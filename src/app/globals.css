@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+@theme{
+  --color-primary: #F5AFAF; /* Your custom color value */
+  --color-primary-hover: #F6B6B6; 
+  --color-secondary: #F9DFDF; /* Another custom color */
+  --color-secondary-hover: #FAE5E5;
+  --color-thirdary: #FBEFEF; /* Custom color with a shade name */
+  --color-thirdary-hover: #FCF2F2; 
+  --color-background: #FCF8F8; /* Custom color with a shade name */
+  --color-background-hover: #F1EEEE; /* Custom color with a shade name */
+  --color-primary-text: #F2889C; /* Custom color with a shade name */
+ --color-primary-text-hover: #F494A6;
+  
+  --color-secondary-text: #403C3C; /* Custom color with a shade name */
+  --color-secondary-text-hover: #484242;
+}
+
+/* Optional: add any base styles within a layer */
+@layer base {
+  body {
+    /* ... your base styles ... */
+  }
+}
