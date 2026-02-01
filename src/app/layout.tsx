@@ -1,8 +1,6 @@
 import { Alexandria } from "next/font/google";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
-import Header from "../components/layout/Header";
 import "./globals.css";
-import Footer from "../components/layout/Footer";
 import { UserProvider } from "../context/UserContext";
 const alexSans = Alexandria({
   variable: "--font-alexandria",

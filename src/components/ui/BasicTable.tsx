@@ -1,57 +1,102 @@
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-
-function createData(
-  name: string,
-  calories: number,
-  fat: number,
-  carbs: number,
-  protein: number,
-) {
-  return { name, calories, fat, carbs, protein };
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  IconButton,
+} from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+interface Column {
+  id: string;
+  label: string;
+  align?: 'left' | 'right' | 'center';
+  isImage?: boolean;
+  isAction?: boolean;
 }
 
-const rows = [
-  createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-  createData('Eclair', 262, 16.0, 24, 6.0),
-  createData('Cupcake', 305, 3.7, 67, 4.3),
-  createData('Gingerbread', 356, 16.0, 49, 3.9),
-];
+interface ProductTableProps {
+  columns: Column[];
+  rows: Record<string, any>[];
+  onEdit?: (row: Record<string, any>) => void;
+  onDelete?: (row: Record<string, any>) => void;
+}
 
-
-
-export default function BasicTable() {
+export default function ProductTable({ columns, rows, onEdit, onDelete }: ProductTableProps) {
   return (
-    <TableContainer  component={Paper}>
-      <Table aria-label="simple table">
-        <TableHead>
+    <TableContainer
+      component={Paper}
+      sx={{
+        borderRadius: 2,
+        overflow: 'hidden',
+      }}
+    >
+      <Table>
+        <TableHead sx={{ backgroundColor: '#FBEFEF' }}>
           <TableRow>
-            <TableCell>القطعه</TableCell>
-            <TableCell align="right">الوصف</TableCell>
-            <TableCell align="right">السعر</TableCell>
-            <TableCell align="right">الكميه</TableCell>
-            <TableCell align="right">السعر الكلي</TableCell>
+            {columns.map((col) => (
+              <TableCell
+                key={col.id}
+                align={col.align || 'center'}
+                sx={{ fontWeight: 'bold', color: '#403C3C', borderRight: '1px solid #F5AFAF' }}
+              >
+                {col.label}
+              </TableCell>
+            ))}
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
+          {rows.map((row, rowIndex) => (
             <TableRow
-              key={row.name}
-              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+              key={rowIndex}
+              sx={{
+
+                '&:nth-of-type': { backgroundColor: '#FCF8F8' },
+              }}
             >
-              <TableCell component="th" scope="row">
-                {row.name}
-              </TableCell>
-              <TableCell align="right">{row.calories}</TableCell>
-              <TableCell align="right">{row.fat}</TableCell>
-              <TableCell align="right">{row.carbs}</TableCell>
-              <TableCell align="right">{row.protein}</TableCell>
+              {columns.map((col) => (
+                <TableCell
+                  key={col.id}
+                  align={col.align || 'center'}
+                  sx={{ borderRight: '1px solid #f48fb1' }}
+                >
+                  {col.isImage ? (
+                    <img
+                      src={row[col.id]}
+                      alt={row.name}
+                      style={{ width: 50, height: 50, objectFit: 'cover', borderRadius: 4 }}
+                    />
+                  ) : col.isAction ? (
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: 4 }}>
+                        <IconButton
+                        size="medium"
+                        onClick={() => onEdit && onEdit(row)}
+                      >
+                        <VisibilityIcon fontSize="medium" />
+                      </IconButton>
+
+                      <IconButton
+                        size="medium"
+                        onClick={() => onEdit && onEdit(row)}
+                      >
+                        <EditIcon fontSize="medium" />
+                      </IconButton>
+                      <IconButton
+                        size="medium"
+                        onClick={() => onDelete && onDelete(row)}
+                      >
+                        <DeleteIcon fontSize="medium" />
+                      </IconButton>
+                    </div>
+                  ) : (
+                    row[col.id]
+                  )}
+                </TableCell>
+              ))}
             </TableRow>
           ))}
         </TableBody>

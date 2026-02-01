@@ -2,8 +2,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { apiClient } from "@/src/utils/apiClient";
 import { Endpoints } from "@/src/utils/endpoints";
-import { log } from "console";
-
 const UserContext = createContext<any>(null);
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {

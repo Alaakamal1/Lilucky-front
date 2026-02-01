@@ -1,5 +1,4 @@
 "use client";
-
 import { useState} from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -58,18 +57,16 @@ const AdminHeader = () => {
           </Link>
         );
       })}
-        {fName ? (
+       
           <div className="">
             <button
               onClick={handleLogout}
-              className=" rounded-md bg-primary py-2 px-4 ml-4 hover:bg-primary-hover text-background hover:text-background duration-300 ease-in"
+              className=" rounded-md bg-primary py-2.5 px-4.5 hover:bg-primary-hover text-background hover:text-background duration-300 ease-in"
             >
               تسجيل الخروج
             </button>
           </div>
-        ) : (
-          <Link href="/customer/login">تسجيل الدخول</Link>
-        )}
+       
 
       </nav>
       {menuOpen && (
@@ -86,7 +83,7 @@ const AdminHeader = () => {
             </Link>
           ))}
 
-          {fName ? (
+         
             <>
               <button
                 onClick={() => {
@@ -99,14 +96,6 @@ const AdminHeader = () => {
               </button>
     
             </>
-          ) : (
-            <Link
-              href="/customer/login"
-              onClick={() => setMenuOpen(false)}
-            >
-              تسجيل الدخول
-            </Link>
-          )}
         </nav>
       )}
     </header>
