@@ -3,6 +3,7 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import Header from "../../components/layout/Header";
 import "../globals.css";
 import Footer from "../../components/layout/Footer";
+import { ToastContainer } from "react-toastify";
 const alexSans = Alexandria({
   variable: "--font-alexandria",
   subsets: ["arabic"],
@@ -15,13 +16,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ar" dir="rtl">
-      <body className={`${alexSans.variable} antialiased bg-background `}>
+      <section  className={`${alexSans.variable} antialiased bg-background `}>
         <AppRouterCacheProvider>
         <Header />{children}
         <Footer/>
         </AppRouterCacheProvider>
-      </body>
-    </html>
+      </section >
   );
 }

@@ -1,13 +1,11 @@
 "use client";
 import { Typography } from "@mui/material";
 import MainButton from "../../components/ui/MainButton";
-// import CardItem from "../../components/ui/CardItem";
 import OptionSelector from "../../components/ui/OptionSelector";
 import { useState } from "react";
 import Link from "next/link";
-export default function page() {
+export default function Page() {
   const [size, setSize] = useState<string>("");
-
   return (
     <>
       <div>
