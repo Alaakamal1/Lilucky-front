@@ -1,4 +1,3 @@
-import BasicTable from "@/src/components/ui/BasicTable";
 import MainButton from "@/src/components/ui/MainButton";
 import { Typography } from "@mui/material";
 import Link from "next/link";

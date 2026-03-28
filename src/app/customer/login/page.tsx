@@ -9,9 +9,10 @@ import MainButton from "@/src/components/ui/MainButton";
 import InputField from "@/src/components/ui/InputField";
 import { Endpoints } from "@/src/utils/endpoints";
 import { apiClient } from "@/src/utils/apiClient";
-import { useUser } from "@/src/context/UserContext"; // ✅ إضافة useUser
+import { useUser } from "@/src/context/UserContext";
+import { AxiosError } from "axios";
 
-// دوال التحقق من صحة الحقول
+
 const validateEmail = (value: string) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(value)) return "الايميل غير صحيح";
@@ -25,24 +26,29 @@ const validatePassword = (value: string) => {
 
 const Page = () => {
   const router = useRouter();
-  const { user, setUser } = useUser(); // ✅ استخدام الـ context لتحديث الاسم
+  const { setUser } = useUser();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [emailError, setEmailError] = useState<string>("");
   const [passwordError, setPasswordError] = useState<string>("");
   const [formError, setFormError] = useState<string>("");
 
-  // Handlers
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setEmail(value);
-    setEmailError(validateEmail(value));
   };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setPassword(value);
-    setPasswordError(validatePassword(value));
+  };
+
+  const handleEmailBlur = () => {
+    setEmailError(validateEmail(email));
+  };
+
+  const handlePasswordBlur = () => {
+    setPasswordError(validatePassword(password));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -78,31 +84,25 @@ const Page = () => {
           sessionStorage.setItem("firstName", result.data.user?.firstName);
           setUser(result.data.user);
         }
+        console.log("ROLE:", role);
+        if (role === "client") router.push("/customer/products");
+        else if (role === "admin") router.push("/admin");
 
-        // توجيه المستخدم حسب الدور
-        if (role === "client") {
-          router.push("/customer/products");
-        } else if (role === "admin") {
-          router.push("/admin");
-        }
       } else {
         setFormError(result.message || "حدث خطأ في تسجيل الدخول");
       }
-    } catch (error: any) {
-      console.error(error);
-      if (error.response) {
-        setFormError(error.response.data.message || "حدث خطأ في تسجيل الدخول");
-      } else {
-        setFormError("خطأ في الاتصال بالسيرفر");
-      }
+    } catch (err: unknown) {
+    const error = err  as AxiosError<{ message?: string }>;
+  if (error.response && error.response.data) {
+    setFormError(error.response.data.message || "حدث خطأ في تسجيل الدخول");
+  } else {
+    setFormError("خطأ في الاتصال بالسيرفر");
+  }
     }
   };
-
-  const isFormValid = !emailError && !passwordError && email && password;
-
+const isFormValid = email && password;
   return (
     <div className="md:flex md:flex-row justify-between items-center gap-6">
-      {/* Form container */}
       <div className="bg-background p-10 rounded-2xl w-full md:mx-30 md:w-4/12 shadow-xl max-md:absolute z-1 max-md:top-50 max-md:opacity-96">
         <form onSubmit={handleSubmit}>
           <Typography variant="h4" className="mb-4 text-center text-primary">
@@ -120,6 +120,7 @@ const Page = () => {
                 type="email"
                 value={email}
                 onChange={handleEmailChange}
+                 onBlur={handleEmailBlur}
                 placeholder="اكتب الايميل"
               />
               {emailError && (
@@ -133,6 +134,7 @@ const Page = () => {
                 type="password"
                 value={password}
                 onChange={handlePasswordChange}
+                onBlur={handlePasswordBlur}
                 placeholder="كلمة المرور"
               />
               {passwordError && (
@@ -160,6 +162,7 @@ const Page = () => {
             </div>
 
             <MainButton
+              type="submit"
               text={"تسجيل الدخول"}
               className="w-full h-12 rounded-md text-background hover:bg-primary-hover duration-400 ease-in my-4 align-item px-6 bg-primary cursor-pointer"
               disabled={!isFormValid}
@@ -167,8 +170,6 @@ const Page = () => {
           </div>
         </form>
       </div>
-
-      {/* Image side */}
       <div className="relative md:w-6/12 w-full h-180 md:h-screen">
         <Image
           src="/login.jpg"

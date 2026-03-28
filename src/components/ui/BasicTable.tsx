@@ -1,3 +1,5 @@
+'use client';
+
 import {
   Table,
   TableBody,
@@ -11,6 +13,9 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import Link from 'next/link';
+import Image from 'next/image';
+
 interface Column {
   id: string;
   label: string;
@@ -19,14 +24,33 @@ interface Column {
   isAction?: boolean;
 }
 
-interface ProductTableProps {
-  columns: Column[];
-  rows: Record<string, any>[];
-  onEdit?: (row: Record<string, any>) => void;
-  onDelete?: (row: Record<string, any>) => void;
+interface Variant {
+  color: string;
+  images: string[];
 }
 
-export default function ProductTable({ columns, rows, onEdit, onDelete }: ProductTableProps) {
+interface ProductRow {
+  _id: string;
+  name: string;
+  variants: Variant[];
+  [key: string]: any;
+}
+
+interface ProductTableProps {
+  columns: Column[];
+  rows: ProductRow[];
+  onView?: (row: ProductRow) => void;
+  onEdit?: (row: ProductRow) => void;
+  onDelete?: (row: ProductRow) => void;
+}
+
+export default function ProductTable({
+  columns,
+  rows,
+  onView,
+  onEdit,
+  onDelete,
+}: ProductTableProps) {
   return (
     <TableContainer
       component={Paper}
@@ -42,61 +66,87 @@ export default function ProductTable({ columns, rows, onEdit, onDelete }: Produc
               <TableCell
                 key={col.id}
                 align={col.align || 'center'}
-                sx={{ fontWeight: 'bold', color: '#403C3C', borderRight: '1px solid #F5AFAF' }}
+                sx={{
+                  fontWeight: 'bold',
+                  color: '#403C3C',
+                  borderRight: '1px solid #F5AFAF',
+                }}
               >
                 {col.label}
               </TableCell>
             ))}
           </TableRow>
         </TableHead>
-        <TableBody>
-          {rows.map((row, rowIndex) => (
-            <TableRow
-              key={rowIndex}
-              sx={{
 
-                '&:nth-of-type': { backgroundColor: '#FCF8F8' },
+        <TableBody>
+          {rows.map((row) => (
+            <TableRow
+              key={row._id}
+              sx={{
+                '&:nth-of-type(even)': { backgroundColor: '#FCF8F8' },
               }}
             >
-              {columns.map((col) => (
-                <TableCell
-                  key={col.id}
-                  align={col.align || 'center'}
-                  sx={{ borderRight: '1px solid #f48fb1' }}
-                >
-                  {col.isImage ? (
-                    <img
-                      src={row[col.id]}
-                      alt={row.name}
-                      style={{ width: 50, height: 50, objectFit: 'cover', borderRadius: 4 }}
-                    />
-                  ) : col.isAction ? (
-                    <div style={{ display: 'flex', justifyContent: 'center', gap: 4 }}>
-                        <IconButton
-                        size="medium"
-                        onClick={() => onEdit && onEdit(row)}
-                      >
-                        <VisibilityIcon fontSize="medium" />
-                      </IconButton>
+              {columns.map((col) => {
+                const image = row.variants?.[0]?.images?.[0];
+                const imageSrc = image
+                  ? image.startsWith('http')
+                    ? image
+                    : `http://localhost:5000/uploads/products/${image.replace(/^\/?/, "")}`
+                  : '/fallback.png';
 
-                      <IconButton
-                        size="medium"
-                        onClick={() => onEdit && onEdit(row)}
+                return (
+                  <TableCell
+                    key={col.id}
+                    align={col.align || 'center'}
+                    sx={{ borderRight: '1px solid #f48fb1' }}
+                  >
+                    {col.isImage ? (
+                      image ? (
+                        <img 
+                        className='center flex'
+                          src={imageSrc}
+                          alt={row.name}
+                          width={50}
+                          height={50}
+                          style={{ objectFit: 'cover', borderRadius: 4 }}
+                        />
+                      ) : (
+                        <span>لا توجد صورة</span>
+                      )
+                    ) : col.isAction ? (
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'center',
+                          gap: 4,
+                        }}
                       >
-                        <EditIcon fontSize="medium" />
-                      </IconButton>
-                      <IconButton
-                        size="medium"
-                        onClick={() => onDelete && onDelete(row)}
-                      >
-                        <DeleteIcon fontSize="medium" />
-                      </IconButton>
-                    </div>
-                  ) : (
-                    row[col.id]
-                  )}
-                </TableCell>
-              ))}
+                        {onView ? (
+                          <IconButton size="medium" onClick={() => onView(row)}>
+                            <VisibilityIcon fontSize="medium" />
+                          </IconButton>
+                        ) : (
+                          <Link href={`/admin/availableProducts/${row._id}`}>
+                            <IconButton size="medium">
+                              <VisibilityIcon fontSize="medium" />
+                            </IconButton>
+                          </Link>
+                        )}
+
+                        <IconButton size="medium" onClick={() => onEdit?.(row)}>
+                          <EditIcon fontSize="medium" />
+                        </IconButton>
+
+                        <IconButton size="medium" onClick={() => onDelete?.(row)}>
+                          <DeleteIcon fontSize="medium" />
+                        </IconButton>
+                      </div>
+                    ) : (
+                      row[col.id]
+                    )}
+                  </TableCell>
+                );
+              })}
             </TableRow>
           ))}
         </TableBody>

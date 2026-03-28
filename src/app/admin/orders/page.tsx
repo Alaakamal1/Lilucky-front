@@ -1,8 +1,10 @@
 'use client';
-import { Typography } from '@mui/material';
-import VisibilityIcon from '@mui/icons-material/Visibility';
+import { Typography, CircularProgress } from '@mui/material';
 import ProductTable from '@/src/components/ui/BasicTable';
-const page = () => {
+import { useEffect, useState } from 'react';
+const Page = () => {
+  const [rows,setRows]=useState([]);
+  const[loading,setLoading]=useState(true);
 
   const columns = [
     { id: 'orderId', label: 'رقم الطلب' },
@@ -14,50 +16,66 @@ const page = () => {
     { id: 'actions', label: 'تفاصيل \\ تعديل \\ حذف', isAction: true },
   ];
 
-  const rows = [
-    {
-      orderId: '1001',
-      customerName: 'محمد علي',
-      totalPrice: 500,
-      orderDate: '2024-06-15',
-      paymentMethod: 'بطاقه ائتمانيه',
-      orderStatus: 'قيد المعالجه',
-    },
-  ];
-
+useEffect (() =>{
+  const fetchData = async () =>{
+    try{
+      const res = await fetch('http://localhost:5000/api/orders');
+      if(!res.ok) throw new Error('Failed to fetch orders');
+      const data = await res.json();
+      setRows (data);
+    }catch(error){
+      console.error('Error fetching orders:', error);
+    }finally{
+      setLoading(false);
+  }
+};
+fetchData();
+},[])
 
 
   return (
     <>
-      <div className='w-full '>
-        <div>
-          {/*Filter */}
-        </div>
-        <div className='flex justify-between m-10 items-center'>
-          <Typography variant="h5" className="mb-4 text-center text-secondary-text">
-           الطلبات المتوفره
-          </Typography>
-       
-        </div>
-        <div className='w-4xl mx-auto  mb-15'>
-          <ProductTable
-            columns={columns}
-            rows={rows}
-            onEdit={(row) => console.log('Edit', row)}
-            onDelete={(row) => console.log('Delete', row)}
-          />
-        </div>
-               <div className='w-4xl mx-auto  mb-20'>
-          <ProductTable
-            columns={columns}
-            rows={rows}
-            onEdit={(row) => console.log('Edit', row)}
-            onDelete={(row) => console.log('Delete', row)}
-          />
-        </div>
-      </div>
+     <div className="w-full px-4 md:px-10 py-6">
+           <div className="w-full overflow-x-auto">
+             {loading ? (
+               // 🌀 Loading State
+               <div className="flex justify-center items-center h-64">
+                 <CircularProgress />
+               </div>
+             ) : rows.length === 0 ? (
+               // ⚠️ Empty State
+               <div className="flex flex-col justify-center items-center h-64 text-gray-500">
+                 <Typography variant="body1" className="text-center">
+                   لا يوجد طلبات بعد
+                 </Typography>
+                 <Typography variant="body2" className="text-center text-gray-400">
+                   سيتم عرض الطلبات هنا بمجرد إضافتهم.
+                 </Typography>
+               </div>
+             ) : (
+               <div>
+                 <div className="flex flex-col md:flex-row justify-between items-center mb-6">
+                   <Typography
+                     variant="h5"
+                     className="text-center md:text-left text-secondary-text mb-4 md:mb-0"
+                   >
+                      الطلبات
+                   </Typography>
+                 </div>
+                 <div className="min-w-sm md:min-w-md lg:min-w-lg">
+                   <ProductTable
+                     columns={columns}
+                     rows={rows}
+                     onEdit={(row) => console.log('Edit', row)}
+                     onDelete={(row) => console.log('Delete', row)}
+                   />
+                 </div>
+               </div>
+             )}
+           </div>
+         </div>
     </>
   )
 }
 
-export default page
+export default Page;

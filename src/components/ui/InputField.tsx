@@ -1,6 +1,6 @@
 import { InputFieldProps } from "@/src/interfaces/InputFieldProps";
 
-const InputField: React.FC<InputFieldProps> = ({ label, value, onChange, type = "text", placeholder  }) => {
+const InputField: React.FC<InputFieldProps> = ({ label, value, onChange, onBlur, type = "text", placeholder  }) => {
   return (
     <div className="mb-4">
       {label && <label className="block text-primary text-sm font-medium mb-1">{label}</label>}
@@ -9,6 +9,7 @@ const InputField: React.FC<InputFieldProps> = ({ label, value, onChange, type = 
         value={value}
         onChange={onChange}
         placeholder={placeholder}
+        onBlur={onBlur}
         className={`
                 w-full
                 h-11

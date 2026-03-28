@@ -27,8 +27,8 @@ const Header = () => {
 
   const links = [
     { href: "/customer", label: "الصفحه الرئيسيه" },
-    { href: "#", label: "اطقم ولادي" },
-    { href: "#", label: "اطقم بناتي" },
+    { href: "/customer/boys", label: "اطقم ولادي" },
+    { href: "/customer/girls", label: "اطقم بناتي" },
   ];
 
   return (

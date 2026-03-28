@@ -1,82 +1,76 @@
 "use client";
+
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import { Typography } from "@mui/material";
-import { useState } from "react";
-import Image from "next/image";
-import ProductColor from "@/src/components/ui/ProductColor";
-import OptionSelector from "@/src/components/ui/OptionSelector";
-import Counter from "@/src/components/ui/Counter";
-import MainButton from "@/src/components/ui/MainButton";
 interface Product {
-  image?: string;
+  id?: number;
   name?: string;
   description?: string;
-  oldPrice?: string | number;
-  price?: string | number;
-  colors?: string[];
-  sizes?: string[];
+  price?: number;
+  gender?: string;
+  variants?: {
+    images?: string[];
+    color?: string;
+    sizes?: string;
+  }[];
+  image?: string;
 }
-const page = ({ product }: { product: Product }) => {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const [size, setSize] = useState<string>("");
 
-  const availableColors = ["red", "white", "black", "green"];
+export default function ProductDetails() {
+  const params = useParams();
+  const id = params?.id;
+  const [product, setProduct] = useState<Product | null>(null);
+
+  const image = product?.variants?.[0]?.images?.[0];
+  const imageSrc = image
+    ? image.startsWith("http")
+      ? image
+      : `http://localhost:5000/uploads/products/${image.replace(/^\/?/, "")}`
+    : "/placeholder.png";
+
+  useEffect(() => {
+    if (!id) return;
+    const fetchProduct = async () => {
+      try {
+        const res = await fetch(
+          `http://localhost:5000/api/products/${id}`
+        );
+        const data = await res.json();
+        setProduct(data.data);
+        console.log("Fetched product data:", data);
+      } catch (err) {
+        console.log(err);
+        setProduct(null);
+      }
+    };
+
+    fetchProduct();
+  }, [id]);
+
+  if (!product) return <p>Loading...</p>;
+
   return (
-    <>
-      <div className="flex bg-amber-100  items-center md:m-20">
-        <div>
-          {/*Image */}
-          <Image src="/test.jpg" alt="product Image" width={300} height={300} />
+    <div className="p-6">
+      <img
+        src={imageSrc}
+        className="w-80 h-80 object-cover"
+      />
+      <h1 className="text-2xl font-bold">{product?.name}</h1>
+      <Typography  variant="h6" className="mt-4">{product?.description}</Typography>
+      <Typography  variant="h6" className="mt-4">{product?.price} EGY</Typography>
+      <Typography variant="h6" className="mt-4">Gender: {product?.gender}</Typography>
+      {/* Add more product details as needed */}
+      <Typography variant="h6" className="mt-4">
+        Variants:
+      </Typography>
+      {product?.variants?.map((variant, index) => (
+        <div key={index} className="border p-2 mt-2">
+          <Typography>Color: {variant.color}</Typography>
+          <Typography>Size: {variant.sizes}</Typography>
         </div>
-        <div className="flex flex-col mx-4 gap-1 align-baseline">
-          <Typography variant="h4" component="h4" className="">
-            {product?.name || "اسم المنتج"}
-          </Typography>
-          <Typography variant="h6" component="h6" className="">
-            {product?.price || "300 Egy"}
-          </Typography>
-          <Typography variant="body2" className=" w-50">
-            {/*Product details */}
-            {product?.description ||
-              "هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة، لقد تم توليد هذا النص من مولد النص العربى."}
-          </Typography>
-          <div className="">
-            {/*coloring */}
-            <Typography variant="body1" className="">
-              {product?.colors ? "الألوان المتاحة" : "لا توجد ألوان متاحة"}
-            </Typography>
-            <ProductColor colors={availableColors} />
-          </div>
-          <div>
-            {/*sizing */}
+      ))}
 
-            <Typography variant="body1" className=" mb-2">
-              {product?.sizes ? "المقاسات المتاحة" : "لا توجد مقاسات متاحة"}
-            </Typography>
-            <OptionSelector
-              label=""
-              options={["XS", "S", "M", "L", "XL"]}
-              selected={size}
-              onSelect={setSize}
-              className={
-                "px-4 py-2 border  rounded-md cursor-pointer transition-all"
-              }
-            />
-          </div>
-          <div>
-            {/*quntity */}
-            <Typography variant="body1" className=" mb-2">
-              الكمية
-            </Typography>
-            <Counter />
-          </div>
-          <MainButton
-            text="إضافه الي السله "
-            className="bg-primary hover:bg-primary-hover duration-300 ease-in-out rounded-md w-32 py-3 my-2 text-background"
-          />
-        </div>
-      </div>
-    </>
+    </div>
   );
-};
-
-export default page;
+}
