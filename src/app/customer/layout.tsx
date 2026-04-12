@@ -19,6 +19,7 @@ export default function RootLayout({
       <section  className={`${alexSans.variable} antialiased bg-background `}>
         <AppRouterCacheProvider>
         <Header />{children}
+        <ToastContainer />
         <Footer/>
         </AppRouterCacheProvider>
       </section >

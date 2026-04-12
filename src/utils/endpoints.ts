@@ -3,10 +3,13 @@ export class Endpoints {
   static baseUrl = Endpoints.devUrl;
 // static prodUrl = "https://well-nest-back.vercel.app";
   static login = `${Endpoints.baseUrl}/auth/login`;
+  static forgetPassword = `${Endpoints.baseUrl}/auth/forgot-password`;
+  static resetPassword = `${Endpoints.baseUrl}/auth/reset-password-otp`;
+
   static register = `${Endpoints.baseUrl}/auth/register`;
   static user = `${Endpoints.baseUrl}/user`;
   static profile = `${Endpoints.baseUrl}/user/profile`;
-  static name = `${Endpoints.baseUrl}/user/name`;
+  static userName = `${Endpoints.baseUrl}/user/name`;
 
   static products = `${Endpoints.baseUrl}/products`;
   static cart = `${Endpoints.baseUrl}/cart`;

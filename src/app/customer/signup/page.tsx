@@ -37,6 +37,7 @@ const Page = () => {
   const [selectedGovError, setSelectedGovError] = useState<string>("");
   const [selectedCityError, setSelectedCityError] = useState<string>("");
   const [formError, setFormError] = useState<string>("");
+  const [successMessage, setSuccessMessage] = useState<string>("");
 
   const router = useRouter();
   const governorateOptions = Object.keys(egyptData).map((gov) => ({
@@ -52,64 +53,91 @@ const Page = () => {
   const handleFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setFirstName(value);
-    setFirstNameError(validateFirstName(value));
+    setFirstNameError("");
   };
+
+    const handleFirstNameBlur = () => {
+    setFirstNameError(validateFirstName(firstName));
+  };
+
 
   const handleLastNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setLastName(value);
-    setLastNameError(validateLastName(value));
+    setLastNameError("");
   };
+
+  const handleLastNameBlur = () => {
+    setLastNameError(validateLastName(lastName));
+  };
+
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setEmail(value);
-    setEmailError(validateEmail(value));
+    setEmailError("");
   };
+
+  const handleEmailBlur = () => {
+    setEmailError(validateEmail(email));
+  };
+
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setPassword(value);
-    setPasswordError(validatePassword(value));
-    setConfirmPasswordError(validateConfirmPassword(value, confirmPassword));
+    setPasswordError("");
   };
+
+  const handlePasswordBlur = () => {
+    setPasswordError(validatePassword(password));
+  };  
 
   const handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setConfirmPassword(value);
-    setConfirmPasswordError(validateConfirmPassword(password, value));
+    setConfirmPasswordError("");
+  };
+
+  const handleConfirmPasswordBlur = () => {
+    setConfirmPasswordError(validateConfirmPassword(password, confirmPassword));
+    
   };
 
   const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    if (/^\d*$/.test(value) && value.length <= 11) {
       setPhoneNumber(value);
-      setPhoneNumberError(validatePhoneNumber(value));
-    }
+    setPhoneNumberError("");
   };
+  const handleNumberBlur = () => {
+    setPhoneNumberError(validatePhoneNumber(phoneNumber));
+  }
 
   const handleAddressChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
     setAddress(value);
-    setAddressError(validateNotEmpty(value, "العنوان"));
+    setAddressError("");
   };
+  const handleAddressBlur = () => {
+    setAddressError(validateNotEmpty(address, "العنوان"));
+  };
+
 
   const handleGovChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
     setSelectedGov(value);
     setSelectedCity("");
-    setSelectedGovError(validateNotEmpty(value, "المحافظة"));
+    setSelectedGovError("");
   };
 
   const handleCityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
     setSelectedCity(value);
-    setSelectedCityError(validateNotEmpty(value, "المدينة"));
+    setSelectedCityError("");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Final Validation
     const errors = [
       validateFirstName(firstName),
       validateLastName(lastName),
@@ -123,25 +151,28 @@ const Page = () => {
     ];
     if (errors.some(err => err !== "")) {
       setFormError("من فضلك صحح جميع الأخطاء قبل الإرسال");
-
       return;
     }
 
-    const data = { firstName, lastName, email, phoneNumber, password, address, governorate: selectedGov, city: selectedCity };
+    const data = { firstName, lastName, email, phoneNumber, password, confirmPassword, address, governorate: selectedGov, city: selectedCity };
 
     try {
       const res = await apiClient.post(`${Endpoints.register}`, data, { headers: { "Content-Type": "application/json" } });
       if (res.status === 200 || res.status === 201) {
-        router.push("/customer/login");
+        setSuccessMessage("تم إنشاء الحساب بنجاح ");
+         setTimeout(() => {
+      router.push("/customer/login");
+    }, 1500);
+
       } else {
-        alert(res.data.message || "حدث خطأ في التسجيل");
+        console.error(res.data.message || "حدث خطأ في التسجيل");
       }
     } catch (error: any) {
-      console.error(error);
+      console.error(error.response?.data?.message || "حدث خطأ في التسجيل");
       if (error.response) {
-        alert(error.response.data.message || "حدث خطأ في التسجيل");
+        console.error(error.response.data.message || "حدث خطأ في التسجيل");
       } else {
-        alert("خطأ في الاتصال بالسيرفر");
+        console.error("خطأ في الاتصال بالسيرفر");
       }
     }
   };
@@ -156,40 +187,41 @@ const Page = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <InputField label="الاسم الاول" value={firstName} onChange={handleFirstNameChange} placeholder="اكتب اسمك" />
+              <InputField label="الاسم الاول" value={firstName} onChange={handleFirstNameChange}                 onBlur={handleFirstNameBlur}
+ placeholder="اكتب اسمك" />
               {firstNameError && <Typography className="text-red-500 text-sm mt-1">{firstNameError}</Typography>}
             </div>
             <div>
-              <InputField label="الاسم الثاني" value={lastName} onChange={handleLastNameChange} placeholder="اكتب اسمك" />
+              <InputField label="الاسم الثاني" value={lastName} onChange={handleLastNameChange} onBlur={handleLastNameBlur} placeholder="اكتب اسمك" />
               {lastNameError && <Typography className="text-red-500 text-sm mt-1">{lastNameError}</Typography>}
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <InputField label="الايميل" type="email" value={email} onChange={handleEmailChange} placeholder="اكتب الايميل" />
+              <InputField label="الايميل" type="email" value={email} onChange={handleEmailChange} onBlur={handleEmailBlur} placeholder="اكتب الايميل"  />
               {emailError && <Typography className="text-red-500 text-sm mt-1">{emailError}</Typography>}
             </div>
             <div>
-              <InputField label="رقم التلفون" value={phoneNumber} onChange={handleNumberChange} placeholder="اكتب رقم التلفون" />
+              <InputField label="رقم التلفون" value={phoneNumber} onChange={handleNumberChange} onBlur={handleNumberBlur} placeholder="اكتب رقم التلفون" />
               {phoneNumberError && <Typography className="text-red-500 text-sm mt-1">{phoneNumberError}</Typography>}
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <InputField label="كلمة المرور" type="password" value={password} onChange={handlePasswordChange} placeholder="كلمة المرور" />
+              <InputField label="كلمة المرور" type="password" value={password} onChange={handlePasswordChange} onBlur={handlePasswordBlur} placeholder="كلمة المرور" />
               {passwordError && <Typography className="text-red-500 text-sm mt-1">{passwordError}</Typography>}
             </div>
             <div>
-              <InputField label="تأكيد كلمة المرور" type="password" value={confirmPassword} onChange={handleConfirmPasswordChange} placeholder="اكتب كلمة المرور مرة اخرى" />
+              <InputField label="تأكيد كلمة المرور" type="password" value={confirmPassword} onChange={handleConfirmPasswordChange} onBlur={handleConfirmPasswordBlur} placeholder="اكتب كلمة المرور مرة اخرى" />
               {confirmPasswordError && <Typography className="text-red-500 text-sm mt-1">{confirmPasswordError}</Typography>}
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Dropdown label="اختر المحافظة" options={governorateOptions} value={selectedGov} onChange={handleGovChange} />
+              <Dropdown label="اختر المحافظة" options={governorateOptions} value={selectedGov} onChange={handleGovChange}  />
               {selectedGovError && <Typography className="text-red-500 text-sm mt-1">{selectedGovError}</Typography>}
             </div>
             <div>
@@ -212,7 +244,7 @@ const Page = () => {
             <Typography className="text-red-600 text-center mb-4">{formError}</Typography>
           )}
 
-          <MainButton text={"إنشاء حساب"} className="w-full h-12 rounded-md text-background hover:bg-primary-hover duration-400 ease-in my-4 px-6 bg-primary cursor-pointer" />
+          <MainButton text={"إنشاء حساب"} type="submit" className="w-full h-12 rounded-md text-background hover:bg-primary-hover duration-400 ease-in my-4 px-6 bg-primary cursor-pointer" />
         </form>
       </div>
 
