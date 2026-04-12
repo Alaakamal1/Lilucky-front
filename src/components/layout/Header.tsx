@@ -27,8 +27,8 @@ const Header = () => {
 
   const links = [
     { href: "/customer", label: "الصفحه الرئيسيه" },
-    { href: "/customer/boys", label: "اطقم ولادي" },
-    { href: "/customer/girls", label: "اطقم بناتي" },
+    { href: "/customer/products", label: "منتجاتنا" },
+    // { href: "/customer/products?gender=girls", label: "اطقم بناتي" },
   ];
 
   return (
@@ -95,9 +95,7 @@ const Header = () => {
 
           {fName ? (
             <>
-
               <span>مرحباً، {fName}</span>
-
               <button
                 onClick={() => {
                   handleLogout();

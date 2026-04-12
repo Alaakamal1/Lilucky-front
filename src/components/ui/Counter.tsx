@@ -1,29 +1,34 @@
 'use client'
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import RemoveOutlinedIcon from "@mui/icons-material/RemoveOutlined";
-import { useState } from "react";
-const Counter = () => {
-  const [num, setNum] = useState<number>(1);
-  const increment = (n: number) => {
-    if(n < 10 ) setNum(n + 1);}
-  const decrement = (n: number) => {
-    if(n > 1) setNum(n - 1);
-  }
+interface CounterProps {
+  value: number;
+  onChange: (value: number) => void;
+  max?: number;
+}
+
+const Counter = ({ value, onChange, max = 10 }: CounterProps) => {
+
+  const increment = () => {
+    if (value < max) onChange(value + 1);
+  };
+
+  const decrement = () => {
+    if (value > 1) onChange(value - 1);
+  };
+
   return (
-    <>
-      <div className="border flex w-30 py-1 justify-around rounded-md">
-        <div className="cursor-pointer" onClick={() => increment(num)}>
-          <AddOutlinedIcon/>
-        </div>
-        <div className="text-xl">
-        {num}
-        </div>
-        <div className=" cursor-pointer" onClick={() => decrement(num)}>
-          <RemoveOutlinedIcon />
-        </div>
+    <div className="border flex w-25 py-0.2 justify-around rounded-md text-secondary-text">
+      <div className="cursor-pointer " onClick={increment}>
+        <AddOutlinedIcon className=""/>
       </div>
-    </>
+
+      <div className="text-xl">{value}</div>
+
+      <div className="cursor-pointer" onClick={decrement}>
+        <RemoveOutlinedIcon />
+      </div>
+    </div>
   );
 };
-
 export default Counter;

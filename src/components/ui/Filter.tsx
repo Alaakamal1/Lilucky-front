@@ -1,17 +1,17 @@
 // components/Filter.js
 import React from "react";
 
-const Filter = ({ label, options, selected, onChange }) => {
+const Filter = ({ label, options, selected, onChange }: { label: string; options: { value: string; label: string }[]; selected: string | null; onChange: (value: string) => void }) => {
   return (
     <div className="filter">
       <label className="filter-label">
         {label} 
         <select
-          value={selected}
+          value={selected ?? ""}
           onChange={(e) => onChange(e.target.value)}
           className="filter-select"
         >
-          {options.map((option) => (
+          {options.map((option: { value: string; label: string }) => (
             <option key={option.value} value={option.value}>
               {option.label}
             </option>

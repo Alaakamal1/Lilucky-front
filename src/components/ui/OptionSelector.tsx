@@ -19,7 +19,7 @@ const OptionSelector = ({
     <div className="flex flex-col gap-2">
       {label && <span className="font-medium">{label}</span>}
 
-      <div className="flex flex-wrap gap-6 justify-center max-md:flex-col m-10">
+      <div className="flex flex-wrap gap-6  max-md:flex-col ">
         {options.map((option) => (
           <button
             key={option}
@@ -29,8 +29,8 @@ const OptionSelector = ({
               ${className}
               ${
                 selected === option
-                  ? " text-primary-text"
-                  : "bg-primary-text text-pink-200"
+                  ? " bg-primary-text text-background"
+                  : " text-primary-text "
               }
             `}
           >

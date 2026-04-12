@@ -11,7 +11,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 const token = sessionStorage.getItem("token");
     if (!token) return;
     apiClient
-      .get(Endpoints.name, { headers: { Authorization: `Bearer ${token}` } })
+      .get(Endpoints.profile, { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => setUser(res.data.data.user))
       .catch(() => setUser(null));
   }, []);
