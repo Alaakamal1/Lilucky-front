@@ -10,13 +10,20 @@ import CloseIcon from "@mui/icons-material/Close";
 import SearchInput from "../ui/input";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/src/context/UserContext";
+import Avatar from "../ui/Avatar";
+import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const { user, setUser } = useUser();
   const router = useRouter();
 
-  const fName = user?.firstName || (typeof window !== "undefined" ? sessionStorage.getItem("firstName") : null);
+  const fName =
+    user?.firstName ||
+    (typeof window !== "undefined"
+      ? sessionStorage.getItem("firstName")
+      : null);
+  const isAuth = !!user || !!sessionStorage.getItem("token");
 
   const handleLogout = () => {
     sessionStorage.removeItem("token");
@@ -54,9 +61,7 @@ const Header = () => {
           </Link>
         ))}
 
-        {fName ? (<Link href="/customer/profile">مرحباً، {fName}</Link>) : (
-          null)}
-
+        {fName ? <Link href="/customer/account">مرحباً، {fName}</Link> : null}
 
         {fName ? (
           <div className="">
@@ -79,6 +84,12 @@ const Header = () => {
           <Link href="/customer/cart">
             <ShoppingCartOutlinedIcon className="cursor-pointer hover:text-primary-hover" />
           </Link>
+          {/* {isAuth && ( */}
+          <Link href="/customer/account">
+            <Avatar fName={fName} />
+            {/* <AccountCircleOutlinedIcon className=" cursor-pointer hover:text-primary-hover" /> */}
+          </Link>
+          {/* )} */}
         </div>
       </nav>
       {menuOpen && (
@@ -95,7 +106,6 @@ const Header = () => {
 
           {fName ? (
             <>
-
               <span>مرحباً، {fName}</span>
 
               <button
@@ -107,13 +117,9 @@ const Header = () => {
               >
                 تسجيل الخروج
               </button>
-    
             </>
           ) : (
-            <Link
-              href="/customer/login"
-              onClick={() => setMenuOpen(false)}
-            >
+            <Link href="/customer/login" onClick={() => setMenuOpen(false)}>
               تسجيل الدخول
             </Link>
           )}
@@ -126,6 +132,11 @@ const Header = () => {
             <Link href="/customer/cart">
               <ShoppingCartOutlinedIcon className="cursor-pointer hover:text-primary-hover" />
             </Link>
+            {isAuth && (
+              <Link href="/customer/account" title={`مرحباً، ${fName}`}>
+                <Avatar fName={fName} />
+              </Link>
+            )}
           </div>
         </nav>
       )}

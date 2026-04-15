@@ -120,7 +120,7 @@ const isFormValid = email && password;
                 type="email"
                 value={email}
                 onChange={handleEmailChange}
-                 onBlur={handleEmailBlur}
+                onBlur={handleEmailBlur}
                 placeholder="اكتب الايميل"
               />
               {emailError && (

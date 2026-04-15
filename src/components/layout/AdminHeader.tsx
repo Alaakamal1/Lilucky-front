@@ -60,7 +60,7 @@ const AdminHeader = () => {
         </Link>
 
         {fName && (
-          <Link href="/admin/profile" className="text-lg">
+          <Link href="/admin/account" className="text-lg">
             مرحباً، {fName}
           </Link>
         )}

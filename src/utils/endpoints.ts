@@ -5,7 +5,7 @@ export class Endpoints {
   static login = `${Endpoints.baseUrl}/auth/login`;
   static register = `${Endpoints.baseUrl}/auth/register`;
   static user = `${Endpoints.baseUrl}/user`;
-  static profile = `${Endpoints.baseUrl}/user/profile`;
+  static profile = `${Endpoints.baseUrl}/user/account`;
   static name = `${Endpoints.baseUrl}/user/name`;
 
   static products = `${Endpoints.baseUrl}/products`;

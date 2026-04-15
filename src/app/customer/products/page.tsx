@@ -49,7 +49,7 @@ const Page = () => {
   }
 
   return (
-    <div>
+    <div className="p-5 mr-5">
       <Typography variant="h4" component="h4" className="text-secondary-text mb-4">
         {selectedCategory
           ? `منتجات ${selectedCategory}`
