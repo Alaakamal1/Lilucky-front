@@ -20,82 +20,70 @@ interface Column {
   id: string;
   label: string;
   align?: 'left' | 'right' | 'center';
-  isImage?: boolean;
   isAction?: boolean;
-  render?: (row: any) => React.ReactNode; // 🔥 مهم جداً
+  render?: (row: any) => React.ReactNode;
 }
 
-interface DataTableProps {
+interface Props {
   columns: Column[];
   rows: any[];
   rowKey?: string;
-  baseImageUrl?: string;
-  imageField?: string;
   onView?: (row: any) => void;
   onEdit?: (row: any) => void;
   onDelete?: (row: any) => void;
-  viewRoute?: (row: any) => string; // 🔥 dynamic route
+  viewRoute?: (row: any) => string;
 }
 
 export default function DataTable({
   columns,
   rows,
   rowKey = '_id',
-  baseImageUrl,
-  imageField,
   onView,
   onEdit,
   onDelete,
   viewRoute,
-}: DataTableProps) {
+}: Props) {
   return (
-    <TableContainer component={Paper} sx={{ borderRadius: 2, overflow: 'hidden' }}>
+    <TableContainer component={Paper} sx={{ borderRadius: 2 }}>
       <Table>
+
+        {/* HEADER */}
         <TableHead sx={{ backgroundColor: '#FBEFEF' }}>
           <TableRow>
             {columns.map((col) => (
-              <TableCell
-                key={col.id}
-                align={col.align || 'center'}
-                sx={{ fontWeight: 'bold', color: '#403C3C' }}
-              >
+              <TableCell key={col.id} align={col.align || 'center'}>
                 {col.label}
               </TableCell>
             ))}
           </TableRow>
         </TableHead>
 
+        {/* BODY */}
         <TableBody>
           {rows.map((row) => (
             <TableRow key={row[rowKey]}>
+
               {columns.map((col) => {
                 const value = row[col.id];
+
+                // IMAGE HANDLING
+                const isImage =
+                  typeof value === 'string' &&
+                  (value.startsWith('http') ||
+                    value.includes('.png') ||
+                    value.includes('.jpg') ||
+                    value.includes('.jpeg'));
 
                 return (
                   <TableCell key={col.id} align={col.align || 'center'}>
 
-                    {/* 🔥 custom render */}
+                    {/* custom render */}
                     {col.render ? (
                       col.render(row)
-                    ) : col.isImage ? (
-                      value ? (
-                        <img
-                          src={
-                            baseImageUrl
-                              ? `${baseImageUrl}/${value}`
-                              : value
-                          }
-                          width={50}
-                          height={50}
-                          style={{ borderRadius: 6, objectFit: 'cover' }}
-                        />
-                      ) : (
-                        'لا توجد صورة'
-                      )
-                    ) : col.isAction ? (
-                      <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
 
-                        {/* 👁 view */}
+                    ) : col.isAction ? (
+                      <div style={{ display: 'flex', gap: 6 }}>
+
                         {viewRoute ? (
                           <Link href={viewRoute(row)}>
                             <IconButton>
@@ -108,27 +96,39 @@ export default function DataTable({
                           </IconButton>
                         )}
 
-                        {/* ✏️ edit */}
                         <IconButton onClick={() => onEdit?.(row)}>
                           <EditIcon />
                         </IconButton>
 
-                        {/* 🗑 delete */}
                         <IconButton onClick={() => onDelete?.(row)}>
                           <DeleteIcon />
                         </IconButton>
 
                       </div>
+
+                    ) : isImage ? (
+                      <img
+                        src={value}
+                        width={50}
+                        height={50}
+                        style={{
+                          borderRadius: 6,
+                          objectFit: 'cover',
+                        }}
+                      />
+
                     ) : (
-                      value
+                      value || '—'
                     )}
 
                   </TableCell>
                 );
               })}
+
             </TableRow>
           ))}
         </TableBody>
+
       </Table>
     </TableContainer>
   );

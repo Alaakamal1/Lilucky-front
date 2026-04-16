@@ -23,9 +23,7 @@ const ProductDetailsPage = () => {
         const res = await fetch(`http://localhost:5000/api/products/${id}`);
         const data = await res.json();
         const productData = data.data.product || data.data;
-
         setProduct(productData);
-
         const firstImage =
           productData?.variants?.[0]?.images?.[0] || "";
         setSelectedImage(firstImage);
