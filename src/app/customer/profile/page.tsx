@@ -1,162 +1,247 @@
-"use client";
-import { useEffect, useState } from "react";
+// "use client";
 
-const Page = () => {
-  const [mounted, setMounted] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [profile, setProfile] = useState<any>(null);
-  const [orders, setOrders] = useState<any[]>([]);
-  const [error, setError] = useState("");
+// import { useState, useEffect } from "react";
+// import { TextField, Button, Avatar, Tabs, Tab } from "@mui/material";
+// import EditIcon from "@mui/icons-material/Edit";
+// import SaveIcon from "@mui/icons-material/Save";
+// import { Endpoints } from "@/src/utils/endpoints";
+// import { apiClient } from "@/src/utils/apiClient";
+// import { useRouter } from "next/navigation";
 
-  // 🔥 يمنع Hydration mismatch
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+// export default function ProfilePage() {
+//     const router = useRouter();
 
-  useEffect(() => {
-    if (!mounted) return;
+//     const [tab, setTab] = useState(0);
+//     const [edit, setEdit] = useState(false);
+//     const [loading, setLoading] = useState(true);
 
-    const fetchData = async () => {
-      try {
-        setLoading(true);
+//     // ✅ initial safe state
+//     const [user, setUser] = useState({
+//         firstName: "",
+//         lastName: "",
+//         email: "",
+//         phoneNumber: "",
+//         city: "",
+//         governorate: "",
+//         address: "",
+//     });
 
-        const token = sessionStorage.getItem("token");
+//     // ✅ fetch user data
+//     useEffect(() => {
+//         const token = sessionStorage.getItem("token");
 
-        if (!token) {
-          setError("No token found. Please login again.");
-          setLoading(false);
-          return;
-        }
+//         if (!token) {
+//             router.push("/customer/login");
+//             return;
+//         }
 
-        const [profileRes, ordersRes] = await Promise.all([
-          fetch("http://localhost:5000/api/user/profile", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }),
-          fetch("http://localhost:5000/api/orders/my-orders", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }),
-        ]);
+//         const fetchUser = async () => {
+//             try {
+//                 const res = await apiClient.get("http://localhost:5000/api/user/account", {
+//                     headers: {
+//                         Authorization: `Bearer ${token}`,
+//                     },
+//                 });
+//                 console.log("-----------------------------------------------");
+//                 console.log(Endpoints.account);
+//                 console.log("API RESPONSE:", res.data);
 
-        const profileData = await profileRes.json();
-        const ordersData = await ordersRes.json();
+//                 const data = res.data?.data || res.data;
+//                 console.log("USER DATA:", data);
 
-        console.log("Profile Response:", profileData);
-        console.log("Orders Response:", ordersData);
-        if (profileData.status === "error") {
-          throw new Error(profileData.message);
-        }
+//                 setUser({
+//                     firstName: data.firstName || "",
+//                     lastName: data.lastName || "",
+//                     email: data.email || "",
+//                     phoneNumber: data.phoneNumber || "",
+//                     city: data.city || "",
+//                     governorate: data.governorate || "",
+//                     address: data.address || "",
+//                 });
 
-        setProfile(profileData.data);
-        setOrders(ordersData.data || []);
-      } catch (err: any) {
-        console.error("ERROR:", err.message);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+//             } catch (err) {
+//                 console.error("Error fetching user:", err);
+//             } finally {
+//                 setLoading(false);
+//             }
+//         };
 
-    fetchData();
-  }, [mounted]);
+//         fetchUser();
+//     }, [router]);
 
-  // 🔥 مهم جدًا: ما ترندرش قبل mount
-  if (!mounted) return null;
+//     // ✅ handle input change
+//     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+//         setUser((prev) => ({
+//             ...prev,
+//             [e.target.name]: e.target.value,
+//         }));
+//     };
 
-  if (loading) return <h2>Loading...</h2>;
+//     // ✅ save updates
+//     const handleSave = async () => {
+//         try {
+//             const token = sessionStorage.getItem("token");
 
-  if (error) return <h2 style={{ color: "red" }}>{error}</h2>;
+//             await apiClient.patch(`${Endpoints.user}/update`, user, {
+//                 headers: {
+//                     Authorization: `Bearer ${token}`,
+//                 },
+//             });
 
-  return (
-    <div style={{ padding: "20px" }}>
-      {/* 👤 PROFILE */}
-      <h2>My Profile</h2>
+//             setEdit(false);
+//             console.log("User updated successfully:", user);
 
-      {profile ? (
-        <div>
-          <p>
-            <strong>Name:</strong> {profile.firstName} {profile.lastName}
-          </p>
-          <p>
-            <strong>Email:</strong> {profile.email}
-          </p>
-          <p>
-            <strong>Phone:</strong> {profile.phoneNumber}
-          </p>
-          <p>
-            <strong>City:</strong> {profile.city}
-          </p>
-          <p>
-            <strong>Address:</strong> {profile.address}
-          </p>
-        </div>
-      ) : (
-        <p>No profile data</p>
-      )}
+//         } catch (err) {
+//             console.error("Error updating user:", err);
+//         }
+//     };
 
-      <hr />
+//     if (loading) {
+//         return <div className="text-center mt-10">Loading...</div>;
+//     }
 
-      {/* 📦 ORDERS */}
-      <h2>My Orders</h2>
+//     return (
+//         <div className="min-h-screen bg-[#F8FAFC] p-6 md:p-10">
+//             <div className="max-w-5xl mx-auto">
 
-      {orders.length === 0 ? (
-        <p>No orders yet</p>
-      ) : (
-        orders.map((order) => (
-          <div
-            key={order._id}
-            style={{
-              border: "1px solid #ccc",
-              padding: "10px",
-              marginBottom: "10px",
-              borderRadius: "8px",
-            }}
-          >
-            <p>
-              <strong>Status:</strong>{" "}
-              <span style={{ color: getStatusColor(order.orderStatus) }}>
-                {order.orderStatus}
-              </span>
-            </p>
+//                 {/* Header */}
+//                 <div className="flex flex-col md:flex-row-reverse items-center md:justify-between gap-6 mb-8">
 
-            <p>
-              <strong>Total:</strong> {order.totalAmount} EGP
-            </p>
+//                     <Button
+//                         variant="outlined"
+//                         onClick={() => (edit ? handleSave() : setEdit(true))}
+//                         startIcon={edit ? <SaveIcon /> : <EditIcon />}
+//                         sx={{
+//                             gap: "6px",
+//                             borderColor: "#eabebe",
+//                             color: "#eabebe",
+//                             "&:hover": {
+//                                 borderColor: "#d89b9b",
+//                                 backgroundColor: "rgba(234,190,190,0.1)",
+//                             },
+//                         }}
+//                     >
+//                         {edit ? "حفظ" : "تعديل البيانات"}
+//                     </Button>
 
-            <h4>Items:</h4>
-            <ul>
-              {order.items.map((item: any, index: number) => (
-                <li key={index}>
-                  {item.name} - {item.quantity} × {item.price}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))
-      )}
-    </div>
-  );
-};
+//                     <div className="flex items-center gap-4">
+//                         <Avatar sx={{ width: 70, height: 70, bgcolor: "#eabebe" }}>
+//                             {user.firstName?.[0] || "U"}
+//                         </Avatar>
 
-// 🎨 Status colors
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case "pending":
-      return "orange";
-    case "confirmed":
-      return "blue";
-    case "shipped":
-      return "purple";
-    case "delivered":
-      return "green";
-    case "cancelled":
-      return "red";
-    default:
-      return "black";
-  }
-};
+//                         <div>
+//                             <h1 className="text-2xl font-bold text-gray-800">
+//                                 {user.firstName} {user.lastName}
+//                             </h1>
+//                             <p className="text-gray-500">حساب المستخدم</p>
+//                         </div>
+//                     </div>
+//                 </div>
 
-export default Page;
+//                 {/* Tabs */}
+//                 <Tabs
+//                     value={tab}
+//                     onChange={(e, newValue) => setTab(newValue)}
+//                     textColor="inherit"
+//                     indicatorColor="secondary"
+//                     className="mb-6"
+//                 >
+//                     <Tab label="البيانات الشخصية" />
+//                     <Tab label="الطلبات" />
+//                     <Tab label="العناوين" />
+//                 </Tabs>
+
+//                 {/* Personal Info */}
+//                 {tab === 0 && (
+//                     <Card className="shadow-md">
+//                         <CardContent className="grid md:grid-cols-2 gap-4">
+
+//                             <TextField
+//                                 label="الاسم الأول"
+//                                 name="firstName"
+//                                 value={user.firstName}
+//                                 onChange={handleChange}
+//                                 disabled={!edit}
+//                                 fullWidth
+//                             />
+
+//                             <TextField
+//                                 label="اسم العائلة"
+//                                 name="lastName"
+//                                 value={user.lastName}
+//                                 onChange={handleChange}
+//                                 disabled={!edit}
+//                                 fullWidth
+//                             />
+
+//                             <TextField
+//                                 label="البريد الإلكتروني"
+//                                 value={user.email}
+//                                 disabled
+//                                 fullWidth
+//                             />
+
+//                             <TextField
+//                                 label="رقم الهاتف"
+//                                 name="phoneNumber"
+//                                 value={user.phoneNumber}
+//                                 onChange={handleChange}
+//                                 disabled={!edit}
+//                                 fullWidth
+//                             />
+
+//                             <TextField
+//                                 label="المدينة"
+//                                 name="city"
+//                                 value={user.city}
+//                                 onChange={handleChange}
+//                                 disabled={!edit}
+//                                 fullWidth
+//                             />
+
+//                             <TextField
+//                                 label="المحافظة"
+//                                 name="governorate"
+//                                 value={user.governorate}
+//                                 onChange={handleChange}
+//                                 disabled={!edit}
+//                                 fullWidth
+//                             />
+
+//                             <TextField
+//                                 label="العنوان"
+//                                 name="address"
+//                                 value={user.address}
+//                                 onChange={handleChange}
+//                                 disabled={!edit}
+//                                 fullWidth
+//                             />
+
+//                         </CardContent>
+//                     </Card>
+//                 )}
+
+//                 {/* Orders */}
+//                 {tab === 1 && (
+//                     <Card>
+//                         <CardContent>
+//                             <h2 className="text-lg font-semibold mb-4">طلباتي</h2>
+//                             <div className="text-gray-500">لا يوجد طلبات حالياً</div>
+//                         </CardContent>
+//                     </Card>
+//                 )}
+
+//                 {/* Addresses */}
+//                 {tab === 2 && (
+//                     <Card>
+//                         <CardContent>
+//                             <h2 className="text-lg font-semibold mb-4">العناوين</h2>
+//                             <div className="text-gray-500">لا يوجد عناوين مضافة</div>
+//                         </CardContent>
+//                     </Card>
+//                 )}
+
+//             </div>
+//         </div>
+//     );
+// }

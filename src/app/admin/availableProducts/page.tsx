@@ -20,6 +20,9 @@ const Page = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedType, setSelectedType] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
+  const [categories, setCategories] = useState<any[]>([
+    { label: "الكل", value: "all" },
+  ]);
   const router = useRouter();
 
   const columns = [
@@ -32,23 +35,19 @@ const Page = () => {
   ];
   const ageRange = [
     { label: "الكل", value: "all" },
-    { label: "سنه - سنتين", value: "0-2" },
-    { label: "3 سنوات - 4 سنوات", value: "3-4" },
-    { label: "5 سنوات - 6 سنوات", value: "5-6" },
-    { label: "7 سنوات - 8 سنوات", value: "7-8" },
-  ];
-  const categories = [
-    { label: "الكل", value: "all" },
-    { label: "تيشيرتات", value: "t-shirts" },
-    { label: "بنطلونات", value: "pants" },
-    { label: "فساتين", value: "dresses" },
-    { label: "سالوبيتات", value: "sweaters" },
-    { label: "بيچامة", value: "begamas" },
+    { label: "سنه", value: "1Y" },
+    { label: "سنتين", value: "2Y" },
+    { label: "3 سنوات", value: "3Y" },
+    { label: "4 سنوات", value: "4Y" },
+    { label: "5 سنوات", value: "5Y" },
+    { label: "5 سنوات", value: "6Y" },
+    { label: "7 سنوات", value: "7Y" },
+    { label: "8 سنوات", value: "8Y" },
   ];
   const types = [
     { label: "الكل", value: "all" },
-    { label: "ذكر", value: "male" },
-    { label: "أنثى", value: "female" },
+    { label: "ولاد", value: "boys" },
+    { label: "بنات", value: "girls" },
   ];
 
   const statuses = [
@@ -56,6 +55,27 @@ const Page = () => {
     { label: "متوفر", value: "available" },
     { label: "غير متوفر", value: "unavailable" },
   ];
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/category/names?lang=ar");
+        const data = await res.json();
+      const categoriesData = data.data.categoryNames;
+
+        const formatted = [
+          { label: "الكل", value: "all" },
+          ...categoriesData.map((cat: any) => ({
+            label: cat.name,
+            value: cat._id,
+          })),
+        ];
+        setCategories(formatted);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -69,10 +89,18 @@ const Page = () => {
           : Array.isArray(data.products)
             ? data.products
             : [];
-            setProducts(productsData);
-            productsData.forEach((product: any) => {
-              product.isActive = product.isActive === true ? 'متوفر' : 'غير متوفر';
-            });
+        const formattedProducts = productsData.map((product: any) => {
+          const firstImage = product.variants?.[0]?.images?.[0];
+          return {
+            ...product,
+            image: firstImage
+              ? `${firstImage.replace(/^\/?/, "")}`
+              : "/no-image.png",
+            isActive: product.isActive,
+            isActiveLabel: product.isActive ? "متوفر" : "غير متوفر",
+          };
+        });
+        setProducts(formattedProducts);
       } catch (err: unknown) {
         if (err instanceof Error) {
           setError(err.message);
@@ -84,23 +112,23 @@ const Page = () => {
     fetchProducts();
   }, []);
   const handleDelete = async (row: any) => {
-      const result = await Swal.fire({
-    title: "هل أنت متأكد؟",
-    text: "لن يمكنك التراجع بعد الحذف!",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonText: "نعم، احذف",
-    cancelButtonText: "إلغاء",
-  });
-  if (!result.isConfirmed) return;
+    const result = await Swal.fire({
+      title: "هل أنت متأكد؟",
+      text: "لن يمكنك التراجع بعد الحذف!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "نعم، احذف",
+      cancelButtonText: "إلغاء",
+    });
+    if (!result.isConfirmed) return;
     const token = sessionStorage.getItem("token");
     try {
       const res = await fetch(`http://localhost:5000/api/products/${row._id}`, {
         method: 'DELETE',
-         headers: {
-        "Content-Type": "application/json", 
-        Authorization: `Bearer ${token}`,
-      },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       });
       if (!res.ok) throw new Error('فشل حذف المنتج');
       setProducts((prev) => prev.filter((p) => p._id !== row._id));
@@ -111,17 +139,40 @@ const Page = () => {
   };
 
   const handleEdit = (row: any) => {
-
     router.push(`/admin/availableProducts/editProduct/${row._id}`);
-};
+  };
 
   const handleView = (row: any) => {
     router.push(`/admin/availableProducts/${row._id}`);
   };
 
+  const filteredProducts = products.filter((p: any) => {
+
+    // gender
+    const matchGender =
+      selectedType === "all" || p.gender === selectedType;
+
+    // status
+    const matchStatus =
+      selectedStatus === "all" ||
+      (selectedStatus === "available" ? p.isActive === true : p.isActive === false);
+
+    // category
+    const matchCategory =
+      selectedCategory === "all" || p.category?._id === selectedCategory;
+
+    // age (from variants.sizes)
+    const matchAge =
+      selectedAgeRange === "all" ||
+      p.variants?.some((v: any) =>
+        v.sizes?.includes(selectedAgeRange)
+      );
+
+    return matchGender && matchStatus && matchCategory && matchAge;
+  });
+
   return (
     <div className="w-full px-4 sm:px-6 md:px-8">
-
       {loading && (
         <div className="flex justify-center my-10">
           <CircularProgress color="primary" />
@@ -194,14 +245,14 @@ const Page = () => {
           </div>
           <div className="w-full max-w-6xl mx-auto mb-16 overflow-x-auto">
             <DataTable
-          columns={columns}
-          rows={products}
-          rowKey="_id"
-          viewRoute={(row) => `/admin/availableProducts/${row._id}`}
-          onView={handleView}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
+              columns={columns}
+              rows={filteredProducts}
+              rowKey="_id"
+              viewRoute={(row) => `/admin/availableProducts/${row._id}`}
+              onView={handleView}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
           </div>
         </div>
       )}
