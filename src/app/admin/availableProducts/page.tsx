@@ -4,11 +4,12 @@ import { useEffect, useState } from 'react';
 import { Typography, CircularProgress } from '@mui/material';
 import MainButton from '@/src/components/ui/MainButton';
 import Link from 'next/link';
-import ProductTable from '@/src/components/ui/BasicTable';
+import ProductTable from '@/src/components/ui/DataTable';
 import Filter from '@/src/components/ui/Filter';
 import { useRouter } from 'next/navigation';
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import DataTable from '@/src/components/ui/DataTable';
 
 
 const Page = () => {
@@ -192,9 +193,11 @@ const Page = () => {
             </Link>
           </div>
           <div className="w-full max-w-6xl mx-auto mb-16 overflow-x-auto">
-            <ProductTable
+            <DataTable
           columns={columns}
           rows={products}
+          rowKey="_id"
+          viewRoute={(row) => `/admin/availableProducts/${row._id}`}
           onView={handleView}
           onEdit={handleEdit}
           onDelete={handleDelete}
