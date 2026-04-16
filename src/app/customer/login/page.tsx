@@ -103,8 +103,8 @@ const Page = () => {
   };
 const isFormValid = email && password;
 const mergeWishlist = async () => {
-  const wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
-  const token = localStorage.getItem("token");
+  const wishlist = JSON.parse(sessionStorage.getItem("wishlist") || "[]");
+  const token = sessionStorage.getItem("token");
   if (!wishlist.length || !token) return;
 
   await fetch("http://localhost:5000/api/products/merge-wishlist", {
@@ -113,7 +113,7 @@ const mergeWishlist = async () => {
     body: JSON.stringify({ productIds: wishlist }),
   });
 
-  localStorage.removeItem("wishlist");
+  sessionStorage.removeItem("wishlist");
 };
   return (
     <div className="md:flex md:flex-row justify-between items-center gap-6">

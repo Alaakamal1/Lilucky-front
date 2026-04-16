@@ -37,12 +37,12 @@ const [loading, setLoading] = useState(true);
     <>
       <div>
         <div
-          className="h-screen bg-cover bg-center  flex items-center justify-center"
+          className="h-screen bg-cover bg-center flex items-center justify-center  "
           style={{
-            backgroundImage: "url('/HomeImage.svg')",
+            backgroundImage: "url('/Home 1.jpg')",
           }}
         >
-          <div className="flex flex-col min-w-10/12  ">
+          <div className="flex flex-col min-w-10/12 items-end text-white">
             <Typography variant="h4" component="h3">
               اختار الأجمل لطفلك..
             </Typography>
@@ -78,9 +78,9 @@ const [loading, setLoading] = useState(true);
       </div>
       <div>
         <div
-          className="min-h-120 bg-cover bg-center flex  justify-center flex-col "
+          className="min-h-140 bg-cover bg-center flex  justify-center flex-col "
           style={{
-            backgroundImage: "url('/HomeImag2.jpg')",
+            backgroundImage: "url('/Home 2.jpg')",
           }}
         >
           <div className="flex flex-col mx-8">
@@ -120,9 +120,9 @@ const [loading, setLoading] = useState(true);
         </div>
       </div>
       <div
-        className="min-h-120 bg-cover bg-center flex  justify-center items-end flex-col px-12"
+        className="min-h-140 bg-cover bg-center flex  justify-center items-end flex-col px-12"
         style={{
-          backgroundImage: "url('/HomeImage3.jpg')",
+          backgroundImage: "url('/Home 3.jpg')",
         }}
       >
         <div className="flex flex-col text-white">
