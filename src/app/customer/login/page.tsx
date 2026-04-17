@@ -83,6 +83,7 @@ const Page = () => {
           sessionStorage.setItem("token", token);
           sessionStorage.setItem("firstName", result.data.user?.firstName);
           setUser(result.data.user);
+          await mergeWishlist();
         }
         console.log("ROLE:", role);
         if (role === "client") router.push("/customer/products");
@@ -101,6 +102,19 @@ const Page = () => {
     }
   };
 const isFormValid = email && password;
+const mergeWishlist = async () => {
+  const wishlist = JSON.parse(sessionStorage.getItem("wishlist") || "[]");
+  const token = sessionStorage.getItem("token");
+  if (!wishlist.length || !token) return;
+
+  await fetch("http://localhost:5000/api/products/merge-wishlist", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ productIds: wishlist }),
+  });
+
+  sessionStorage.removeItem("wishlist");
+};
   return (
     <div className="md:flex md:flex-row justify-between items-center gap-6">
       <div className="bg-background p-10 rounded-2xl w-full md:mx-30 md:w-4/12 shadow-xl max-md:absolute z-1 max-md:top-50 max-md:opacity-96">
@@ -152,6 +166,7 @@ const isFormValid = email && password;
                   ليس لديك حساب؟ سجل الآن
                 </Typography>
               </Link>
+              <Link href="/customer/forgetPassword">
               <Typography
                 variant="body2"
                 gutterBottom
@@ -159,6 +174,7 @@ const isFormValid = email && password;
               >
                 نسيت كلمة السر؟
               </Typography>
+              </Link>
             </div>
 
             <MainButton

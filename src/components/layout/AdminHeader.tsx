@@ -27,7 +27,7 @@ const AdminHeader = () => {
 
   const handleLogout = () => {
     sessionStorage.removeItem("token");
-    sessionStorage.removeItem("user");
+    sessionStorage.removeItem("firstName");
     setUser(null);
     router.replace("/customer/login");
   };

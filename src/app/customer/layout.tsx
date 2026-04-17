@@ -4,6 +4,7 @@ import Header from "../../components/layout/Header";
 import "../globals.css";
 import Footer from "../../components/layout/Footer";
 import { ToastContainer } from "react-toastify";
+import { CartWishlistProvider } from "@/src/context/CartWishlistContext";
 const alexSans = Alexandria({
   variable: "--font-alexandria",
   subsets: ["arabic"],
@@ -18,8 +19,11 @@ export default function RootLayout({
   return (
       <section  className={`${alexSans.variable} antialiased bg-background `}>
         <AppRouterCacheProvider>
+          <CartWishlistProvider>
         <Header />{children}
+        <ToastContainer />
         <Footer/>
+          </CartWishlistProvider>
         </AppRouterCacheProvider>
       </section >
   );

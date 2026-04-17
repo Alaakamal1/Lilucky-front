@@ -11,31 +11,27 @@ import SearchInput from "../ui/input";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/src/context/UserContext";
 import Avatar from "../ui/Avatar";
-import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
+import { useCartWishlist } from "@/src/context/CartWishlistContext";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const { user, setUser } = useUser();
+  const { cart, wishlist } = useCartWishlist();
   const router = useRouter();
 
-  const fName =
-    user?.firstName ||
-    (typeof window !== "undefined"
-      ? sessionStorage.getItem("firstName")
-      : null);
-  const isAuth = !!user || !!sessionStorage.getItem("token");
+  // const fName = user?.firstName || (typeof window !== "undefined" ? sessionStorage.getItem("firstName") : null);
+  const fName = user?.firstName ?? sessionStorage.getItem("firstName");
+  const isAuth = !!user || (typeof window !== "undefined" ? !!sessionStorage.getItem("token") : false);
 
   const handleLogout = () => {
-    sessionStorage.removeItem("token");
-    sessionStorage.removeItem("firstName");
-    setUser(null);
-    router.replace("/customer/login");
-  };
+  sessionStorage.clear();
+  setUser(null);
+  router.replace("/customer/login");
+};
 
   const links = [
     { href: "/customer", label: "الصفحه الرئيسيه" },
-    { href: "/customer/boys", label: "اطقم ولادي" },
-    { href: "/customer/girls", label: "اطقم بناتي" },
+    { href: "/customer/products", label: "منتجاتنا" },
   ];
 
   return (
@@ -47,13 +43,14 @@ const Header = () => {
         </Link>
 
         <button
-          aria-label={menuOpen ? "Close menu" : "Open menu"}
-          className="md:hidden text-primary absolute left-4"
+          className="md:hidden absolute left-4"
           onClick={() => setMenuOpen(!menuOpen)}
         >
           {menuOpen ? <CloseIcon /> : <MenuIcon />}
         </button>
       </div>
+
+      {/* Desktop */}
       <nav className="hidden md:flex justify-evenly items-center py-2">
         {links.map((link) => (
           <Link key={link.href} href={link.href}>
@@ -61,45 +58,47 @@ const Header = () => {
           </Link>
         ))}
 
-        {fName ? <Link href="/customer/account">مرحباً، {fName}</Link> : null}
-
         {fName ? (
-          <div className="">
-            <button
-              onClick={handleLogout}
-              className="border rounded-md  border-primary py-1.5 px-3 ml-4 hover:bg-primary hover:text-background duration-300 ease-in"
-            >
-              تسجيل الخروج
-            </button>
-          </div>
+          <button onClick={handleLogout}>تسجيل الخروج</button>
         ) : (
           <Link href="/customer/login">تسجيل الدخول</Link>
         )}
 
         <div className="flex items-center gap-4">
           <SearchInput />
-          <Link href="/customer/wishlist">
-            <FavoriteBorderIcon className="cursor-pointer hover:text-primary-hover" />
+
+          {/* ❤️ Wishlist */}
+          <Link href="/customer/wishlist" className="relative">
+            <FavoriteBorderIcon />
+            {wishlist.length > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs min-w-[20px] h-5 px-1 flex items-center justify-center rounded-full">
+                {wishlist.length > 9 ? "9+" : wishlist.length}
+              </span>
+            )}
           </Link>
-          <Link href="/customer/cart">
-            <ShoppingCartOutlinedIcon className="cursor-pointer hover:text-primary-hover" />
+
+          {/* 🛒 Cart */}
+          <Link href="/customer/cart" className="relative">
+            <ShoppingCartOutlinedIcon />
+            {cart.length > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs min-w-[20px] h-5 px-1 flex items-center justify-center rounded-full">
+                {cart.length > 9 ? "9+" : cart.length}
+              </span>
+            )}
           </Link>
           {/* {isAuth && ( */}
           <Link href="/customer/account">
             <Avatar fName={fName} />
-            {/* <AccountCircleOutlinedIcon className=" cursor-pointer hover:text-primary-hover" /> */}
           </Link>
           {/* )} */}
         </div>
       </nav>
+
+      {/* Mobile */}
       {menuOpen && (
-        <nav className="flex flex-col items-center gap-4 py-4 bg-thirdary border-t border-gray-300 md:hidden transition-all duration-300">
+        <nav className="flex flex-col items-center gap-4 py-4 md:hidden">
           {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => setMenuOpen(false)}
-            >
+            <Link key={link.href} href={link.href}>
               {link.label}
             </Link>
           ))}
@@ -123,14 +122,23 @@ const Header = () => {
               تسجيل الدخول
             </Link>
           )}
-
-          <div className="flex items-center gap-4">
-            <SearchInput />
-            <Link href="/customer/wishlist">
-              <FavoriteBorderIcon className="cursor-pointer hover:text-primary-hover" />
+          <div className="flex gap-4">
+            <Link href="/customer/wishlist" className="relative">
+              <FavoriteBorderIcon />
+              {wishlist.length > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                  {wishlist.length}
+                </span>
+              )}
             </Link>
-            <Link href="/customer/cart">
-              <ShoppingCartOutlinedIcon className="cursor-pointer hover:text-primary-hover" />
+
+            <Link href="/customer/cart" className="relative">
+              <ShoppingCartOutlinedIcon />
+              {cart.length > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                  {cart.length}
+                </span>
+              )}
             </Link>
             {isAuth && (
               <Link href="/customer/account" title={`مرحباً، ${fName}`}>
@@ -143,5 +151,6 @@ const Header = () => {
     </header>
   );
 };
+
 
 export default Header;

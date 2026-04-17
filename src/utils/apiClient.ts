@@ -6,17 +6,17 @@ export const apiClient = axios.create({
   timeout: 3000,
 });
 apiClient.defaults.withCredentials = true;
-export const getRefreshTokenFromLocalStorage = () => {
-  return localStorage.getItem("refreshToken");
+export const getRefreshTokenFromStorage = () => {
+  return sessionStorage.getItem("refreshToken");
 };
-export const addRefreshTokenToLocalStorage = (refreshToken: string) => {
-  return localStorage.setItem("refreshToken", refreshToken);
+export const addRefreshTokenToStorage = (refreshToken: string) => {
+  return sessionStorage.setItem("refreshToken", refreshToken);
 };
-export const getTokenFromLocalStorage = () => {
-  return localStorage.getItem("token");
+export const getTokenFromStorage = () => {
+  return sessionStorage.getItem("token");
 };
-export const addTokenToLocalStorage = (token: string) => {
-  return localStorage.setItem("token", token);
+export const addTokenToStorage = (token: string) => {
+  return sessionStorage.setItem("token", token);
 };
 const refreshToken = async () => {
   try {
@@ -33,7 +33,7 @@ const refreshToken = async () => {
 
 apiClient.interceptors.request.use(
   async (config) => {
-    const token = getTokenFromLocalStorage();
+    const token = getTokenFromStorage();
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
     }
@@ -63,7 +63,7 @@ apiClient.interceptors.response.use(
       const access_token = resp?.response?.token;
 
       if (access_token) {
-        addTokenToLocalStorage(access_token);
+        addTokenToStorage(access_token);
         apiClient.defaults.headers.common["Authorization"] = `Bearer ${access_token}`;
         return apiClient(originalRequest);
       }

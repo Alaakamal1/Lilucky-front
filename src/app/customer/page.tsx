@@ -2,20 +2,47 @@
 import { Typography } from "@mui/material";
 import MainButton from "../../components/ui/MainButton";
 import OptionSelector from "../../components/ui/OptionSelector";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import CardItem from "@/src/components/ui/CardItem";
 export default function Page() {
   const [size, setSize] = useState<string>("");
+  const [products, setProducts] = useState<any[]>([]);
+const [loading, setLoading] = useState(true);
+    useEffect(() => {
+      const fetchProduct = async () => {
+        setLoading(true);
+        try {
+          const query = new URLSearchParams();
+          const res = await fetch(
+            `http://localhost:5000/api/products/get-all?${query.toString()}`
+          );
+  
+          if (!res.ok) throw new Error("Failed to fetch product data");
+  
+          const data = await res.json();
+          setProducts(data.data);
+        } catch (err: unknown) {
+          if (err instanceof Error) {
+            console.error("Error fetching products:", err.message);
+          }
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      fetchProduct();
+    }, []);
   return (
     <>
       <div>
         <div
-          className="h-screen bg-cover bg-center  flex items-center justify-center"
+          className="h-screen bg-cover bg-center flex items-center justify-center  "
           style={{
-            backgroundImage: "url('/HomeImage.svg')",
+            backgroundImage: "url('/Home 1.jpg')",
           }}
         >
-          <div className="flex flex-col min-w-10/12  ">
+          <div className="flex flex-col min-w-10/12 items-end text-white">
             <Typography variant="h4" component="h3">
               اختار الأجمل لطفلك..
             </Typography>
@@ -41,17 +68,19 @@ export default function Page() {
         >
           الأكتر مبيعا
         </Typography>
-        {/* <div className="flex w-full justify-center items-center gap-6 flex-col md:flex-row my-16">
-          <CardItem />
-          <CardItem />
-          <CardItem />
-        </div> */}
+<div className="grid grid-cols-3 md:grid-cols-3 gap-1 justify-items-center">
+  {products.length > 0 ? (
+    products.slice(0, 3).map((product) => (
+      <CardItem key={product._id} product={product} />
+    ))
+  ) : null}
+</div>
       </div>
       <div>
         <div
-          className="min-h-120 bg-cover bg-center flex  justify-center flex-col "
+          className="min-h-140 bg-cover bg-center flex  justify-center flex-col "
           style={{
-            backgroundImage: "url('/HomeImag2.jpg')",
+            backgroundImage: "url('/Home 2.jpg')",
           }}
         >
           <div className="flex flex-col mx-8">
@@ -78,20 +107,22 @@ export default function Page() {
         >
           اختار حسب الفئه العمريه
         </Typography>
+        <div className="flex w-full justify-center items-center gap-6 flex-col md:flex-row my-16">
         <OptionSelector
           label=""
           options={["1  سنه" ,"2 سنه", "3 سنوات", "4 سنوات", "5 سنوات", "6 سنوات", "7 سنوات", "8 سنوات"]}
           selected={size}
           onSelect={setSize}
           className={
-            "p-6 border bg-primary-text hover:bg-primary-text-hover text-white  rounded-md cursor-pointer duration-300 easy-in"
+            " p-6 border bg-primary-text hover:bg-primary-text-hover text-white  rounded-md cursor-pointer duration-300 easy-in"
           }
         />
+        </div>
       </div>
       <div
-        className="min-h-120 bg-cover bg-center flex  justify-center items-end flex-col px-12"
+        className="min-h-140 bg-cover bg-center flex  justify-center items-end flex-col px-12"
         style={{
-          backgroundImage: "url('/HomeImage3.jpg')",
+          backgroundImage: "url('/Home 3.jpg')",
         }}
       >
         <div className="flex flex-col text-white">
