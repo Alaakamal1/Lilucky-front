@@ -2,6 +2,8 @@
 
 import CardItem from "@/src/components/ui/CardItem";
 import Filter from "@/src/components/ui/Filter";
+import { apiClient } from "@/src/utils/apiClient";
+import { Endpoints } from "@/src/utils/endpoints";
 import { Typography } from "@mui/material";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -41,13 +43,11 @@ const Page = () => {
           query.append("category", selectedCategory);
         }
 
-        const res = await fetch(
-          `http://localhost:5000/api/products/get-all?${query.toString()}`
+        const res = await apiClient.get(
+          `${Endpoints.products}/get-all?${query.toString()}`
         );
-
-        if (!res.ok) throw new Error("Failed to fetch product data");
-
-        const data = await res.json();
+        if (res.status !== 200) throw new Error("Failed to fetch product data");
+        const data = res.data;
         setProducts(data.data);
       } catch (err: unknown) {
         if (err instanceof Error) {
@@ -63,11 +63,10 @@ const Page = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch(
-          `http://localhost:5000/api/category/names?lang=ar&gender=${selectedGender || "all"}`
+        const res = await apiClient.get(
+          `${Endpoints.category}/names?lang=ar&gender=${selectedGender || "all"}`
         );
-
-        const data = await res.json();
+        const data =  res.data;
         setCategories(data.data.categoryNames);
       } catch (err) {
         console.error("Error fetching categories:", err);
@@ -87,56 +86,11 @@ const Page = () => {
   if (loading) {
     return <p>Loading...</p>;
   }
-
   return (
     <div>
-      <div className="flex gap-4 mb-4">
-        {/* Gender Filter */}
-        <Filter
-          label={"النوع"}
-          options={[
-            { value: "all", label: "الكل" },
-            { value: "boys", label: "الأولاد" },
-            { value: "girls", label: "البنات" }
-          ]}
-          selected={selectedGender}
-          onChange={(value) => {
-            const newSearchParams = new URLSearchParams(searchParams.toString());
-
-            if (value === "all") {
-              newSearchParams.delete("gender");
-            } else {
-              newSearchParams.set("gender", value);
-            }
-            newSearchParams.delete("category");
-
-            window.history.pushState({}, "", `?${newSearchParams.toString()}`);
-          }}
-        />
-
-        {/* Category Filter */}
-        <Filter
-          label={"الفئة"}
-          options={categoryOptions}
-          selected={selectedCategory}
-          onChange={(value) => {
-            const newSearchParams = new URLSearchParams(searchParams.toString());
-
-            if (value === "all") {
-              newSearchParams.delete("category");
-            } else {
-              newSearchParams.set("category", value);
-            }
-
-            window.history.pushState({}, "", `?${newSearchParams.toString()}`);
-          }}
-        />
-      </div>
-      <Typography variant="h4" className="text-secondary-text mb-4">
-        {selectedGender
-          ? `منتجات ${
-              selectedGender === "boys" ? "الأولاد" : "البنات"
-            }`
+      <Typography variant="h4" component="h4" className="text-secondary-text mb-4">
+        {selectedCategory
+          ? `منتجات ${selectedCategory}`
           : "أشيك لبس لأجمل عيال"}
       </Typography>
       <div className="grid grid-cols-2 md:grid-cols-4 justify-items-center ">

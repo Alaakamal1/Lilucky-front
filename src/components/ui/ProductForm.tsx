@@ -7,6 +7,9 @@ import MainButton from "@/src/components/ui/MainButton";
 import TextArea from "@/src/components/ui/TextArea";
 import { Typography } from "@mui/material";
 import { useState, useEffect } from "react";
+import { apiClient } from "@/src/utils/apiClient";
+import { Endpoints } from "@/src/utils/endpoints";
+import { Category } from "@/src/interfaces/Category";
 
 interface Variant {
   color: string;
@@ -55,8 +58,6 @@ export default function ProductForm({ initialData, onSubmit }: ProductFormProps)
       previews: v.images || [],
     })) || [{ color: "", sizes: [], images: [], previews: [] }]
   );
-
-  // 🔥 fetch حسب gender
   useEffect(() => {
     if (gender) {
       fetchCategories(gender);
@@ -67,13 +68,13 @@ export default function ProductForm({ initialData, onSubmit }: ProductFormProps)
     try {
       setLoadingCategories(true);
 
-      const res = await fetch(
-        `http://localhost:5000/api/category/names?lang=ar&gender=${selectedGender}`
+      const res = await apiClient.get(
+        `${Endpoints.category}/names?lang=ar&gender=${selectedGender}`
       );
 
-      const data = await res.json();
+      const data = res.data;
 
-      const formatted = data.data.categoryNames.map((cat: any) => ({
+      const formatted = data.data.categoryNames.map((cat: Category) => ({
         value: cat._id,
         label: cat.name,
       }));

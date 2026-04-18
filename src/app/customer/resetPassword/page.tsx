@@ -11,9 +11,7 @@ import { Typography } from "@mui/material";
 const ResetPasswordPage = () => {
   const searchParams = useSearchParams();
   const email = searchParams.get("email") || "";
-
   const router = useRouter();
-
   const [otp, setOtp] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");

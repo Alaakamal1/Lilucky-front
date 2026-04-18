@@ -5,34 +5,36 @@ import OptionSelector from "../../components/ui/OptionSelector";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import CardItem from "@/src/components/ui/CardItem";
+import { apiClient } from "@/src/utils/apiClient";
+import { Endpoints } from "@/src/utils/endpoints";
 export default function Page() {
   const [size, setSize] = useState<string>("");
   const [products, setProducts] = useState<any[]>([]);
-const [loading, setLoading] = useState(true);
-    useEffect(() => {
-      const fetchProduct = async () => {
-        setLoading(true);
-        try {
-          const query = new URLSearchParams();
-          const res = await fetch(
-            `http://localhost:5000/api/products/get-all?${query.toString()}`
-          );
-  
-          if (!res.ok) throw new Error("Failed to fetch product data");
-  
-          const data = await res.json();
-          setProducts(data.data);
-        } catch (err: unknown) {
-          if (err instanceof Error) {
-            console.error("Error fetching products:", err.message);
-          }
-        } finally {
-          setLoading(false);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const fetchProduct = async () => {
+      setLoading(true);
+      try {
+        const query = new URLSearchParams();
+        const res = await apiClient.get(
+          `${Endpoints.products}/get-all?${query.toString()}`
+        );
+
+        if (res.status !== 200) throw new Error("Failed to fetch product data");
+
+        const data = res.data;
+        setProducts(data.data);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          console.error("Error fetching products:", err.message);
         }
-      };
-  
-      fetchProduct();
-    }, []);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, []);
   return (
     <>
       <div>
@@ -42,18 +44,18 @@ const [loading, setLoading] = useState(true);
             backgroundImage: "url('/Home 1.jpg')",
           }}
         >
-          <div className="flex flex-col min-w-10/12 items-end text-white">
-            <Typography variant="h4" component="h3">
+          <div className="flex flex-col min-w-10/12 items-end ">
+            <Typography variant="h4" component="h4" >
               اختار الأجمل لطفلك..
             </Typography>
             <Typography variant="h4" component="h3">
               لأن كل يوم يستاهل لوك جديد
             </Typography>
             <Link href="/customer/products">
-            <MainButton
-              text="تسوق الان"
-              className="cursor-pointer bg-background hover:bg-background-hover duration-300 ease-in-out rounded-md w-44 py-6  m-10 text-3xl text-secondary-text hover:text-secondary-text-hover"
-            />
+              <MainButton
+                text="تسوق الان"
+                className="cursor-pointer bg-background hover:bg-background-hover duration-300 ease-in-out rounded-md w-40 p-3 m-6 text-2xl text-secondary-text hover:text-secondary-text-hover"
+              />
             </Link>
           </div>
         </div>
@@ -68,13 +70,13 @@ const [loading, setLoading] = useState(true);
         >
           الأكتر مبيعا
         </Typography>
-<div className="grid grid-cols-3 md:grid-cols-3 gap-1 justify-items-center">
-  {products.length > 0 ? (
-    products.slice(0, 3).map((product) => (
-      <CardItem key={product._id} product={product} />
-    ))
-  ) : null}
-</div>
+        <div className="grid grid-cols-3 md:grid-cols-3 gap-1 justify-items-center">
+          {products.length > 0 ? (
+            products.slice(0, 3).map((product) => (
+              <CardItem key={product._id} product={product} />
+            ))
+          ) : null}
+        </div>
       </div>
       <div>
         <div
@@ -84,19 +86,17 @@ const [loading, setLoading] = useState(true);
           }}
         >
           <div className="flex flex-col mx-8">
-            <Typography variant="h2" component="h2" className="">
-              اطقم اطفال تبدا من
+            <Typography variant="h3" component="h2" className="">
+              اختاري اللي يليق عليكِ
             </Typography>
-            <Typography variant="h2" component="h2" className="text-red-500">
-              200 EGY
-            </Typography>
+
           </div>
-         <Link href="/customer/products">
+          <Link href="/customer/products">
             <MainButton
               text="تسوق الان"
-              className="cursor-pointer bg-background hover:bg-background-hover duration-300 ease-in-out rounded-md w-44 py-6  m-10 text-3xl text-secondary-text hover:text-secondary-text-hover"
+              className="cursor-pointer bg-background hover:bg-background-hover duration-300 ease-in-out rounded-md w-40 p-3 m-10 text-2xl text-secondary-text hover:text-secondary-text-hover"
             />
-            </Link>
+          </Link>
         </div>
       </div>
       <div className="my-6">
@@ -108,15 +108,15 @@ const [loading, setLoading] = useState(true);
           اختار حسب الفئه العمريه
         </Typography>
         <div className="flex w-full justify-center items-center gap-6 flex-col md:flex-row my-16">
-        <OptionSelector
-          label=""
-          options={["1  سنه" ,"2 سنه", "3 سنوات", "4 سنوات", "5 سنوات", "6 سنوات", "7 سنوات", "8 سنوات"]}
-          selected={size}
-          onSelect={setSize}
-          className={
-            " p-6 border bg-primary-text hover:bg-primary-text-hover text-white  rounded-md cursor-pointer duration-300 easy-in"
-          }
-        />
+          <OptionSelector
+            label=""
+            options={["1  سنه", "2 سنه", "3 سنوات", "4 سنوات", "5 سنوات", "6 سنوات", "7 سنوات", "8 سنوات"]}
+            selected={size}
+            onSelect={setSize}
+            className={
+              " p-6 border bg-primary-text hover:bg-primary-text-hover text-white  rounded-md cursor-pointer duration-300 easy-in"
+            }
+          />
         </div>
       </div>
       <div
@@ -125,22 +125,19 @@ const [loading, setLoading] = useState(true);
           backgroundImage: "url('/Home 3.jpg')",
         }}
       >
-        <div className="flex flex-col text-white">
-          <Typography variant="h4" component="h2" className="">
-            ملابس شتويه
+        <div className="w-full  h-25">
+          <Typography variant="h3" component="h3" className="">
+عروضنا مش بتتفوت
           </Typography>
-          <Typography variant="h4" component="h2" className="">
-            خصومات لحد 70%
-          </Typography>
-        </div>
         <Link href="/customer/products">
-        <MainButton
-          text="تسوق الان"
-          className="bg-background w-32 h-10 text-xl  md:w-44 md:h-20 rounded-md m-10 md:text-3xl text-primary-text cursor-pointer"
-        />
+          <MainButton
+            text="تسوق الان"
+            className="cursor-pointer bg-background hover:bg-background-hover duration-300 ease-in-out rounded-md w-40 p-3 m-10 text-2xl text-secondary-text hover:text-secondary-text-hover"
+          />
         </Link>
+        </div>
       </div>
- 
+
     </>
   );
 }

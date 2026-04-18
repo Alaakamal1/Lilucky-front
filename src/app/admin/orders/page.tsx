@@ -1,12 +1,26 @@
 'use client';
 
-import { Typography, CircularProgress } from '@mui/material';
 import DataTable from '@/src/components/ui/DataTable';
+import { Order, OrderStatus } from '@/src/interfaces/order';
+import { apiClient } from '@/src/utils/apiClient';
+import { Endpoints } from '@/src/utils/endpoints';
+import { Typography, CircularProgress } from '@mui/material';
 import { useEffect, useState } from 'react';
 
+/* ✅ UI Model */
+type OrderRow = {
+  id: string;
+  orderId: string;
+  customerName: string;
+  totalPrice: number;
+  orderDate: string;
+  paymentMethod: string;
+  orderStatus: OrderStatus;
+};
+
 const Page = () => {
-  const [rows, setRows] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [rows, setRows] = useState<OrderRow[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const columns = [
     { id: 'orderId', label: 'رقم الطلب' },
@@ -18,43 +32,48 @@ const Page = () => {
     { id: 'actions', label: 'تفاصيل / تعديل / حذف', isAction: true },
   ];
 
-  // ================= FETCH ORDERS =================
+  /* ================= FETCH ================= */
   useEffect(() => {
     const fetchOrders = async () => {
       try {
         const token = sessionStorage.getItem('token');
 
-        const res = await fetch(
-          'http://localhost:5000/api/orders/all_orders',
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        if (!token) throw new Error('No token');
 
-        if (!res.ok) throw new Error('Failed to fetch orders');
+        const res = await apiClient.get(`${Endpoints.order}/all_orders`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-        const data = await res.json();
+        const data = res.data;
 
-        const orders = Array.isArray(data)
+        const orders: Order[] = Array.isArray(data)
           ? data
           : data.orders || data.data || [];
 
-        const mapped = orders.map((order) => ({
+        const mapped: OrderRow[] = orders.map((order) => ({
           id: order._id,
-          orderId: order._id.slice(-6), // رقم مختصر
-          customerName:
-            `${order.user?.firstName || ''} ${order.user?.lastName || ''}`,
-          totalPrice: order.totalPrice || 0,
+          orderId: order._id.slice(-6),
+
+          customerName: order.userId
+            ? typeof order.userId === 'string'
+              ? order.userId
+              : `${order.userId.firstName} ${order.userId.lastName}`
+            : "---",
+
+          totalPrice: order.totalAmount, // ✅ اسمه في backend كده
           orderDate: new Date(order.createdAt).toLocaleDateString(),
-          paymentMethod: order.paymentMethod || 'cash',
-          orderStatus: order.status || 'pending',
+
+          paymentMethod: 'cash', // ❗ مش موجود في schema
+          orderStatus: order.orderStatus,
         }));
 
         setRows(mapped);
-      } catch (err) {
-        console.error('Error fetching orders:', err);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          console.error(err.message);
+        }
       } finally {
         setLoading(false);
       }
@@ -63,42 +82,43 @@ const Page = () => {
     fetchOrders();
   }, []);
 
-  // ================= EDIT (status) =================
-  const handleEdit = async (row) => {
+  /* ================= EDIT ================= */
+  const handleEdit = async (row: OrderRow) => {
     try {
       const newStatus = prompt(
-        'Enter new status (pending / shipped / delivered)',
+        'Enter new status (pending / confirmed / shipped / delivered / cancelled)',
         row.orderStatus
-      );
+      ) as OrderStatus | null;
+
+      if (!newStatus) return;
 
       const token = sessionStorage.getItem('token');
+      if (!token) throw new Error('No token');
 
-      const res = await fetch(
-        `http://localhost:5000/api/orders/${row.id}/status`,
+      await apiClient.patch(
+        `${Endpoints.order}/${row.id}/status`,
+        { orderStatus: newStatus },
         {
-          method: 'PATCH',
           headers: {
-            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ status: newStatus }),
         }
       );
-
-      if (!res.ok) throw new Error('Update failed');
 
       setRows((prev) =>
         prev.map((o) =>
           o.id === row.id ? { ...o, orderStatus: newStatus } : o
         )
       );
-    } catch (err) {
-      console.error(err);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.error(err.message);
+      }
     }
   };
 
-  // ================= DELETE (frontend only or backend optional) =================
-  const handleDelete = (row) => {
+  /* ================= DELETE ================= */
+  const handleDelete = (row: OrderRow) => {
     setRows((prev) => prev.filter((o) => o.id !== row.id));
   };
 

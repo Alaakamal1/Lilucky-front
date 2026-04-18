@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import {
   Typography,
   CircularProgress,
@@ -9,17 +9,32 @@ import {
   DialogContent,
   DialogActions,
   Button,
+  TextField,
+  Box,
 } from '@mui/material';
-
 import DataTable from '@/src/components/ui/DataTable';
+import { apiClient } from '@/src/utils/apiClient';
+import { Endpoints } from '@/src/utils/endpoints';
+import { User } from '@/src/interfaces';
+import { useRouter } from 'next/navigation';
+
+type UserRow = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  role: string;
+  createdAt: string;
+};
 
 const Page = () => {
-  const [rows, setRows] = useState([]);
+  const [rows, setRows] = useState<UserRow[]>([]);
   const [loading, setLoading] = useState(true);
-
-  // 🔥 التحكم في البوباب
   const [openDelete, setOpenDelete] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUser, setSelectedUser] = useState<UserRow | null>(null);
+  const [search, setSearch] = useState('');
+  const router = useRouter();
+  
 
   const columns = [
     { id: 'name', label: 'اسم المستخدم' },
@@ -30,25 +45,20 @@ const Page = () => {
     { id: 'actions', label: 'الإجراءات', isAction: true },
   ];
 
-  // ================= FETCH USERS =================
+  /* ================= FETCH USERS ================= */
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const token = sessionStorage.getItem('token');
 
-        const res = await fetch('http://localhost:5000/api/user/users', {
+        const res = await apiClient.get(`${Endpoints.user}/users`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-
-        if (!res.ok) throw new Error('فشل في جلب المستخدمين');
-
-        const data = await res.json();
-
+        const data = res.data;
         const users = Array.isArray(data.data) ? data.data : data;
-
-        const mappedUsers = users.map((user) => ({
+        const mappedUsers: UserRow[] = users.map((user: User) => ({
           id: user._id,
           name: `${user.firstName} ${user.lastName}`,
           email: user.email,
@@ -56,7 +66,6 @@ const Page = () => {
           role: user.role,
           createdAt: new Date(user.createdAt).toLocaleDateString(),
         }));
-
         setRows(mappedUsers);
       } catch (err) {
         console.error(err);
@@ -68,71 +77,37 @@ const Page = () => {
     fetchUsers();
   }, []);
 
-  // ================= EDIT =================
-  const handleEdit = async (row) => {
-    try {
-      const newName = prompt('Enter new name', row.name);
-      const newEmail = prompt('Enter new email', row.email);
+  /* ================= FILTER SEARCH ================= */
+  const filteredRows = useMemo(() => {
+    return rows.filter((user) =>
+      user.name.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [rows, search]);
 
-      const token = sessionStorage.getItem('token');
+  /* ================= EDIT ================= */
 
-      const res = await fetch(
-        `http://localhost:5000/api/user/users/${row.id}`,
-        {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            firstName: newName?.split(' ')[0],
-            lastName: newName?.split(' ')[1] || '',
-            email: newEmail,
-          }),
-        }
-      );
+  const handleEdit = (row: UserRow) => {
+  router.push(`/admin/clients/edit/${row.id}`);
+};
 
-      if (!res.ok) throw new Error('Update failed');
-
-      const updated = await res.json();
-
-      setRows((prev) =>
-        prev.map((u) =>
-          u.id === row.id
-            ? {
-                ...u,
-                name: `${updated.firstName} ${updated.lastName}`,
-              }
-            : u
-        )
-      );
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  // ================= OPEN DELETE POPUP =================
-  const handleDeleteClick = (row) => {
+  /* ================= DELETE ================= */
+  const handleDeleteClick = (row: UserRow) => {
     setSelectedUser(row);
     setOpenDelete(true);
   };
 
-  // ================= CONFIRM DELETE =================
   const confirmDelete = async () => {
+    if (!selectedUser) return;
+
     try {
       const token = sessionStorage.getItem('token');
 
-      const res = await fetch(
-        `http://localhost:5000/api/user/users/${selectedUser.id}`,
+      await apiClient.delete(
+        `${Endpoints.user}/users/${selectedUser.id}`,
         {
-          method: 'DELETE',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
-
-      if (!res.ok) throw new Error('Delete failed');
 
       setRows((prev) =>
         prev.filter((u) => u.id !== selectedUser.id)
@@ -146,34 +121,52 @@ const Page = () => {
   };
 
   return (
-    <div className="w-full px-4 md:px-10 py-6">
+    <Box className="w-full px-4 md:px-10 py-6">
 
-      {/* Title */}
-      <Typography variant="h5" className="text-secondary-text mb-4">
-        إدارة المستخدمين
-      </Typography>
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
 
-      {/* Loading */}
-      {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <CircularProgress />
-        </div>
-      ) : rows.length === 0 ? (
-        <Typography className="text-center text-gray-500">
-          لا يوجد مستخدمين
+        <Typography variant="h5" className="font-semibold text-secondary-text">
+          إدارة المستخدمين
         </Typography>
-      ) : (
-        <DataTable
-          columns={columns}
-          rows={rows}
-          rowKey="id"
-          viewRoute={(row) => `/admin/clients/${row.id}`}
-          onEdit={handleEdit}
-          onDelete={handleDeleteClick} // 🔥 مهم
-        />
-      )}
 
-      {/* ================= DELETE POPUP ================= */}
+        {/* 🔍 Search */}
+        <TextField
+          size="small"
+          placeholder="ابحث باسم المستخدم..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full md:w-80"
+        />
+
+      </div>
+
+      {/* Content */}
+
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <CircularProgress />
+          </div>
+
+        ) : filteredRows.length === 0 ? (
+          <Typography className="text-center text-gray-500 py-10">
+            لا يوجد مستخدمين
+          </Typography>
+
+        ) : (
+          <DataTable
+            columns={columns}
+            rows={filteredRows}
+            rowKey="id"
+            viewRoute={(row) => `/admin/clients/${row.id}`}
+            onDelete={handleDeleteClick}
+           actions={{ view: true, edit: false, delete: true }}
+
+          />
+        )}
+
+
+      {/* Delete Dialog */}
       <Dialog open={openDelete} onClose={() => setOpenDelete(false)}>
         <DialogTitle>تأكيد الحذف</DialogTitle>
 
@@ -183,16 +176,14 @@ const Page = () => {
         </DialogContent>
 
         <DialogActions>
-          <Button onClick={() => setOpenDelete(false)} color="primary">
-            إلغاء
-          </Button>
-
+          <Button onClick={() => setOpenDelete(false)}>إلغاء</Button>
           <Button onClick={confirmDelete} color="error" variant="contained">
             حذف
           </Button>
         </DialogActions>
       </Dialog>
-    </div>
+
+    </Box>
   );
 };
 

@@ -10,6 +10,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import SearchInput from "../ui/input";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/src/context/UserContext";
+import Avatar from "../ui/Avatar";
+// import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import { useCartWishlist } from "@/src/context/CartWishlistContext";
 
 const Header = () => {
@@ -23,6 +25,9 @@ const Header = () => {
     (typeof window !== "undefined"
       ? sessionStorage.getItem("firstName")
       : null);
+  const isAuth =
+    !!user ||
+    (typeof window !== "undefined" ? !!sessionStorage.getItem("token") : false);
 
   const handleLogout = () => {
     sessionStorage.removeItem("token");
@@ -60,7 +65,7 @@ const Header = () => {
           </Link>
         ))}
 
-        {fName && <Link href="/customer/profile">مرحباً، {fName}</Link>}
+        {/* {fName ? <Link href="/customer/account">مرحباً، {fName}</Link> : null} */}
 
         {fName ? (
           <button onClick={handleLogout}>تسجيل الخروج</button>
@@ -90,6 +95,12 @@ const Header = () => {
               </span>
             )}
           </Link>
+          {/* {isAuth && ( */}
+          <Link href="/customer/account">
+            <Avatar fName={fName} />
+            {/* <AccountCircleOutlinedIcon className=" cursor-pointer hover:text-primary-hover" /> */}
+          </Link>
+          {/* )} */}
         </div>
       </nav>
 
@@ -102,6 +113,25 @@ const Header = () => {
             </Link>
           ))}
 
+          {fName ? (
+            <>
+              <span>مرحباً، {fName}</span>
+
+              <button
+                onClick={() => {
+                  handleLogout();
+                  setMenuOpen(false);
+                }}
+                className="border rounded-md  border-primary py-1.5 px-3 ml-4 hover:bg-primary hover:text-background duration-300 ease-in"
+              >
+                تسجيل الخروج
+              </button>
+            </>
+          ) : (
+            <Link href="/customer/login" onClick={() => setMenuOpen(false)}>
+              تسجيل الدخول
+            </Link>
+          )}
           <div className="flex gap-4">
             <Link href="/customer/wishlist" className="relative">
               <FavoriteBorderIcon />
@@ -120,11 +150,17 @@ const Header = () => {
                 </span>
               )}
             </Link>
+            {isAuth && (
+              <Link href="/customer/account" title={`مرحباً، ${fName}`}>
+                <Avatar fName={fName} />
+              </Link>
+            )}
           </div>
         </nav>
       )}
     </header>
   );
 };
+
 
 export default Header;

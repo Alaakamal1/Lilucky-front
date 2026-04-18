@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import InputField from "@/src/components/ui/InputField";
 import MainButton from "@/src/components/ui/MainButton";
 import { Typography } from "@mui/material";
+import { apiClient } from "@/src/utils/apiClient";
+import { Endpoints } from "@/src/utils/endpoints";
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState("");
@@ -19,21 +21,19 @@ const ForgotPasswordPage = () => {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/forgot-password", {
-        method: "POST",
+      const res = await apiClient.post( `${Endpoints.forgetPassword}` , {
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
       });
 
-      const data = await res.json();
+      const data = res.data;
 
-      if (res.ok) {
+      if (res.status === 200) {
         router.push(`/customer/resetPassword?email=${email}`);
       } else {
         setError(data.message || "Something went wrong");
       }
 
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError("Network error");
     } finally {
       setLoading(false);

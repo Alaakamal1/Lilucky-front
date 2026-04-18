@@ -1,35 +1,27 @@
 'use client';
 
-import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { Typography } from "@mui/material";
 import MainButton from "@/src/components/ui/MainButton";
 import OptionSelector from "@/src/components/ui/OptionSelector";
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import Counter from "@/src/components/ui/Counter";
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { Typography } from "@mui/material";
 import { toast } from "react-toastify";
-interface ProductVariant {
-  images?: string[];
+import { apiClient } from "@/src/utils/apiClient";
+import { Endpoints } from "@/src/utils/endpoints";
+import { Product, ProductVariant } from "@/src/interfaces/product";
+
+type CartItem = {
+  productId: string;
+  size: string;
   color?: string;
-  sizes?: string[];
-}
-
-interface Product {
-  _id?: string;
-  name?: string;
-  description?: string;
-  price?: number;
-  gender?: string;
-  variants?: ProductVariant[];
-  like?: boolean;
-  stock?: number;
-}
-
+  quantity: number;
+};
 export default function ProductDetails() {
   const params = useParams();
   const router = useRouter();
-
   const id = params?.id;
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
@@ -38,7 +30,6 @@ export default function ProductDetails() {
   const [isLiked, setIsLiked] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [showLoginPopup, setShowLoginPopup] = useState(false);
-
   const token =
     typeof window !== "undefined"
       ? sessionStorage.getItem("token")
@@ -46,18 +37,15 @@ export default function ProductDetails() {
 
   useEffect(() => {
     if (!id) return;
-
     const fetchProduct = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/products/${id}`);
-        const data = await res.json();
-
+        const res = await apiClient.get(`${Endpoints.products}/${id}`);
+        const data = res.data;
         setProduct(data.data);
-
         if (data.data.variants?.length) {
           setSelectedVariantIndex(0);
           setSelectedImageIndex(0);
-          setSelectedSize(data.data.variants[0].sizes?.[0] || "");
+          setSelectedSize(data.data.variants?.[0]?.sizes?.[0] ?? "");
         }
 
         if (!token) {
@@ -71,34 +59,30 @@ export default function ProductDetails() {
         setProduct(null);
       }
     };
-
     fetchProduct();
   }, [id, token]);
 
   const handleLike = async () => {
     if (!product?._id) return;
-
     if (!token) {
-      let wishlist = JSON.parse(sessionStorage.getItem("wishlist") || "[]");
-
+      let wishlist = JSON.parse(sessionStorage.getItem("likedProducts") || "[]");
       if (isLiked)
         wishlist = wishlist.filter((i: string) => i !== product._id);
       else wishlist.push(product._id);
-
-      sessionStorage.setItem("wishlist", JSON.stringify(wishlist));
+      sessionStorage.setItem("likedProducts", JSON.stringify(wishlist));
       setIsLiked(!isLiked);
       return;
     }
 
     try {
-      const res = await fetch(
-        `http://localhost:5000/api/products/like/${product._id}`,
+      const res = await apiClient.patch(
+        `${Endpoints.products}/like/${product._id}`,
+        {},
         {
-          method: "PATCH",
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      const data = await res.json();
+      const data = res.data;
       setIsLiked(data.data.like);
     } catch (err) {
       console.error(err);
@@ -108,13 +92,16 @@ export default function ProductDetails() {
   const handleVariantChange = (index: number) => {
     setSelectedVariantIndex(index);
     setSelectedImageIndex(0);
-
     const variant = product?.variants?.[index];
     setSelectedSize(variant?.sizes?.[0] || "");
   };
-
-  if (!product) return <p>Loading...</p>;
-
+  if (!product) {
+  return (
+    <div className="p-6 text-center">
+      جاري التحميل...
+    </div>
+  );
+}
   const currentVariant = product.variants?.[selectedVariantIndex];
   const images = currentVariant?.images || [];
 
@@ -143,7 +130,6 @@ export default function ProductDetails() {
     }
 
     if (!product) return;
-
     if (!selectedSize) {
       toast.error("من فضلك اختار المقاس");
       return;
@@ -160,10 +146,8 @@ export default function ProductDetails() {
     };
 
     const existingCart = JSON.parse(sessionStorage.getItem("cart") || "[]");
-
-    // منع التكرار
     const existingIndex = existingCart.findIndex(
-      (item: any) =>
+      (item: CartItem) =>
         item.productId === cartItem.productId &&
         item.size === cartItem.size &&
         item.color === cartItem.color
@@ -293,7 +277,7 @@ export default function ProductDetails() {
             {currentVariant?.sizes && (
               <OptionSelector
                 className="p-3 my-2 rounded-lg"
-                options={currentVariant.sizes}
+                options={(currentVariant?.sizes ?? []) as string[]}
                 selected={selectedSize}
                 onSelect={setSelectedSize}
               />

@@ -1,29 +1,43 @@
 'use client';
 
-import { toast } from 'react-toastify';
 import ProductForm from '../../../../components/ui/ProductForm';
-
+import { toast } from 'react-toastify';
+import { apiClient } from '@/src/utils/apiClient';
+import { Endpoints } from '@/src/utils/endpoints';
 export default function AddProductPage() {
+
   const handleSubmit = async (formData: FormData) => {
-    try{
+  try {
     const token = sessionStorage.getItem("token");
-    const res = await fetch("http://localhost:5000/api/products/add-product", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-      body: formData,
-    });
-    const data = await res.json();
-      if (!res.ok) {
-      toast.error(data.message || "حدث خطأ");
+    if (!token) {
+      toast.error("يجب تسجيل الدخول");
       return;
     }
-    toast.success("تم اضافة المنتج");
-    return true; 
-  }catch(err){
-    toast.error("خطأ في الاتصال بالسيرفر");
+    const res = await apiClient.post(
+  `${Endpoints.products}/add-product`,
+  formData,
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   }
-  };
+);
+    if (res.status >= 400) {
+      toast.error(res.data.message || "حدث خطأ");
+      return;
+    }
 
+    toast.success("تم اضافة المنتج");
+    return true;
+
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      toast.error(err.message);
+    } else {
+      toast.error("خطأ في الاتصال بالسيرفر");
+    }
+  }
+};
   return (
     <div className="w-full p-6">
       <h2 className="text-2xl font-bold mb-4">اضافة منتج</h2>

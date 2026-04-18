@@ -10,38 +10,35 @@ import {
   Divider,
   Box,
 } from '@mui/material';
-
+import { User } from '@/src/interfaces';
+import { apiClient } from '@/src/utils/apiClient';
+import { Endpoints } from '@/src/utils/endpoints';
 const Page = () => {
   const { id } = useParams();
-
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const token = sessionStorage.getItem('token');
-
-        const res = await fetch(`http://localhost:5000/api/user/${id}`, {
+        const res = await apiClient.get(`${Endpoints.user}/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
-        if (!res.ok) throw new Error('Failed to fetch user');
-
-        const data = await res.json();
+        if (res.status !== 200) throw new Error('Failed to fetch user');
+        const data = res.data;
         setUser(data.data);
-      } catch (error) {
+      } catch (error:unknown) {
         console.error(error);
       } finally {
         setLoading(false);
       }
     };
-
     if (id) fetchUser();
   }, [id]);
-
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -49,7 +46,6 @@ const Page = () => {
       </div>
     );
   }
-
   if (!user) {
     return (
       <Typography className="text-center mt-10 text-gray-500">
@@ -57,20 +53,15 @@ const Page = () => {
       </Typography>
     );
   }
-
   return (
     <div className="w-full px-4 md:px-10 py-6">
       <Card className="shadow-md rounded-2xl">
         <CardContent>
-
           <Typography variant="h5" className="mb-4 text-secondary-text">
             تفاصيل المستخدم
           </Typography>
-
           <Divider className="mb-4" />
-
           <Box className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
             <Info label="الاسم الأول" value={user.firstName} />
             <Info label="الاسم الأخير" value={user.lastName} />
             <Info label="البريد الإلكتروني" value={user.email} />
@@ -79,7 +70,6 @@ const Page = () => {
             <Info label="المحافظة" value={user.governorate} />
             <Info label="العنوان" value={user.address} />
             <Info label="توع المستخدم" value={user.role} />
-
             <Info
               label="تاريخ الإنشاء"
               value={new Date(user.createdAt).toLocaleDateString()}
@@ -98,9 +88,7 @@ const Page = () => {
 };
 
 export default Page;
-
-/* 🔥 Component صغير لإعادة الاستخدام */
-const Info = ({ label, value }: any) => (
+const Info = ({ label, value }: { label: string; value: string | null }) => (
   <div className="p-3 border rounded-lg bg-gray-50">
     <Typography variant="caption" className="text-gray-500">
       {label}

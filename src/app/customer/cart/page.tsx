@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from "react";
 import MainButton from "@/src/components/ui/MainButton";
@@ -7,60 +7,59 @@ import Link from "next/link";
 import RemoveShoppingCartSharpIcon from "@mui/icons-material/RemoveShoppingCartSharp";
 import { useRouter } from "next/navigation";
 import Counter from "@/src/components/ui/Counter";
+import { apiClient } from "@/src/utils/apiClient";
+import { Endpoints } from "@/src/utils/endpoints";
+import { Cart } from "@/src/interfaces/Cart";
+import { Product } from "@/src/interfaces/product";
 
-interface CartItem {
-  productId: string;
-  name: string;
-  price: number;
-  image: string;
-  size: string;
-  color: string;
-  quantity: number;
-  stock?: number;
-}
+/* ================= TYPES ================= */
+
 
 const Page = () => {
   const router = useRouter();
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const [suggestedProducts, setSuggestedProducts] = useState<any[]>([]);
 
+  const [cart, setCart] = useState<Cart[]>([]);
+  const [suggestedProducts, setSuggestedProducts] = useState<Product[]>([]);
+
+  /* ================= LOAD CART ================= */
   useEffect(() => {
-    const storedCart = JSON.parse(sessionStorage.getItem("cart") || "[]");
-    setCart(storedCart);
+    const stored: Cart[] = JSON.parse(
+      sessionStorage.getItem("cart") || "[]"
+    );
+    setCart(stored);
   }, []);
 
-  // Fetch suggested products
+  /* ================= FETCH SUGGESTED ================= */
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const token = sessionStorage.getItem("token");
 
-        const res = await fetch("http://localhost:5000/api/products", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          },
+        const res = await apiClient.get(`${Endpoints.cart}/cart`, {
+          headers: token
+            ? { Authorization: `Bearer ${token}` }
+            : undefined,
         });
 
-        if (!res.ok) return;
+        if (res.status !== 200) return;
 
-        const data = await res.json();
-        setSuggestedProducts(data?.data?.slice(0, 4) || []);
+        setSuggestedProducts(res.data?.data?.slice(0, 4) || []);
       } catch (err) {
-        console.error("Fetch error:", err);
+        console.error(err);
       }
     };
 
     fetchProducts();
   }, []);
 
+  /* ================= TOTAL ================= */
   const totalPrice = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
 
-  const saveCart = (updated: CartItem[]) => {
+  /* ================= SAVE ================= */
+  const saveCart = (updated: Cart[]) => {
     setCart(updated);
     sessionStorage.setItem("cart", JSON.stringify(updated));
   };
@@ -72,21 +71,20 @@ const Page = () => {
   };
 
   const updateQuantity = (index: number, value: number) => {
-    const updated = [...cart];
-
     if (value < 1) return;
 
+    const updated = [...cart];
     updated[index].quantity = value;
-
     saveCart(updated);
   };
 
-  if (cart.length === 0) {
+  /* ================= EMPTY ================= */
+  if (!cart.length) {
     return (
-      <div className="min-h-lvh flex flex-col items-center justify-center text-center">
+      <div className="min-h-screen flex flex-col items-center justify-center text-center">
         <RemoveShoppingCartSharpIcon fontSize="large" />
 
-        <Typography variant="h5" className="mt-4">
+        <Typography variant="h5" className="mt-4 text-primary">
           السلة فارغة
         </Typography>
 
@@ -97,7 +95,7 @@ const Page = () => {
         <Link href="/customer/products">
           <MainButton
             text="تصفح المنتجات"
-            className="mt-6 bg-primary text-white px-6 py-2 rounded"
+            className="mt-6 bg-primary text-white px-6 py-2"
           />
         </Link>
       </div>
@@ -105,114 +103,134 @@ const Page = () => {
   }
 
   return (
-    <div className="min-h-lvh">
+    <div className="min-h-screen px-4 md:px-10 py-6 bg-background">
 
-      <div className="mx-25">
-        <Typography variant="h4">سلة المشتريات</Typography>
-      </div>
+      {/* TITLE */}
+      <Typography variant="h4" className="text-primary mb-6">
+        سلة المشتريات
+      </Typography>
 
-      <div className="flex justify-evenly max-md:flex-col max-md:items-center">
+      <div className="flex flex-col lg:flex-row gap-6 items-start">
 
-        {/* TABLE */}
-        <div className="min-w-xl max-w-xl overflow-x-auto">
+        {/* ================= TABLE ================= */}
+        <div className="flex-1">
 
-          <table className="w-full border">
-            <thead>
-              <tr>
-                <th>الصورة</th>
-                <th>المنتج</th>
-                <th>المقاس</th>
-                <th>اللون</th>
-                <th>الكمية</th>
-                <th>السعر</th>
-                <th></th>
-              </tr>
-            </thead>
+          <div className="overflow-x-auto rounded-lg border border-gray-200">
 
-            <tbody>
-              {cart.map((item, index) => (
-                <tr
-                  key={index}
-                  className="text-center border-b hover:bg-gray-50"
-                  onClick={() => router.push(`/product/${item.productId}`)}
-                >
+            <table className="w-full text-center text-sm">
 
-                  <td className="flex justify-center py-2">
-                    <img
-                      src={item.image}
-                      className="w-16 h-16 object-cover rounded"
-                    />
-                  </td>
-
-                  <td>{item.name}</td>
-                  <td>{item.size}</td>
-
-                  <td>
-                    <div
-                      className="w-5 h-5 rounded-full mx-auto border"
-                      style={{ backgroundColor: item.color }}
-                    />
-                  </td>
-
-                  {/* ✅ COUNTER FIXED */}
-                  <td onClick={(e) => e.stopPropagation()}>
-                    <Counter
-                      value={item.quantity}
-                      onChange={(val: number) =>
-                        updateQuantity(index, val)
-                      }
-                      max={item.stock || 99}
-                    />
-                  </td>
-
-                  <td>
-                    {(item.price * item.quantity).toFixed(2)} EGY
-                  </td>
-
-                  <td>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        removeItem(index);
-                      }}
-                      className="text-red-500"
-                    >
-                      حذف
-                    </button>
-                  </td>
+              <thead className="bg-primary/10 text-primary">
+                <tr>
+                  <th className="p-3">الصورة</th>
+                  <th>المنتج</th>
+                  <th>المقاس</th>
+                  <th>اللون</th>
+                  <th>الكمية</th>
+                  <th>السعر</th>
+                  <th>حذف</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+
+              <tbody>
+
+                {cart.map((item, index) => (
+                  <tr
+                    key={index}
+                    className="border-b hover:bg-gray-50 transition"
+                    onClick={() =>
+                      router.push(`/product/${item.productId}`)
+                    }
+                  >
+
+                    <td className="p-2 flex justify-center">
+                      <img
+                        src={item.image}
+                        className="w-14 h-14 rounded object-cover"
+                      />
+                    </td>
+
+                    <td className="text-gray-700">{item.name}</td>
+                    <td>{item.size}</td>
+
+                    <td>
+                      <div
+                        className="w-5 h-5 rounded-full mx-auto border"
+                        style={{ backgroundColor: item.color }}
+                      />
+                    </td>
+
+                    <td onClick={(e) => e.stopPropagation()}>
+                      <Counter
+                        value={item.quantity}
+                        onChange={(val) =>
+                          updateQuantity(index, val)
+                        }
+                        max={item.stock || 99}
+                      />
+                    </td>
+
+                    {/* 💰 PRICE (smaller + styled) */}
+                    <td className="text-primary font-medium text-sm">
+                      {(item.price * item.quantity).toFixed(2)} EGY
+                    </td>
+
+                    <td>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeItem(index);
+                        }}
+                        className="text-red-500 hover:text-red-700 text-sm"
+                      >
+                        حذف
+                      </button>
+                    </td>
+
+                  </tr>
+                ))}
+
+              </tbody>
+            </table>
+          </div>
         </div>
 
-        {/* SUMMARY */}
-        <div className="flex flex-col items-center py-4 border rounded-md">
+        {/* ================= SUMMARY ================= */}
+        <div className="w-full lg:w-72 border rounded-lg p-5 shadow-sm bg-white">
 
-          <Typography variant="h5">السعر الكلي</Typography>
+          <Typography variant="h6" className="text-primary mb-2">
+            الإجمالي
+          </Typography>
 
-          <Typography variant="h5">
+          <Typography variant="h5" className="text-secondary-text mb-4">
             {totalPrice.toFixed(2)} EGY
           </Typography>
 
+          <Link href={"/customer/checkout"}>
           <MainButton
-            text="شراء"
-            className="bg-secondary w-40 py-3 m-6"
+            text="إتمام الشراء"
+            className="w-full bg-primary text-white py-3 cursor-pointer duration-300 ease-in-out rounded-md  text-xl my-4 hover:bg-primary-hover"
           />
+          </Link>
+
         </div>
       </div>
 
-      {/* SUGGESTED */}
-      <div className="text-center my-10 text-primary">
-        <Typography variant="h4">منتجات ممكن تعجبك</Typography>
+      {/* ================= SUGGESTED ================= */}
+      <div className="mt-10">
 
-        <div className="grid grid-cols-4 gap-4 mt-6 px-10 max-md:grid-cols-1">
+        <Typography variant="h5" className="text-primary text-center mb-6">
+          منتجات ممكن تعجبك
+        </Typography>
+
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
 
           {suggestedProducts.map((product) => (
             <div
               key={product._id}
-              className="border rounded p-3 cursor-pointer"
-              onClick={() => router.push(`/product/${product._id}`)}
+              className="border rounded-lg p-3 cursor-pointer hover:shadow-md transition"
+              onClick={() =>
+                router.push(`/product/${product._id}`)
+              }
             >
               <img
                 src={
@@ -223,10 +241,14 @@ const Page = () => {
                 className="w-full h-40 object-cover rounded"
               />
 
-              <Typography>{product.name}</Typography>
-              <Typography className="text-gray-500">
+              <p className="mt-2 font-medium text-sm">
+                {product.name}
+              </p>
+
+              <p className="text-primary text-sm">
                 {product.price} EGY
-              </Typography>
+              </p>
+
             </div>
           ))}
 

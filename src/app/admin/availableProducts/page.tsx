@@ -4,25 +4,27 @@ import { useEffect, useState } from 'react';
 import { Typography, CircularProgress } from '@mui/material';
 import MainButton from '@/src/components/ui/MainButton';
 import Link from 'next/link';
-import ProductTable from '@/src/components/ui/DataTable';
 import Filter from '@/src/components/ui/Filter';
 import { useRouter } from 'next/navigation';
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import DataTable from '@/src/components/ui/DataTable';
+import { apiClient } from '@/src/utils/apiClient';
+import { Endpoints } from '@/src/utils/endpoints';
+import { Category } from '@/src/interfaces/Category';
+import { Product, ProductVariant } from '@/src/interfaces/product';
 
-
+type Age = '1Y' | '2Y' | '3Y' | '4Y' | '5Y' | '6Y' | '7Y' | '8Y';
 const Page = () => {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedAgeRange, setSelectedAgeRange] = useState("all");
+  const [selectedAgeRange, setSelectedAgeRange] = useState<Age | "all">("all");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedType, setSelectedType] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
-  const [categories, setCategories] = useState<any[]>([
-    { label: "الكل", value: "all" },
-  ]);
+  const [categories, setCategories] = useState<{ label: string; value: string }[]
+  >([{ label: "الكل", value: "all" }]);
   const router = useRouter();
 
   const columns = [
@@ -58,13 +60,12 @@ const Page = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/category/names?lang=ar");
-        const data = await res.json();
-      const categoriesData = data.data.categoryNames;
-
+        const res = await apiClient.get(`${Endpoints.category}/names?lang=ar`);
+        const data = res.data;
+        const categoriesData = data.data.categoryNames;
         const formatted = [
           { label: "الكل", value: "all" },
-          ...categoriesData.map((cat: any) => ({
+          ...categoriesData.map((cat: Category) => ({
             label: cat.name,
             value: cat._id,
           })),
@@ -81,23 +82,21 @@ const Page = () => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const res = await fetch('http://localhost:5000/api/products/get-all-products');
-        if (!res.ok) throw new Error('Failed to fetch products');
-        const data = await res.json();
+        const res = await apiClient.get(`${Endpoints.products}/get-all-products`);
+        const data = res.data;
         const productsData = Array.isArray(data.data)
           ? data.data
           : Array.isArray(data.products)
             ? data.products
             : [];
-        const formattedProducts = productsData.map((product: any) => {
+        const formattedProducts = productsData.map((product: Product) => {
           const firstImage = product.variants?.[0]?.images?.[0];
           return {
             ...product,
             image: firstImage
               ? `${firstImage.replace(/^\/?/, "")}`
               : "/no-image.png",
-            isActive: product.isActive,
-            isActiveLabel: product.isActive ? "متوفر" : "غير متوفر",
+            isActive: product.isActive ? "متوفر" : "غير متوفر",
           };
         });
         setProducts(formattedProducts);
@@ -111,60 +110,61 @@ const Page = () => {
     };
     fetchProducts();
   }, []);
-  const handleDelete = async (row: any) => {
-    const result = await Swal.fire({
-      title: "هل أنت متأكد؟",
-      text: "لن يمكنك التراجع بعد الحذف!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "نعم، احذف",
-      cancelButtonText: "إلغاء",
-    });
-    if (!result.isConfirmed) return;
-    const token = sessionStorage.getItem("token");
-    try {
-      const res = await fetch(`http://localhost:5000/api/products/${row._id}`, {
-        method: 'DELETE',
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!res.ok) throw new Error('فشل حذف المنتج');
-      setProducts((prev) => prev.filter((p) => p._id !== row._id));
-      toast.success("تم حذف المنتج بنجاح");
-    } catch (err: any) {
-      toast.error("Error message");
-    }
-  };
 
-  const handleEdit = (row: any) => {
+  const handleDelete = async (row: Product) => {
+  const result = await Swal.fire({
+    title: "هل أنت متأكد؟",
+    text: "لن يمكنك التراجع بعد الحذف!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "نعم، احذف",
+    cancelButtonText: "إلغاء",
+  });
+
+  if (!result.isConfirmed) return;
+
+  const token = sessionStorage.getItem("token");
+
+  if (!token) {
+    toast.error("يجب تسجيل الدخول أولاً");
+    return;
+  }
+  try {
+    await apiClient.delete(`${Endpoints.products}/${row._id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    setProducts((prev) => prev.filter((p) => p._id !== row._id));
+    toast.success("تم حذف المنتج بنجاح");
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      toast.error(err.message);
+    } else {
+      toast.error("حدث خطأ أثناء الحذف");
+    }
+  }
+};
+  const handleEdit = (row: Product) => {
     router.push(`/admin/availableProducts/editProduct/${row._id}`);
   };
-
-  const handleView = (row: any) => {
+  const handleView = (row: Product) => {
     router.push(`/admin/availableProducts/${row._id}`);
   };
-
-  const filteredProducts = products.filter((p: any) => {
-
-    // gender
+    const filteredProducts = products.filter((p) => {
     const matchGender =
       selectedType === "all" || p.gender === selectedType;
-
-    // status
     const matchStatus =
       selectedStatus === "all" ||
       (selectedStatus === "available" ? p.isActive === true : p.isActive === false);
-
-    // category
     const matchCategory =
-      selectedCategory === "all" || p.category?._id === selectedCategory;
-
-    // age (from variants.sizes)
+      selectedCategory === "all" ||
+      (typeof p.category === "object"
+        ? p.category._id === selectedCategory
+        : p.category === selectedCategory);
     const matchAge =
       selectedAgeRange === "all" ||
-      p.variants?.some((v: any) =>
+      p.variants?.some((v: ProductVariant) =>
         v.sizes?.includes(selectedAgeRange)
       );
 
@@ -172,91 +172,121 @@ const Page = () => {
   });
 
   return (
-    <div className="w-full px-4 sm:px-6 md:px-8">
-      {loading && (
-        <div className="flex justify-center my-10">
-          <CircularProgress color="primary" />
-        </div>
-      )}
+    <div className="w-full px-3 sm:px-6 md:px-8 lg:px-10 py-4 space-y-6">
 
-      {error && (
-        <Typography align="center" className="my-6">
-          حدث خطأ أثناء تحميل البيانات: {error}
-        </Typography>
-      )}
-
-      {/* No Data State */}
-      {!loading && !error && products.length === 0 && (
-        <div className='flex flex-col justify-around items-center md:h-2/4 '>
-          <Link href="/admin/availableProducts/addProduct">
-            <MainButton
-              text="اضافه اول منتج "
-              className="cursor-pointer bg-primary hover:bg-primary-hover text-background duration-300 ease-in-out rounded-md px-5 py-3"
-            />
-          </Link>
-          <Typography align="center" className="my-10 text-gray-500 text-lg">
-            لا توجد بيانات حالياً
-          </Typography>
-        </div>
-      )}
-
-      {!loading && !error && products.length > 0 && (
-        <div>
-          <div className="flex flex-wrap gap-4 justify-evenly bg-thirdary my-6 p-4 rounded-lg shadow-sm">
-            <Filter
-              label="الفئه العمريه"
-              options={ageRange}
-              selected={selectedAgeRange}
-              onChange={setSelectedAgeRange}
-            />
-            <Filter
-              label="نوع المنتج"
-              options={categories}
-              selected={selectedCategory}
-              onChange={setSelectedCategory}
-            />
-            <Filter
-              label="النوع"
-              options={types}
-              selected={selectedType}
-              onChange={setSelectedType}
-            />
-            <Filter
-              label="الحاله"
-              options={statuses}
-              selected={selectedStatus}
-              onChange={setSelectedStatus}
-            />
-          </div>
-
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 m-6">
-            <Typography
-              variant="h5"
-              className="text-center text-secondary-text font-semibold"
-            >
-              المنتجات المتاحة
-            </Typography>
-            <Link href="/admin/availableProducts/addProduct">
-              <MainButton
-                text="اضافة منتج جديد"
-                className="cursor-pointer bg-primary hover:bg-primary-hover text-background duration-300 ease-in-out rounded-md px-5 py-3"
-              />
-            </Link>
-          </div>
-          <div className="w-full max-w-6xl mx-auto mb-16 overflow-x-auto">
-            <DataTable
-              columns={columns}
-              rows={filteredProducts}
-              rowKey="_id"
-              viewRoute={(row) => `/admin/availableProducts/${row._id}`}
-              onView={handleView}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-            />
-          </div>
-        </div>
-      )}
+  {/* Loading */}
+  {loading && (
+    <div className="flex justify-center items-center py-16">
+      <CircularProgress color="primary" />
     </div>
+  )}
+
+  {/* Error */}
+  {error && (
+    <Typography align="center" className="my-6">
+      حدث خطأ أثناء تحميل البيانات: {error}
+    </Typography>
+  )}
+
+  {/* No Data */}
+  {!loading && !error && products.length === 0 && (
+    <div className="flex flex-col justify-center items-center gap-6 min-h-[50vh] text-center">
+
+      <Link href="/admin/availableProducts/addProduct">
+        <MainButton
+          text="اضافه اول منتج "
+          className="cursor-pointer bg-primary hover:bg-primary-hover text-background duration-300 ease-in-out rounded-md px-5 py-3"
+        />
+      </Link>
+
+      <Typography className="text-gray-500 text-base sm:text-lg">
+        لا توجد بيانات حالياً
+      </Typography>
+    </div>
+  )}
+
+  {/* Content */}
+  {!loading && !error && products.length > 0 && (
+    <div className="space-y-6">
+
+      {/* Filters */}
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-thirdary text-secondary-text p-4 sm:p-6 rounded-md shadow-sm items-stretch">
+
+  <div className="w-full">
+    <Filter
+      label="الفئه العمريه"
+      options={ageRange}
+      selected={selectedAgeRange}
+      onChange={(value) => setSelectedAgeRange(value as Age | "all")}
+    />
+  </div>
+
+  <div className="w-full">
+    <Filter
+      label="نوع المنتج"
+      options={categories}
+      selected={selectedCategory}
+      onChange={setSelectedCategory}
+    />
+  </div>
+
+  <div className="w-full">
+    <Filter
+      label="النوع"
+      options={types}
+      selected={selectedType}
+      onChange={setSelectedType}
+    />
+  </div>
+
+  <div className="w-full">
+    <Filter
+      label="الحاله"
+      options={statuses}
+      selected={selectedStatus}
+      onChange={setSelectedStatus}
+    />
+  </div>
+
+</div>
+
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-1 sm:px-2">
+
+        <Typography
+          variant="h5"
+          className="text-secondary-text font-semibold text-center sm:text-right w-full sm:w-auto"
+        >
+          المنتجات المتاحة
+        </Typography>
+
+        <Link href="/admin/availableProducts/addProduct" className="w-full sm:w-auto">
+          <MainButton
+            text="اضافة منتج جديد"
+            className="w-full sm:w-auto cursor-pointer bg-primary hover:bg-primary-hover text-background duration-300 ease-in-out rounded-md px-5 py-3 shadow"
+          />
+        </Link>
+
+      </div>
+
+      {/* Table */}
+      <div className="w-full overflow-x-auto rounded-lg">
+        <div className="min-w-[700px]">
+          <DataTable
+            columns={columns}
+            rows={filteredProducts}
+            rowKey="_id"
+            viewRoute={(row) => `/admin/availableProducts/${row._id}`}
+            onView={handleView}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+        </div>
+      </div>
+
+    </div>
+  )}
+</div>
   );
 };
 

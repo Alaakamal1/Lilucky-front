@@ -1,21 +1,21 @@
 'use client';
 
+import MainButton from '@/src/components/ui/MainButton';
+import DataTable from '@/src/components/ui/DataTable';
+import Link from 'next/link';
+import Swal from "sweetalert2";
 import { useEffect, useState } from 'react';
 import { Typography, CircularProgress } from '@mui/material';
-import MainButton from '@/src/components/ui/MainButton';
-import Link from 'next/link';
-import ProductTable from '@/src/components/ui/DataTable';
 import { toast } from "react-toastify";
-import Swal from "sweetalert2";
 import { useRouter } from 'next/navigation';
-
+import { apiClient } from '@/src/utils/apiClient';
+import { Endpoints } from '@/src/utils/endpoints';
+import { Category } from '@/src/interfaces/Category';
 const Page = () => {
-  const [category, setCategory] = useState<any[]>([]);
+  const [category, setCategory] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
   const router = useRouter();
-
   const columns = [
     { id: 'arName', label: 'اسم الفئه' },
     { id: 'categoryType', label: 'نوع الفئه' },
@@ -27,28 +27,26 @@ const Page = () => {
     const fetchCategory = async () => {
       try {
         setLoading(true);
-
-        const res = await fetch('http://localhost:5000/api/category/get-all');
-
-        if (!res.ok) throw new Error('Failed to fetch category data');
-
-        const data = await res.json();
-
+        const res = await apiClient.get(`${Endpoints.category}/get-all`);
+        const data = res.data;
         const categoryData = Array.isArray(data?.data?.categories)
-          ? data.data.categories
+          ? data?.data?.categories
           : [];
-
-        // ✅ تنسيق البيانات بشكل صحيح
-        const formattedData = categoryData.map((cat: any) => ({
+        const formattedData = categoryData.map((cat: Category) => ({
           ...cat,
           isActive: cat.isActive ? 'متوفر' : 'غير متوفر',
         }));
 
         setCategory(formattedData);
 
-      } catch (err: any) {
-        setError(err.message);
-        toast.error(err.message);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+          toast.error(err.message);
+        } else {
+          setError('حدث خطأ غير متوقع');
+          toast.error('حدث خطأ غير متوقع');
+        }
       } finally {
         setLoading(false);
       }
@@ -56,14 +54,10 @@ const Page = () => {
 
     fetchCategory();
   }, []);
-
-  // ✅ تعديل → يفتح نفس الفورم مع id
-  const handleEdit = (row: any) => {
+  const handleEdit = (row: Category) => {
     router.push(`/admin/availableCategory/addCategory?id=${row._id}`);
   };
-
-  // ✅ حذف
-  const handleDelete = async (row: any) => {
+  const handleDelete = async (row: Category) => {
     const result = await Swal.fire({
       title: "هل أنت متأكد؟",
       text: "لن يمكنك التراجع بعد الحذف!",
@@ -72,28 +66,28 @@ const Page = () => {
       confirmButtonText: "نعم، احذف",
       cancelButtonText: "إلغاء",
     });
-
     if (!result.isConfirmed) return;
-
     const token = sessionStorage.getItem("token");
-
     try {
-      const res = await fetch(`http://localhost:5000/api/category/${row._id}`, {
-        method: 'DELETE',
+      const res = await apiClient.delete(`${Endpoints.category}/${row._id}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
 
-      if (!res.ok) throw new Error('فشل حذف الفئه');
+      if (res.status !== 200) throw new Error('فشل حذف الفئه');
 
       setCategory((prev) => prev.filter((c) => c._id !== row._id));
 
       toast.success("تم حذف الفئه بنجاح");
 
-    } catch (err: any) {
-      toast.error(err.message || "حدث خطأ أثناء الحذف");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error(err.message || "حدث خطأ أثناء الحذف");
+      } else {
+        toast.error("حدث خطأ غير متوقع");
+      }
     }
   };
 
@@ -106,19 +100,15 @@ const Page = () => {
           <CircularProgress />
         </div>
       )}
-
-      {/* Error */}
       {error && (
         <Typography align="center" className="my-6 text-red-500">
           حدث خطأ أثناء تحميل البيانات: {error}
         </Typography>
       )}
-
-      {/* No data */}
       {!loading && !error && category.length === 0 && (
         <div className='flex flex-col justify-center items-center gap-4 md:h-2/4'>
-          
-          <Link href="/admin/availableCategory/editCategory/new">
+
+          <Link href="/admin/availableCategory/addCategory">
             <MainButton
               text="اضافه اول فئه"
               className="cursor-pointer bg-primary hover:bg-primary-hover text-background duration-300 ease-in-out rounded-md px-5 py-3"
@@ -140,9 +130,7 @@ const Page = () => {
             <Typography variant="h5" className="text-secondary-text font-semibold">
               الفئات المتاحة
             </Typography>
-
-            {/* ✅ نفس الفورم للإضافة */}
-            <Link href="/admin/availableCategory/editCategory/new">
+            <Link href="/admin/availableCategory/addCategory">
               <MainButton
                 text="اضافة فئه جديدة"
                 className="cursor-pointer bg-primary hover:bg-primary-hover text-background duration-300 ease-in-out rounded-md px-5 py-3"
@@ -150,14 +138,15 @@ const Page = () => {
             </Link>
 
           </div>
-
           <div className="w-full max-w-6xl mx-auto mb-16 overflow-x-auto">
-            <ProductTable
+
+            <DataTable
               columns={columns}
               rows={category}
               onEdit={handleEdit}
               onDelete={handleDelete}
-            />
+actions={{ view: false, edit: true, delete: true }}
+/>
           </div>
 
         </div>
