@@ -134,7 +134,7 @@ const mergeWishlist = async () => {
                 type="email"
                 value={email}
                 onChange={handleEmailChange}
-                 onBlur={handleEmailBlur}
+                onBlur={handleEmailBlur}
                 placeholder="اكتب الايميل"
               />
               {emailError && (

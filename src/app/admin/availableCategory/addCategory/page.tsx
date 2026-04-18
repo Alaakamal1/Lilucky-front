@@ -1,24 +1,40 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Typography, CircularProgress } from "@mui/material";
+import {
+  Typography,
+  CircularProgress,
+  Paper,
+  Box,
+} from "@mui/material";
 import InputField from "@/src/components/ui/InputField";
 import MainButton from "@/src/components/ui/MainButton";
-
 import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { useSearchParams, useRouter } from "next/navigation";
+import { apiClient } from "@/src/utils/apiClient";
+import { Endpoints } from "@/src/utils/endpoints";
 
-import { useParams, useRouter } from "next/navigation";
+type CategoryType = "boys" | "girls" | "all";
+
+type CategoryResponse = {
+  success: boolean;
+  data: {
+    arName: string;
+    enName: string;
+    categoryType: CategoryType;
+    isActive?: boolean;
+  };
+};
 
 const Page = () => {
-  const params = useParams();
-  const id = params?.id as string | undefined;
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
 
   const router = useRouter();
 
   const [arName, setArName] = useState("");
   const [enName, setEnName] = useState("");
-  const [categoryType, setCategoryType] = useState("");
+  const [categoryType, setCategoryType] = useState<CategoryType | "">("");
   const [isActive, setIsActive] = useState(true);
 
   const [arNameError, setArNameError] = useState("");
@@ -27,26 +43,29 @@ const Page = () => {
   const [loading, setLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
 
-  const isEditMode = !!id;
+  const isEditMode = Boolean(id);
+
+  /* 🔥 Fetch category for edit */
   useEffect(() => {
     if (!id) return;
+
     const fetchCategory = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`http://localhost:5000/api/category/get-category/${id}`);
-        const data = await res.json();
-              console.log("API RESPONSE:", data);
 
-        if (res.ok) {
-          const category = data.data;
-          setArName(category.arName || "");
-          setEnName(category.enName || "");
-          setCategoryType(category.categoryType || "");
-        } else {
-          toast.error("فشل في تحميل البيانات");
-        }
-      } catch (err) {
-        toast.error("خطأ في الاتصال بالخادم");
+        const res = await apiClient.get(
+          `${Endpoints.category}/get-category/${id}`
+        );
+
+        const category: CategoryResponse["data"] = res.data.data;
+
+        setArName(category.arName || "");
+        setEnName(category.enName || "");
+        setCategoryType(category.categoryType || "");
+        setIsActive(category.isActive ?? true);
+
+      } catch (err: any) {
+        toast.error(err.message || "خطأ في جلب البيانات");
       } finally {
         setLoading(false);
       }
@@ -55,24 +74,36 @@ const Page = () => {
     fetchCategory();
   }, [id]);
 
+  /* 🔥 Submit */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     setArNameError("");
     setEnNameError("");
+
     if (!arName.trim()) {
       setArNameError("اسم الفئة العربية مطلوب");
       return;
     }
+
     if (!enName.trim()) {
       setEnNameError("اسم الفئة الإنجليزية مطلوب");
       return;
     }
+
     const token = sessionStorage.getItem("token");
+
+    if (!token) {
+      toast.error("يجب تسجيل الدخول");
+      return;
+    }
+
     try {
       setSubmitLoading(true);
+
       const url = isEditMode
-        ? `http://localhost:5000/api/category/editCategory/${id}`
-        : "http://localhost:5000/api/category/add-category";
+        ? `${Endpoints.category}/editCategory/${id}`
+        : `${Endpoints.category}/add-category`;
 
       const method = isEditMode ? "PATCH" : "POST";
 
@@ -86,20 +117,23 @@ const Page = () => {
           arName,
           enName,
           categoryType,
+          isActive,
         }),
       });
+
       const data = await res.json();
+
       if (res.ok) {
         toast.success(
           isEditMode
-            ? "تم تعديل الفئة بنجاح "
-            : "تم إنشاء الفئة بنجاح "
+            ? "تم تعديل الفئة بنجاح"
+            : "تم إنشاء الفئة بنجاح"
         );
 
         if (isEditMode) {
           setTimeout(() => {
             router.push("/admin/availableCategory");
-          }, 1000);
+          }, 800);
         } else {
           setArName("");
           setEnName("");
@@ -109,34 +143,41 @@ const Page = () => {
       } else {
         toast.error(data.message || "حدث خطأ");
       }
-    } catch (error) {
-      toast.error("فشل الاتصال بالخادم");
+
+    } catch (error: any) {
+      toast.error(error.message || "فشل الاتصال بالخادم");
     } finally {
       setSubmitLoading(false);
     }
   };
+
   return (
-    <div className="w-full">
+    <Box className="flex justify-center items-start min-h-screen p-10 w-full">
       <ToastContainer position="top-right" autoClose={3000} />
-      <div className="md:w-3xl flex bg-background my-5 p-6 rounded-md mx-20 shadow-md flex-col gap-4">
-        <Typography variant="h4" className="mb-4 text-primary">
+
+      <Paper elevation={3} className="w-full max-w-3xl p-6 md:p-8 rounded-md">
+
+        {/* Title */}
+        <Typography variant="h5" className="mb-6 text-primary text-center font-semibold">
           {isEditMode ? "تعديل فئة" : "إضافة فئة جديدة"}
         </Typography>
 
+        {/* Loading */}
         {loading ? (
-          <div className="flex justify-center my-10">
+          <div className="flex justify-center py-10">
             <CircularProgress />
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+
+              {/* Arabic */}
               <div>
                 <InputField
                   label="اسم الفئة بالعربي"
-                  type="text"
                   value={arName}
-                  onChange={(e: any) => {
+                  onChange={(e) => {
                     setArName(e.target.value);
                     setArNameError("");
                   }}
@@ -148,12 +189,12 @@ const Page = () => {
                 )}
               </div>
 
+              {/* English */}
               <div>
                 <InputField
                   label="الاسم الإنجليزي للفئة"
-                  type="text"
                   value={enName}
-                  onChange={(e: any) => {
+                  onChange={(e) => {
                     setEnName(e.target.value);
                     setEnNameError("");
                   }}
@@ -165,36 +206,46 @@ const Page = () => {
                 )}
               </div>
 
-              <div>
-                <label>Category Type:</label>
+              {/* Type */}
+              <div className="md:col-span-2">
+                <label className="block mb-2 text-sm font-medium">
+                  نوع الفئة
+                </label>
+
                 <select
                   value={categoryType}
-                  onChange={(e) => setCategoryType(e.target.value)}
+                  onChange={(e) =>
+                    setCategoryType(e.target.value as CategoryType)
+                  }
+                  className="w-full border border-gray-300 p-3 rounded-md"
                   required
                 >
                   <option value="">اختر النوع</option>
-                  <option value="boys">Boys</option>
-                  <option value="girls">Girls</option>
-                  <option value="all">All</option>
+                  <option value="all">الكل</option>
+                  <option value="boys">أولاد</option>
+                  <option value="girls">بنات</option>
                 </select>
               </div>
 
             </div>
 
+            {/* Submit */}
             <MainButton
               type="submit"
-              text={submitLoading
-                ? "جاري الحفظ..."
-                : isEditMode
+              text={
+                submitLoading
+                  ? "جاري الحفظ..."
+                  : isEditMode
                   ? "تعديل الفئة"
-                  : "إضافة فئة جديدة"
+                  : "إضافة فئة"
               }
-              className="cursor-pointer bg-primary hover:bg-primary-hover text-background duration-300 ease-in-out rounded-md p-3"
+              className="w-full bg-primary text-white py-3 rounded-md"
             />
+
           </form>
         )}
-      </div>
-    </div>
+      </Paper>
+    </Box>
   );
 };
 

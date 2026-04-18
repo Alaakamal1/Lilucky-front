@@ -1,36 +1,62 @@
 'use client';
+
 import ProductForm from '@/src/components/ui/ProductForm';
+import { apiClient } from '@/src/utils/apiClient';
+import { Endpoints } from '@/src/utils/endpoints';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import { Product } from '@/src/interfaces/product';
 
 export default function EditProductPage() {
   const params = useParams();
-  const productId = params.id;
-  const [initialData, setInitialData] = useState<any>(null);
-  console.log("Editing product id:", productId);
+
+  const productId = params?.id as string;
+
+  const [initialData, setInitialData] = useState<Product | null>(null);
 
   useEffect(() => {
     const fetchProduct = async () => {
-      const res = await fetch(`http://localhost:5000/api/products/${productId}`);
-      const data = await res.json();
-      setInitialData(data.data);
+      try {
+        const res = await apiClient.get(
+          `${Endpoints.products}/${productId}`
+        );
+        const data = res.data;
+        const product = data.data;
+
+        setInitialData(product);
+
+      } catch (err) {
+        console.error(err);
+        toast.error("فشل تحميل البيانات");
+      }
     };
-    fetchProduct();
+
+    if (productId) fetchProduct();
   }, [productId]);
 
   const handleSubmit = async (formData: FormData) => {
-    const token = sessionStorage.getItem("token");
-    const res = await fetch(`http://localhost:5000/api/products/${productId}`, {
-        method: 'PATCH',
-         headers: {
-        "Content-Type": "application/json", 
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    const data = await res.json();
-    if (res.ok) toast.success("تم تعديل المنتج");
-    else toast.error(data.message);
+    try {
+      const token = sessionStorage.getItem("token");
+      const res = await apiClient.patch(
+        `${Endpoints.products}/${productId}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        }
+      );
+
+      if (res.status === 200) {
+        toast.success("تم تعديل المنتج");
+      } else {
+        toast.error("حدث خطأ أثناء التعديل");
+      }
+
+    } catch (err) {
+      toast.error("فشل التحديث");
+    }
   };
 
   if (!initialData) return <p>جارٍ تحميل البيانات...</p>;
@@ -38,7 +64,10 @@ export default function EditProductPage() {
   return (
     <div className="w-full p-6">
       <h2 className="text-2xl font-bold mb-4">تعديل المنتج</h2>
-      <ProductForm initialData={initialData} onSubmit={handleSubmit} />
+      <ProductForm
+        initialData={initialData}
+        onSubmit={handleSubmit}
+      />
     </div>
   );
 }

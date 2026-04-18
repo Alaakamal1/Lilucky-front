@@ -3,12 +3,12 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { Typography, CircularProgress } from '@mui/material';
-import Image from 'next/image';
-
+import { Product } from '@/src/interfaces/product';
+import { apiClient } from '@/src/utils/apiClient';
+import { Endpoints } from '@/src/utils/endpoints';
 const ProductDetailsPage = () => {
   const { id } = useParams();
-
-  const [product, setProduct] = useState<any>(null);
+  const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<string>("");
@@ -16,26 +16,36 @@ const ProductDetailsPage = () => {
   const images =
     product?.variants?.flatMap((v: any) => v.images || []) || [];
 
-  useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        setLoading(true);
-        const res = await fetch(`http://localhost:5000/api/products/${id}`);
-        const data = await res.json();
-        const productData = data.data.product || data.data;
-        setProduct(productData);
-        const firstImage =
-          productData?.variants?.[0]?.images?.[0] || "";
-        setSelectedImage(firstImage);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+    useEffect(() => {
+  const fetchProduct = async () => {
+    try {
+      setLoading(true);
 
-    if (id) fetchProduct();
-  }, [id]);
+      const res = await apiClient.get(`${Endpoints.products}/${id}`);
+      const data = res.data;
+
+      const productData = data.data; 
+
+      setProduct(productData);
+
+      const firstImage =
+        productData?.variants?.[0]?.images?.[0] || "";
+
+      setSelectedImage(firstImage);
+
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('حدث خطأ غير معروف');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (id) fetchProduct();
+}, [id]);
 
   if (loading) {
     return (
@@ -58,9 +68,9 @@ const ProductDetailsPage = () => {
   return (
     <div className="w-full  p-4 md:p-6  justify-center items-center">
 
-    <Typography variant="h4" className="mb-6 text-center text-primary">
-      تفاصيل المنتج
-    </Typography>
+      <Typography variant="h4" className="mb-6 text-center text-primary">
+        تفاصيل المنتج
+      </Typography>
       <div className="max-w-5xl mx-auto bg-white justify-center items-center rounded-xl shadow p-4 md:p-6">
 
         <div className="grid md:grid-cols-2 gap-10">
@@ -76,7 +86,7 @@ const ProductDetailsPage = () => {
                   alt="product"
                   className="w-full h-full object-cover"
 
-                  />
+                />
               )}
             </div>
 
@@ -123,7 +133,15 @@ const ProductDetailsPage = () => {
             </div>
 
             <Typography className="text-gray-600">
+              الوصف:
               {product.description}
+            </Typography>
+
+            <Typography className="text-sm text-gray-500">
+              الفئة: {product.category?.name || "غير محدد"}
+            </Typography>
+            <Typography className="text-sm text-gray-500">
+              الخامه: {product.material}
             </Typography>
 
             {/* الحالة */}
@@ -136,11 +154,8 @@ const ProductDetailsPage = () => {
                 {product.isActive ? "متوفر" : "غير متوفر"}
               </div>
             </div>
-
-            {/* 🔥 Variants (الأهم) */}
             <div className="mt-4 space-y-3">
               <p className="font-semibold">الألوان والمقاسات:</p>
-
               {product.variants.map((variant: any, i: number) => (
                 <div key={i} className="border p-3 rounded-lg">
 

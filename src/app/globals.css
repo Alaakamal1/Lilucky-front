@@ -10,7 +10,7 @@
   --color-background: #FCF8F8; /* Custom color with a shade name */
   --color-background-hover: #F1EEEE; /* Custom color with a shade name */
   --color-primary-text: #F2889C; /* Custom color with a shade name */
- --color-primary-text-hover: #F494A6;
+  --color-primary-text-hover: #F494A6;
   --color-secondary-text: #403C3C; /* Custom color with a shade name */
   --color-secondary-text-hover: #484242;
 }

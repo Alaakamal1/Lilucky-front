@@ -3,7 +3,7 @@ import { Endpoints } from "./endpoints";
 export const apiClient = axios.create({
   baseURL: Endpoints.baseUrl
   ,
-  timeout: 3000,
+  timeout: 30000,
 });
 apiClient.defaults.withCredentials = true;
 export const getRefreshTokenFromLocalStorage = () => {
