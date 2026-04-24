@@ -20,7 +20,7 @@ type OrderRow = {
 
 const Page = () => {
   const [rows, setRows] = useState<OrderRow[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
 
   const columns = [
     { id: 'orderId', label: 'رقم الطلب' },
@@ -37,7 +37,7 @@ const Page = () => {
     const fetchOrders = async () => {
       try {
         const token = sessionStorage.getItem('token');
-        if (!token) throw new Error('No token');
+        if (!token) return;
 
         const res = await apiClient.get(`${Endpoints.order}/all_orders`, {
           headers: {
@@ -90,7 +90,7 @@ const Page = () => {
       if (!newStatus) return;
 
       const token = sessionStorage.getItem('token');
-      if (!token) throw new Error('No token');
+      if (!token) return;
 
       await apiClient.patch(
         `${Endpoints.order}/${row._id}/status`,
@@ -135,7 +135,7 @@ const Page = () => {
         </Typography>
 
       ) : (
-        <DataTable
+        <DataTable<OrderRow>
           columns={columns}
           rows={rows}
           rowKey={(row) => row._id}
