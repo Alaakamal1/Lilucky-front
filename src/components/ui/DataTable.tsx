@@ -33,17 +33,14 @@ export interface ActionConfig {
   delete?: boolean;
 }
 
-interface Props<T extends object> {
+interface Props<T extends { _id: string }> {
   columns: Column<T>[];
   rows: T[];
   rowKey: (row: T) => string;
-
   onView?: (row: T) => void;
   onEdit?: (row: T) => void;
   onDelete?: (row: T) => void;
-
   viewRoute?: (row: T) => string;
-
   actions?: ActionConfig;
 }
 
@@ -57,7 +54,7 @@ const defaultActions: ActionConfig = {
 
 /* ================= COMPONENT ================= */
 
-export default function DataTable<T extends object>({
+export default function DataTable<T extends { _id: string }>({
   columns,
   rows,
   rowKey,
