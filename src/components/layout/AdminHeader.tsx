@@ -7,25 +7,14 @@ import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import { useRouter, usePathname } from "next/navigation";
 import { useUser } from "@/src/context/UserContext";
-
-/* ================= TYPES ================= */
-
-interface User {
-  firstName: string;
-  lastName?: string;
-  email?: string;
-  role?: string;
-}
+import type { User } from "@/src/context/UserContext";
 
 /* ================= COMPONENT ================= */
 
 const AdminHeader = () => {
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
 
-  const { user, setUser } = useUser() as {
-    user: User | null;
-    setUser: (user: User | null) => void;
-  };
+  const { user, setUser } = useUser();
 
   const router = useRouter();
   const pathname = usePathname();
@@ -34,7 +23,6 @@ const AdminHeader = () => {
     if (typeof window === "undefined") return;
 
     const storedUser = sessionStorage.getItem("user");
-
     if (!storedUser) return;
 
     try {
@@ -67,6 +55,7 @@ const AdminHeader = () => {
   return (
     <header className="w-2xs flex flex-col bg-thirdary text-primary font-semibold">
 
+      {/* MOBILE ICON */}
       <div>
         <button
           aria-label={menuOpen ? "Close menu" : "Open menu"}

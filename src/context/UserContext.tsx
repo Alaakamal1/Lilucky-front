@@ -61,3 +61,5 @@ export const useUser = () => {
 
   return context;
 };
+
+export type { User };
