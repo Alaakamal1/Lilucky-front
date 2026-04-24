@@ -178,7 +178,7 @@ const Page = () => {
           <DataTable
             columns={columns}
             rows={filteredRows}
-            rowKey="id"
+            rowKey= {(row) => row.id}
             viewRoute={(row) => `/admin/clients/${row.id}`}
             onDelete={handleDeleteClick}
            actions={{ view: true, edit: false, delete: true }}

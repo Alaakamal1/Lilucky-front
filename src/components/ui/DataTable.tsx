@@ -19,7 +19,7 @@ import React from 'react';
 
 /* ================= TYPES ================= */
 
-export interface Column<T = Record<string, unknown>> {
+export interface Column<T> {
   id: string;
   label: string;
   align?: 'left' | 'right' | 'center';
@@ -33,14 +33,15 @@ export interface ActionConfig {
   delete?: boolean;
 }
 
-interface Props<T = Record<string, unknown>> {
+interface Props<T extends object> {
   columns: Column<T>[];
   rows: T[];
-  rowKey?: keyof T & string;
+  rowKey: (row: T) => string;
 
   onView?: (row: T) => void;
   onEdit?: (row: T) => void;
   onDelete?: (row: T) => void;
+
   viewRoute?: (row: T) => string;
 
   actions?: ActionConfig;
@@ -56,10 +57,10 @@ const defaultActions: ActionConfig = {
 
 /* ================= COMPONENT ================= */
 
-export default function DataTable<T extends Record<string, unknown>>({
+export default function DataTable<T extends object>({
   columns,
   rows,
-  rowKey = '_id' as keyof T & string,
+  rowKey,
   onView,
   onEdit,
   onDelete,
@@ -108,11 +109,11 @@ export default function DataTable<T extends Record<string, unknown>>({
         {/* BODY */}
         <TableBody>
           {rows.map((row) => {
-            const rowId = row[rowKey];
+            const id = rowKey(row);
 
             return (
               <TableRow
-                key={String(rowId)}
+                key={id}
                 sx={{
                   '&:hover': { backgroundColor: '#fafafa' },
                 }}
@@ -137,8 +138,7 @@ export default function DataTable<T extends Record<string, unknown>>({
                         fontSize: { xs: '0.75rem', sm: '0.9rem' },
                       }}
                     >
-
-                      {/* custom render */}
+                      {/* CUSTOM RENDER */}
                       {col.render ? (
                         col.render(row)
 
@@ -151,7 +151,6 @@ export default function DataTable<T extends Record<string, unknown>>({
                             gap: 6,
                           }}
                         >
-
                           {/* VIEW */}
                           {actions.view &&
                             (viewRoute ? (
@@ -179,7 +178,6 @@ export default function DataTable<T extends Record<string, unknown>>({
                               <DeleteIcon fontSize="small" />
                             </IconButton>
                           )}
-
                         </div>
 
                       ) : isImage ? (
@@ -204,10 +202,9 @@ export default function DataTable<T extends Record<string, unknown>>({
                             display: 'inline-block',
                           }}
                         >
-                          {value?.toString() || '—'}
+                          {value ? String(value) : '—'}
                         </span>
                       )}
-
                     </TableCell>
                   );
                 })}

@@ -141,7 +141,7 @@ const Page = () => {
         <DataTable
           columns={columns}
           rows={rows}
-          rowKey="id"
+          rowKey={(row) => row.id}
           onEdit={handleEdit}
           onDelete={handleDelete}
         />
