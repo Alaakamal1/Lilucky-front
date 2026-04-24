@@ -10,7 +10,15 @@ import { toast } from "react-toastify";
 import { useRouter } from 'next/navigation';
 import { apiClient } from '@/src/utils/apiClient';
 import { Endpoints } from '@/src/utils/endpoints';
-import { Category } from '@/src/interfaces/Category';
+
+export interface Category {
+  _id: string;
+  arName: string;
+  categoryType: string;
+  isActive: boolean;
+
+  [key: string]: unknown; // 👈 تضيف دي
+}
 const Page = () => {
   const [category, setCategory] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -183,13 +191,14 @@ const Page = () => {
           </div>
           <div className="w-full max-w-6xl mx-auto mb-16 overflow-x-auto">
 
-            <DataTable
-              columns={columns}
-              rows={category}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-actions={{ view: false, edit: true, delete: true }}
+<DataTable<Category>
+  columns={columns}
+  rows={category}
+  onEdit={handleEdit}
+  onDelete={handleDelete}
+  actions={{ view: false, edit: true, delete: true }}
 />
+
           </div>
 
         </div>
