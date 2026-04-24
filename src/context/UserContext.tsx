@@ -10,7 +10,7 @@ import {
 
 import { apiClient } from "@/src/utils/apiClient";
 import { Endpoints } from "@/src/utils/endpoints";
-import { User } from "../interfaces";
+import { User } from "@/src/interfaces/user";
 
 /* ================= TYPES ================= */
 
