@@ -8,6 +8,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useRouter, usePathname } from "next/navigation";
 import { useUser } from "@/src/context/UserContext";
 
+/* ================= TYPES ================= */
+
 interface User {
   firstName: string;
   lastName?: string;
@@ -15,14 +17,22 @@ interface User {
   role?: string;
 }
 
+/* ================= COMPONENT ================= */
+
 const AdminHeader = () => {
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
-  const { user, setUser } = useUser();
+
+  const { user, setUser } = useUser() as {
+    user: User | null;
+    setUser: (user: User | null) => void;
+  };
 
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
     const storedUser = sessionStorage.getItem("user");
 
     if (!storedUser) return;
@@ -37,14 +47,16 @@ const AdminHeader = () => {
   }, [setUser]);
 
   const handleLogout = () => {
-    sessionStorage.removeItem("token");
-    sessionStorage.removeItem("user");
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem("token");
+      sessionStorage.removeItem("user");
+    }
 
     setUser(null);
     router.replace("/customer/login");
   };
 
-  const links = [
+  const links: { href: string; label: string }[] = [
     { href: "/admin", label: "لوحه التحكم" },
     { href: "/admin/availableProducts", label: "قسم المنتجات" },
     { href: "/admin/availableCategory", label: "قسم الفئات" },
@@ -54,6 +66,7 @@ const AdminHeader = () => {
 
   return (
     <header className="w-2xs flex flex-col bg-thirdary text-primary font-semibold">
+
       <div>
         <button
           aria-label={menuOpen ? "Close menu" : "Open menu"}
@@ -66,6 +79,7 @@ const AdminHeader = () => {
 
       {/* DESKTOP */}
       <nav className="hidden md:flex flex-col justify-evenly items-center py-2 h-dvh">
+
         <Link href="/" className="flex items-center">
           <Image src="/Lilucky.svg" alt="logo" width={100} height={100} />
         </Link>
@@ -103,8 +117,11 @@ const AdminHeader = () => {
       {/* MOBILE */}
       {menuOpen && (
         <nav className="flex flex-col items-center gap-4 py-4 bg-thirdary md:hidden">
+
           {user?.firstName && (
-            <Link href="/admin/account">مرحباً، {user.firstName}</Link>
+            <Link href="/admin/account">
+              مرحباً، {user.firstName}
+            </Link>
           )}
 
           {links.map((link) => (
