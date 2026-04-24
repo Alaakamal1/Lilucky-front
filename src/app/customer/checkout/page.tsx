@@ -1,12 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { TextField, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import MainButton from "@/src/components/ui/MainButton";
 import { useRouter } from "next/navigation";
 import { apiClient } from "@/src/utils/apiClient";
 import { Endpoints } from "@/src/utils/endpoints";
-import { toast } from "react-toastify";
 
 /* ================= TYPES ================= */
 
@@ -18,13 +17,6 @@ type CartItem = {
   quantity: number;
 };
 
-type DeliveryAddress = {
-  city: string;
-  governorate: string;
-  address: string;
-  phoneNumber: string;
-};
-
 export default function CheckoutPage() {
   const router = useRouter();
 
@@ -34,42 +26,43 @@ export default function CheckoutPage() {
 
   /* ================= LOAD CART ================= */
 
-useEffect(() => {
-  const fetchCart = async () => {
-    const token = sessionStorage.getItem("token");
+  useEffect(() => {
+    const fetchCart = async () => {
+      const token = sessionStorage.getItem("token");
+      if (!token) return;
 
-    if (!token) return;
+      try {
+        const res = await apiClient.get(`${Endpoints.cart}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-    try {
-      const res = await apiClient.get(`${Endpoints.cart}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+        setCart(res.data?.cart?.items || []);
+      } catch (err) {
+        console.error(err);
+      }
+    };
 
-      setCart(res.data?.cart?.items || []);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+    fetchCart();
+  }, []);
 
-  fetchCart();
-}, []);
+  /* ================= TOTAL PRICE ================= */
+
+  const totalPrice = cart.reduce(
+    (total, item) => total + item.productId.price * item.quantity,
+    0
+  );
 
   /* ================= CHECKOUT ================= */
 
   const handleCheckout = async () => {
-
     const token = sessionStorage.getItem("token");
-    if (!token) {
-      toast.error("يجب تسجيل الدخول");
-      return;
-    }
+    if (!token) return;
 
     setLoading(true);
 
     try {
-
       const res = await apiClient.post(
         `${Endpoints.order}/create`,
         {
@@ -93,7 +86,6 @@ useEffect(() => {
       }
     } catch (err) {
       console.error(err);
-      toast.error("حصل خطأ أثناء إنشاء الطلب");
     } finally {
       setLoading(false);
     }
@@ -103,19 +95,14 @@ useEffect(() => {
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
-
       {/* TITLE */}
       <Typography variant="h4" className="text-primary mb-6">
         Checkout
       </Typography>
 
       <div className="grid md:grid-cols-2 gap-6">
-
-        {/* ================= FORM ================= */}
-
         {/* ================= SUMMARY ================= */}
         <div className="border rounded-lg p-4 bg-white shadow-sm">
-
           <Typography variant="h6" className="mb-4">
             ملخص الطلب
           </Typography>
@@ -128,17 +115,13 @@ useEffect(() => {
           )}
 
           <div className="space-y-3 max-h-80 overflow-auto">
-
             {cart.map((item, index) => (
               <div
                 key={index}
                 className="flex justify-between items-center border-b pb-2 text-sm"
               >
                 <div>
-                  <p className="font-medium">
-                    {item.productId.name}
-                  </p>
-
+                  <p className="font-medium">{item.productId.name}</p>
                   <p className="text-gray-500">
                     {item.quantity} × {item.productId.price}
                   </p>
@@ -149,7 +132,6 @@ useEffect(() => {
                 </span>
               </div>
             ))}
-
           </div>
 
           {/* TOTAL */}
@@ -166,9 +148,7 @@ useEffect(() => {
             onClick={handleCheckout}
             className="w-full mt-5 bg-primary text-white"
           />
-
         </div>
-
       </div>
     </div>
   );
