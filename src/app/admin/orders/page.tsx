@@ -7,9 +7,9 @@ import { Endpoints } from '@/src/utils/endpoints';
 import { Typography, CircularProgress } from '@mui/material';
 import { useEffect, useState } from 'react';
 
-/* ✅ UI Model */
+/* ================= UI MODEL ================= */
 type OrderRow = {
-  id: string;
+  _id: string;
   orderId: string;
   customerName: string;
   totalPrice: number;
@@ -20,7 +20,7 @@ type OrderRow = {
 
 const Page = () => {
   const [rows, setRows] = useState<OrderRow[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
 
   const columns = [
     { id: 'orderId', label: 'رقم الطلب' },
@@ -32,13 +32,12 @@ const Page = () => {
     { id: 'actions', label: 'تفاصيل / تعديل / حذف', isAction: true },
   ];
 
-  /* ================= FETCH ================= */
+  /* ================= FETCH ORDERS ================= */
   useEffect(() => {
     const fetchOrders = async () => {
       try {
         const token = sessionStorage.getItem('token');
-
-        if (!token) throw new Error('No token');
+        if (!token) return;
 
         const res = await apiClient.get(`${Endpoints.order}/all_orders`, {
           headers: {
@@ -53,27 +52,25 @@ const Page = () => {
           : data.orders || data.data || [];
 
         const mapped: OrderRow[] = orders.map((order) => ({
-          id: order._id,
+          _id: order._id,
           orderId: order._id.slice(-6),
 
           customerName: order.userId
             ? typeof order.userId === 'string'
               ? order.userId
               : `${order.userId.firstName} ${order.userId.lastName}`
-            : "---",
+            : '---',
 
-          totalPrice: order.totalAmount, // ✅ اسمه في backend كده
+          totalPrice: order.totalAmount,
           orderDate: new Date(order.createdAt).toLocaleDateString(),
 
-          paymentMethod: 'cash', // ❗ مش موجود في schema
+          paymentMethod: 'cash',
           orderStatus: order.orderStatus,
         }));
 
         setRows(mapped);
-      } catch (err: unknown) {
-        if (err instanceof Error) {
-          console.error(err.message);
-        }
+      } catch (err) {
+        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -93,10 +90,10 @@ const Page = () => {
       if (!newStatus) return;
 
       const token = sessionStorage.getItem('token');
-      if (!token) throw new Error('No token');
+      if (!token) return;
 
       await apiClient.patch(
-        `${Endpoints.order}/${row.id}/status`,
+        `${Endpoints.order}/${row._id}/status`,
         { orderStatus: newStatus },
         {
           headers: {
@@ -107,19 +104,17 @@ const Page = () => {
 
       setRows((prev) =>
         prev.map((o) =>
-          o.id === row.id ? { ...o, orderStatus: newStatus } : o
+          o._id === row._id ? { ...o, orderStatus: newStatus } : o
         )
       );
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        console.error(err.message);
-      }
+    } catch (err) {
+      console.error(err);
     }
   };
 
   /* ================= DELETE ================= */
   const handleDelete = (row: OrderRow) => {
-    setRows((prev) => prev.filter((o) => o.id !== row.id));
+    setRows((prev) => prev.filter((o) => o._id !== row._id));
   };
 
   return (
@@ -133,19 +128,22 @@ const Page = () => {
         <div className="flex justify-center items-center h-64">
           <CircularProgress />
         </div>
+
       ) : rows.length === 0 ? (
         <Typography className="text-center text-gray-500">
           لا يوجد طلبات
         </Typography>
+
       ) : (
-        <DataTable
+        <DataTable<OrderRow>
           columns={columns}
           rows={rows}
-          rowKey={(row) => row.id}
+          rowKey={(row) => row._id}
           onEdit={handleEdit}
           onDelete={handleDelete}
         />
       )}
+
     </div>
   );
 };
