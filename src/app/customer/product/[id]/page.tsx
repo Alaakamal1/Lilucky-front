@@ -11,7 +11,7 @@ import { Typography } from "@mui/material";
 import { toast } from "react-toastify";
 import { apiClient } from "@/src/utils/apiClient";
 import { Endpoints } from "@/src/utils/endpoints";
-import { Product, ProductVariant } from "@/src/interfaces/product";
+import { Product } from "@/src/interfaces/product";
 
 type CartItem = {
   productId: string;
@@ -109,7 +109,7 @@ export default function ProductDetails() {
     images[selectedImageIndex]
       ? images[selectedImageIndex].startsWith("http")
         ? images[selectedImageIndex]
-        : `http://localhost:5000/uploads/products/${images[selectedImageIndex]}`
+        : `${Endpoints.prodUrl}/uploads/products/${images[selectedImageIndex]}`
       : "/placeholder.png";
 
   const availableColors =
@@ -208,7 +208,7 @@ export default function ProductDetails() {
             {images.map((img, i) => {
               const src = img.startsWith("http")
                 ? img
-                : `http://localhost:5000/uploads/products/${img}`;
+                : `${Endpoints.prodUrl}/uploads/products/${img}`;
 
               return (
                 <img
@@ -293,7 +293,7 @@ export default function ProductDetails() {
           <MainButton
             text="اضافه إلي السله"
             type="submit"
-            className="w-full h-10 mt-2 rounded-md text-background hover:bg-primary-hover duration-400 ease-in my-4 px-6 bg-primary cursor-pointer"
+            className="md:w-80 h-10 mt-2 rounded-md text-background hover:bg-primary-hover duration-400 ease-in my-4 px-6 bg-primary cursor-pointer"
             onClick={handleAddToCart}
           />
         </div>

@@ -12,19 +12,22 @@ const ForgotPasswordPage = () => {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
-
     try {
-      const res = await apiClient.post( `${Endpoints.forgetPassword}` , {
-        headers: { "Content-Type": "application/json" },
-      });
-
+      const res = await apiClient.post(
+        Endpoints.forgetPassword,
+        { email },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       const data = res.data;
 
       if (res.status === 200) {

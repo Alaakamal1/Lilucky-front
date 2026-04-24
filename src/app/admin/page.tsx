@@ -14,6 +14,8 @@
 
 "use client";
 
+import { apiClient } from "@/src/utils/apiClient";
+import { Endpoints } from "@/src/utils/endpoints";
 import { useEffect, useState } from "react";
 
 export default function DashboardPage() {
@@ -23,8 +25,8 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchDashboard = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/dashboard");
-        const result = await res.json();
+        const res = await apiClient.get(`${Endpoints.baseUrl}/dashboard`);
+        const result = res.data;
         setData(result.data);
       } catch (err) {
         console.log(err);

@@ -1,60 +1,144 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { Typography, CircularProgress } from '@mui/material';
-import { Product } from '@/src/interfaces/product';
+import Image from 'next/image';
+import {
+  Typography,
+  Skeleton,
+  Box,
+} from '@mui/material';
 import { apiClient } from '@/src/utils/apiClient';
 import { Endpoints } from '@/src/utils/endpoints';
+import { Product } from '@/src/interfaces/product';
+
+/* ================= TYPES ================= */
+
+interface ApiResponse<T> {
+  data: T;
+}
+
+/* ================= COMPONENT ================= */
+
 const ProductDetailsPage = () => {
-  const { id } = useParams();
+  const params = useParams<{ id: string }>();
+  const id = params?.id;
   const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedImage, setSelectedImage] = useState<string>("");
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  const images =
-    product?.variants?.flatMap((v: any) => v.images || []) || [];
+  /* ================= MEMO ================= */
 
-    useEffect(() => {
-  const fetchProduct = async () => {
-    try {
-      setLoading(true);
+  const images = useMemo(() => {
+    return product?.variants?.flatMap((v) => v.images) || [];
+  }, [product]);
 
-      const res = await apiClient.get(`${Endpoints.products}/${id}`);
-      const data = res.data;
+  /* ================= FETCH ================= */
 
-      const productData = data.data; 
+  useEffect(() => {
+    if (!id) return;
+    const fetchProduct = async () => {
+      try {
+        setLoading(true);
 
-      setProduct(productData);
+        const res = await apiClient.get<ApiResponse<Product>>(
+          `${Endpoints.products}/${id}`
+        );
 
-      const firstImage =
-        productData?.variants?.[0]?.images?.[0] || "";
+        const productData = res.data.data;
 
-      setSelectedImage(firstImage);
+        setProduct(productData);
 
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('حدث خطأ غير معروف');
+        setSelectedImage(
+          productData?.variants?.[0]?.images?.[0] || null
+        );
+      } catch (err: unknown) {
+        setError(
+          err instanceof Error
+            ? err.message
+            : 'حدث خطأ غير معروف'
+        );
+      } finally {
+        setLoading(false);
       }
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
 
-  if (id) fetchProduct();
-}, [id]);
+    fetchProduct();
+  }, [id]);
 
-  if (loading) {
-    return (
-      <div className="flex justify-center my-20">
-        <CircularProgress />
+  /* ================= SKELETON ================= */
+
+if (loading) {
+  return (
+    <div className="w-full p-4 md:p-6 flex justify-center">
+      <div className="w-full max-w-5xl">
+
+        {/* عنوان */}
+        <Skeleton
+          variant="text"
+          width="40%"
+          height={50}
+          className="mx-auto mb-6"
+        />
+
+        <div className="bg-white rounded-xl shadow p-4 md:p-6">
+          <div className="grid md:grid-cols-2 gap-10">
+
+            {/* صورة */}
+            <div className="space-y-4">
+              <Skeleton
+                variant="rectangular"
+                height={300}
+                className="rounded-lg"
+              />
+
+              <div className="flex gap-2 flex-wrap">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Skeleton
+                    key={i}
+                    variant="rectangular"
+                    width={64}
+                    height={64}
+                    className="rounded"
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* تفاصيل */}
+            <div className="space-y-5">
+
+              <Skeleton height={35} width="70%" />
+
+              <div className="space-y-3">
+                <Skeleton height={25} width="50%" />
+                <Skeleton height={30} width="40%" />
+                <Skeleton height={20} width="30%" />
+                <Skeleton height={20} width="35%" />
+              </div>
+
+              <Skeleton height={80} />
+
+              <Skeleton height={20} width="40%" />
+              <Skeleton height={20} width="30%" />
+
+              <div className="flex gap-4">
+                <Skeleton height={40} width={100} />
+                <Skeleton height={40} width={100} />
+              </div>
+              <div className="space-y-3">
+                <Skeleton height={25} width="50%" />
+                <Skeleton height={60} />
+                <Skeleton height={60} />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    );
-  }
-
+    </div>
+  );
+}
   if (error) {
     return (
       <Typography align="center" className="my-10 text-red-500">
@@ -64,129 +148,160 @@ const ProductDetailsPage = () => {
   }
 
   if (!product) return null;
-
   return (
-    <div className="w-full  p-4 md:p-6  justify-center items-center">
+    <div className="w-full p-4 md:p-6 flex justify-center">
+      <div className="w-full max-w-5xl">
+        <Typography
+          variant="h4"
+          className="mb-6 text-center text-primary"
+        >
+          تفاصيل المنتج
+        </Typography>
+        <div className="bg-white rounded-xl shadow p-4 md:p-6">
+          <div className="grid md:grid-cols-2 gap-10">
 
-      <Typography variant="h4" className="mb-6 text-center text-primary">
-        تفاصيل المنتج
-      </Typography>
-      <div className="max-w-5xl mx-auto bg-white justify-center items-center rounded-xl shadow p-4 md:p-6">
+            {/* ================= IMAGES ================= */}
+            <div className="max-w-md w-full mx-auto">
 
-        <div className="grid md:grid-cols-2 gap-10">
-
-          {/* الصور */}
-          <div className="max-w-md w-full mx-auto">
-
-            {/* الصورة الكبيرة */}
-            <div className="w-full h-[280px] relative border rounded-lg overflow-hidden">
-              {selectedImage && (
-                <img
-                  src={selectedImage}
-                  alt="product"
-                  className="w-full h-full object-cover"
-
-                />
-              )}
-            </div>
-
-            {/* thumbnails */}
-            <div className="flex gap-2 mt-3 flex-wrap">
-              {images.map((img: string, index: number) => (
-                <div
-                  key={index}
-                  onClick={() => setSelectedImage(img)}
-                  className={`w-16 h-16 relative cursor-pointer border rounded overflow-hidden ${selectedImage === img ? "border-primary border-2" : "border-gray-300"
-                    }`}
-                >
-                  <img
-                    src={img}
-                    alt="thumb"
-                    className="w-full h-full object-cover"
+              {/* MAIN IMAGE */}
+              <div className="relative w-full h-[300px] border rounded-lg overflow-hidden">
+                {selectedImage ? (
+                  <Image
+                    src={selectedImage}
+                    alt="product"
+                    fill
+                    className="object-cover"
+                    priority
                   />
-                </div>
-              ))}
+                ) : (
+                  <div className="flex items-center justify-center h-full text-gray-400">
+                    لا توجد صورة
+                  </div>
+                )}
+              </div>
+
+              {/* THUMBNAILS */}
+              <div className="flex gap-2 mt-3 flex-wrap">
+                {images.map((img, index) => (
+                  <div
+                    key={`${img}-${index}`}
+                    onClick={() => setSelectedImage(img)}
+                    className={`relative w-16 h-16 cursor-pointer border rounded overflow-hidden transition ${
+                      selectedImage === img
+                        ? 'border-primary border-2 scale-105'
+                        : 'border-gray-300'
+                    }`}
+                  >
+                    <Image
+                      src={img}
+                      alt="thumb"
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
 
-          {/* التفاصيل */}
-          <div className="space-y-4">
+            {/* ================= DETAILS ================= */}
+            <div className="space-y-4">
 
-            <Typography variant="h5" className="font-bold">
-              {product.name}
-            </Typography>
-
-            <div className="flex-col gap-3 ">
-              <Typography className="text-lg font-bold text-gray-700">
-                السعر علي الموقع
+              <Typography variant="h5" className="font-bold">
+                {product.name}
               </Typography>
-              <Typography className="text-lg font-bold text-primary">
-                {product.price} جنيه
+
+              {/* PRICE */}
+              <div className="flex flex-col gap-2">
+                <Typography className="text-lg font-bold text-gray-700">
+                  السعر على الموقع
+                </Typography>
+
+                <Typography className="text-2xl font-bold text-primary">
+                  {product.price} جنيه
+                </Typography>
+
+                <Typography className="text-sm text-gray-500">
+                  السعر الأصلي
+                </Typography>
+
+                <Typography className="text-gray-400 line-through">
+                  {product.main_price} جنيه
+                </Typography>
+              </div>
+
+              {/* DESCRIPTION */}
+              <Typography className="text-gray-600 leading-relaxed">
+                {product.description}
+              </Typography>
+
+              {/* META */}
+              <Typography className="text-sm text-gray-500">
+                الفئة: {product.category?.arName || 'غير محدد'}
               </Typography>
 
               <Typography className="text-sm text-gray-500">
-                السعر الأصلي
+                الخامه: {product.material}
               </Typography>
-              <Typography className="text-gray-400">
-                {product.main_price} جنيه
-              </Typography>
-            </div>
 
-            <Typography className="text-gray-600">
-              الوصف:
-              {product.description}
-            </Typography>
-
-            <Typography className="text-sm text-gray-500">
-              الفئة: {product.category?.name || "غير محدد"}
-            </Typography>
-            <Typography className="text-sm text-gray-500">
-              الخامه: {product.material}
-            </Typography>
-
-            {/* الحالة */}
-            <div className="flex gap-4">
-              <div className="bg-gray-100 px-3 py-2 rounded">
-                المخزون: {product.stock || 0}
-              </div>
-              <div className={`px-3 py-2 rounded ${product.isActive ? "bg-green-100 text-green-600" : "bg-red-100 text-red-500"
-                }`}>
-                {product.isActive ? "متوفر" : "غير متوفر"}
-              </div>
-            </div>
-            <div className="mt-4 space-y-3">
-              <p className="font-semibold">الألوان والمقاسات:</p>
-              {product.variants.map((variant: any, i: number) => (
-                <div key={i} className="border p-3 rounded-lg">
-
-                  {/* اللون */}
-                  <div className="flex items-center gap-2 mb-2">
-                    <span>اللون:</span>
-                    <div
-                      className="w-5 h-5 rounded-full border"
-                      style={{ backgroundColor: variant.color }}
-                    />
-                  </div>
-
-                  {/* المقاسات */}
-                  <div className="flex flex-wrap gap-2">
-                    {variant.sizes.map((size: string, index: number) => (
-                      <span
-                        key={index}
-                        className="px-2 py-1 bg-gray-200 rounded text-sm"
-                      >
-                        {size}
-                      </span>
-                    ))}
-                  </div>
-
+              {/* STATUS */}
+              <div className="flex gap-4">
+                <div className="bg-gray-100 px-3 py-2 rounded">
+                  المخزون: {product.stock || 0}
                 </div>
-              ))}
-            </div>
 
+                <div
+                  className={`px-3 py-2 rounded font-medium ${
+                    product.isActive
+                      ? 'bg-green-100 text-green-600'
+                      : 'bg-red-100 text-red-500'
+                  }`}
+                >
+                  {product.isActive ? 'متوفر' : 'غير متوفر'}
+                </div>
+              </div>
+
+              {/* VARIANTS */}
+              <div className="mt-4 space-y-3">
+                <p className="font-semibold">الألوان والمقاسات:</p>
+
+                {product.variants?.length ? (
+                  product.variants.map((variant, i) => (
+                    <div
+                      key={i}
+                      className="border p-3 rounded-lg"
+                    >
+                      {/* COLOR */}
+                      <div className="flex items-center gap-2 mb-2">
+                        <span>اللون:</span>
+                        <div
+                          className="w-5 h-5 rounded-full border"
+                          style={{ backgroundColor: variant.color }}
+                        />
+                      </div>
+
+                      {/* SIZES */}
+                      <div className="flex flex-wrap gap-2">
+                        {variant.sizes.map((size, index) => (
+                          <span
+                            key={`${size}-${index}`}
+                            className="px-2 py-1 bg-gray-200 rounded text-sm"
+                          >
+                            {size}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-400">
+                    لا توجد بيانات
+                  </p>
+                )}
+              </div>
+
+            </div>
           </div>
         </div>
-
       </div>
     </div>
   );

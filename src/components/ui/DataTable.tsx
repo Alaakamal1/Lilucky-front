@@ -17,55 +17,56 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import Link from 'next/link';
 import React from 'react';
 
-/* 🔥 Column Type */
-interface Column {
+/* ================= TYPES ================= */
+
+export interface Column<T = Record<string, unknown>> {
   id: string;
   label: string;
   align?: 'left' | 'right' | 'center';
   isAction?: boolean;
-  render?: (row: any) => React.ReactNode;
+  render?: (row: T) => React.ReactNode;
 }
 
-/* ✅ FULL ACTION CONTROL */
-type ActionConfig = {
+export interface ActionConfig {
   view?: boolean;
   edit?: boolean;
   delete?: boolean;
-};
+}
 
-interface Props {
-  columns: Column[];
-  rows: any[];
-  rowKey?: string;
+interface Props<T = Record<string, unknown>> {
+  columns: Column<T>[];
+  rows: T[];
+  rowKey?: keyof T & string;
 
-  onView?: (row: any) => void;
-  onEdit?: (row: any) => void;
-  onDelete?: (row: any) => void;
-
-  viewRoute?: (row: any) => string;
+  onView?: (row: T) => void;
+  onEdit?: (row: T) => void;
+  onDelete?: (row: T) => void;
+  viewRoute?: (row: T) => string;
 
   actions?: ActionConfig;
 }
 
-/* 🔥 default */
+/* ================= DEFAULT ================= */
+
 const defaultActions: ActionConfig = {
   view: true,
   edit: true,
   delete: true,
 };
 
-export default function DataTable({
+/* ================= COMPONENT ================= */
+
+export default function DataTable<T extends Record<string, unknown>>({
   columns,
   rows,
-  rowKey = '_id',
+  rowKey = '_id' as keyof T & string,
   onView,
   onEdit,
   onDelete,
   viewRoute,
   actions = defaultActions,
-}: Props) {
+}: Props<T>) {
 
-  /* 🔥 header dynamic */
   const actionLabel = [
     actions.view ? 'تفاصيل' : null,
     actions.edit ? 'تعديل' : null,
@@ -106,109 +107,113 @@ export default function DataTable({
 
         {/* BODY */}
         <TableBody>
-          {rows.map((row) => (
-            <TableRow
-              key={row[rowKey]}
-              sx={{
-                '&:hover': { backgroundColor: '#fafafa' },
-              }}
-            >
-              {columns.map((col) => {
-                const value = row[col.id];
+          {rows.map((row) => {
+            const rowId = row[rowKey];
 
-                const isImage =
-                  typeof value === 'string' &&
-                  (value.startsWith('http') ||
-                    value.includes('.png') ||
-                    value.includes('.jpg') ||
-                    value.includes('.jpeg'));
+            return (
+              <TableRow
+                key={String(rowId)}
+                sx={{
+                  '&:hover': { backgroundColor: '#fafafa' },
+                }}
+              >
+                {columns.map((col) => {
+                  const value = row[col.id as keyof T];
 
-                return (
-                  <TableCell
-                    key={col.id}
-                    align={col.align || 'center'}
-                    sx={{
-                      whiteSpace: 'nowrap',
-                      padding: { xs: 1, sm: 2 },
-                      fontSize: { xs: '0.75rem', sm: '0.9rem' },
-                    }}
-                  >
+                  const isImage =
+                    typeof value === 'string' &&
+                    (value.startsWith('http') ||
+                      value.includes('.png') ||
+                      value.includes('.jpg') ||
+                      value.includes('.jpeg'));
 
-                    {/* custom render */}
-                    {col.render ? (
-                      col.render(row)
+                  return (
+                    <TableCell
+                      key={col.id}
+                      align={col.align || 'center'}
+                      sx={{
+                        whiteSpace: 'nowrap',
+                        padding: { xs: 1, sm: 2 },
+                        fontSize: { xs: '0.75rem', sm: '0.9rem' },
+                      }}
+                    >
 
-                    ) : col.isAction ? (
-                      <div
-                        style={{
-                          display: 'flex',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          gap: 6,
-                        }}
-                      >
+                      {/* custom render */}
+                      {col.render ? (
+                        col.render(row)
 
-                        {/* 👁 VIEW */}
-                        {actions.view &&
-                          (viewRoute ? (
-                            <Link href={viewRoute(row)}>
-                              <IconButton size="small">
+                      ) : col.isAction ? (
+                        <div
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            gap: 6,
+                          }}
+                        >
+
+                          {/* VIEW */}
+                          {actions.view &&
+                            (viewRoute ? (
+                              <Link href={viewRoute(row)}>
+                                <IconButton size="small">
+                                  <VisibilityIcon fontSize="small" />
+                                </IconButton>
+                              </Link>
+                            ) : (
+                              <IconButton size="small" onClick={() => onView?.(row)}>
                                 <VisibilityIcon fontSize="small" />
                               </IconButton>
-                            </Link>
-                          ) : (
-                            <IconButton size="small" onClick={() => onView?.(row)}>
-                              <VisibilityIcon fontSize="small" />
+                            ))}
+
+                          {/* EDIT */}
+                          {actions.edit && (
+                            <IconButton size="small" onClick={() => onEdit?.(row)}>
+                              <EditIcon fontSize="small" />
                             </IconButton>
-                          ))}
+                          )}
 
-                        {/* ✏️ EDIT */}
-                        {actions.edit && (
-                          <IconButton size="small" onClick={() => onEdit?.(row)}>
-                            <EditIcon fontSize="small" />
-                          </IconButton>
-                        )}
+                          {/* DELETE */}
+                          {actions.delete && (
+                            <IconButton size="small" onClick={() => onDelete?.(row)}>
+                              <DeleteIcon fontSize="small" />
+                            </IconButton>
+                          )}
 
-                        {/* 🗑 DELETE */}
-                        {actions.delete && (
-                          <IconButton size="small" onClick={() => onDelete?.(row)}>
-                            <DeleteIcon fontSize="small" />
-                          </IconButton>
-                        )}
+                        </div>
 
-                      </div>
+                      ) : isImage ? (
+                        <img
+                          src={value as string}
+                          width={40}
+                          height={40}
+                          style={{
+                            borderRadius: 8,
+                            objectFit: 'cover',
+                          }}
+                        />
 
-                    ) : isImage ? (
-                      <img
-                        src={value}
-                        width={40}
-                        height={40}
-                        style={{
-                          borderRadius: 8,
-                          objectFit: 'cover',
-                        }}
-                      />
+                      ) : (
+                        <span
+                          style={{
+                            fontSize: '0.8rem',
+                            maxWidth: '120px',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                            display: 'inline-block',
+                          }}
+                        >
+                          {value?.toString() || '—'}
+                        </span>
+                      )}
 
-                    ) : (
-                      <span
-                        style={{
-                          fontSize: '0.8rem',
-                          maxWidth: '120px',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                          display: 'inline-block',
-                        }}
-                      >
-                        {value || '—'}
-                      </span>
-                    )}
-
-                  </TableCell>
-                );
-              })}
-            </TableRow>
-          ))}
+                    </TableCell>
+                  );
+                })}
+              </TableRow>
+            );
+          })}
         </TableBody>
 
       </Table>

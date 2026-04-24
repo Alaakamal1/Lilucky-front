@@ -7,14 +7,10 @@ import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { Product } from '@/src/interfaces/product';
-
 export default function EditProductPage() {
   const params = useParams();
-
   const productId = params?.id as string;
-
   const [initialData, setInitialData] = useState<Product | null>(null);
-
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -23,15 +19,12 @@ export default function EditProductPage() {
         );
         const data = res.data;
         const product = data.data;
-
         setInitialData(product);
-
       } catch (err) {
         console.error(err);
         toast.error("فشل تحميل البيانات");
       }
     };
-
     if (productId) fetchProduct();
   }, [productId]);
 
@@ -54,13 +47,15 @@ export default function EditProductPage() {
         toast.error("حدث خطأ أثناء التعديل");
       }
 
-    } catch (err) {
-      toast.error("فشل التحديث");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error(err.message);
+      } else {
+        toast.error("فشل التحديث");
+      }
     }
   };
-
   if (!initialData) return <p>جارٍ تحميل البيانات...</p>;
-
   return (
     <div className="w-full p-6">
       <h2 className="text-2xl font-bold mb-4">تعديل المنتج</h2>

@@ -2,14 +2,15 @@
 import { Typography } from "@mui/material";
 import MainButton from "../../components/ui/MainButton";
 import OptionSelector from "../../components/ui/OptionSelector";
-import { useEffect, useState } from "react";
-import Link from "next/link";
 import CardItem from "@/src/components/ui/CardItem";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import { apiClient } from "@/src/utils/apiClient";
 import { Endpoints } from "@/src/utils/endpoints";
+import { Product } from "@/src/interfaces/product";
 export default function Page() {
   const [size, setSize] = useState<string>("");
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     const fetchProduct = async () => {
@@ -26,7 +27,7 @@ export default function Page() {
         setProducts(data.data);
       } catch (err: unknown) {
         if (err instanceof Error) {
-          console.error("Error fetching products:", err.message);
+          console.log("Error fetching products:", err.message);
         }
       } finally {
         setLoading(false);

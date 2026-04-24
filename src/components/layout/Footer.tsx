@@ -3,14 +3,11 @@ import Link from "next/link";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
-
 const Footer = () => {
   return (
     <div className="bg-thirdary text-secondary-text py-10 px-5">
       <div className="flex flex-col items-center text-center text-xl md:flex-row md:justify-around md:items-start md:text-left gap-10 md:gap-0">
-        
-        {/* Clothes Section */}
-        <div className="flex flex-col py-2 ">
+                <div className="flex flex-col py-2 ">
           <h5 className="font-semibold mb-3">ملابس</h5>
           <Link href="">تيشرتات</Link>
           <Link href="">بنطلونات</Link>

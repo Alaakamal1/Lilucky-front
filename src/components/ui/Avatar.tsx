@@ -13,11 +13,8 @@ export default function LetterAvatars({ className, fName }: LetterAvatarsProps) 
                     bgcolor: "#FBEFEF", width: 30, height: 30, fontSize: "1rem",
                     color: "#F5AFAF", cursor: "pointer",
                     transition: "0.3s",
-                    // , border: "2.5px solid #F5AFAF",
                     "&:hover": {
-                        // bgcolor: "#F6B6B6",
                         color: "#F6B6B6",
-                        // color: "#fff",
                     }
                 }}
             >

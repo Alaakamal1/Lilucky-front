@@ -3,7 +3,7 @@ interface MainButtonProps {
   className:string,
   disabled?:boolean,
   type?: "button" | "submit" | "reset"
-  onClick?: () => void;
+onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 const MainButton  = ({text,className,disabled=false,type="button",onClick}:MainButtonProps) => {

@@ -3,7 +3,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import {
   Typography,
-  CircularProgress,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -16,8 +15,6 @@ import DataTable from '@/src/components/ui/DataTable';
 import { apiClient } from '@/src/utils/apiClient';
 import { Endpoints } from '@/src/utils/endpoints';
 import { User } from '@/src/interfaces';
-import { useRouter } from 'next/navigation';
-
 type UserRow = {
   id: string;
   name: string;
@@ -32,10 +29,7 @@ const Page = () => {
   const [loading, setLoading] = useState(true);
   const [openDelete, setOpenDelete] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserRow | null>(null);
-  const [search, setSearch] = useState('');
-  const router = useRouter();
-  
-
+  const [search, setSearch] = useState('');  
   const columns = [
     { id: 'name', label: 'اسم المستخدم' },
     { id: 'email', label: 'البريد الإلكتروني' },
@@ -44,13 +38,11 @@ const Page = () => {
     { id: 'createdAt', label: 'تاريخ الإنشاء' },
     { id: 'actions', label: 'الإجراءات', isAction: true },
   ];
-
   /* ================= FETCH USERS ================= */
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const token = sessionStorage.getItem('token');
-
         const res = await apiClient.get(`${Endpoints.user}/users`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -84,12 +76,6 @@ const Page = () => {
     );
   }, [rows, search]);
 
-  /* ================= EDIT ================= */
-
-  const handleEdit = (row: UserRow) => {
-  router.push(`/admin/clients/edit/${row.id}`);
-};
-
   /* ================= DELETE ================= */
   const handleDeleteClick = (row: UserRow) => {
     setSelectedUser(row);
@@ -101,7 +87,6 @@ const Page = () => {
 
     try {
       const token = sessionStorage.getItem('token');
-
       await apiClient.delete(
         `${Endpoints.user}/users/${selectedUser.id}`,
         {
@@ -112,7 +97,6 @@ const Page = () => {
       setRows((prev) =>
         prev.filter((u) => u.id !== selectedUser.id)
       );
-
       setOpenDelete(false);
       setSelectedUser(null);
     } catch (err) {
@@ -122,15 +106,12 @@ const Page = () => {
 
   return (
     <Box className="w-full px-4 md:px-10 py-6">
-
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
 
         <Typography variant="h5" className="font-semibold text-secondary-text">
           إدارة المستخدمين
         </Typography>
-
-        {/* 🔍 Search */}
         <TextField
           size="small"
           placeholder="ابحث باسم المستخدم..."
@@ -142,12 +123,52 @@ const Page = () => {
       </div>
 
       {/* Content */}
-
         {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <CircularProgress />
-          </div>
+          <div className="space-y-6 animate-pulse">
+    <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div className="h-6 bg-gray-300 rounded w-40"></div>
+      <div className="h-10 bg-gray-300 rounded w-40"></div>
+    </div>
 
+    {/* Table Skeleton */}
+    <div className="w-full overflow-x-auto rounded-lg">
+      <div className="min-w-[800px] space-y-3">
+
+        {/* Table Header */}
+        <div className="grid grid-cols-6 gap-3 bg-gray-200 p-3 rounded">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="h-4 bg-gray-300 rounded"></div>
+          ))}
+        </div>
+
+        {/* Rows */}
+        {Array.from({ length: 6 }).map((_, rowIndex) => (
+          <div
+            key={rowIndex}
+            className="grid grid-cols-6 gap-3 p-3 border rounded items-center"
+          >
+            <div className="h-4 bg-gray-200 rounded"></div>
+
+            {/* image */}
+            <div className="h-10 w-10 bg-gray-300 rounded"></div>
+
+            <div className="h-4 bg-gray-200 rounded"></div>
+            <div className="h-4 bg-gray-200 rounded"></div>
+
+            <div className="h-6 bg-gray-300 rounded w-20"></div>
+
+            {/* actions */}
+            <div className="flex gap-2">
+              <div className="h-8 w-8 bg-gray-300 rounded"></div>
+              <div className="h-8 w-8 bg-gray-300 rounded"></div>
+              <div className="h-8 w-8 bg-gray-300 rounded"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+  </div>
         ) : filteredRows.length === 0 ? (
           <Typography className="text-center text-gray-500 py-10">
             لا يوجد مستخدمين

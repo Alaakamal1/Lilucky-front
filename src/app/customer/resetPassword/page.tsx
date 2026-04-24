@@ -33,12 +33,11 @@ const ResetPasswordPage = () => {
       });
 
       if (res.status === 200) {
-        // setMessage("Password reset successfully");
         console.log("OTP:", otp);
         router.push("/customer/login");
       }
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Invalid OTP or expired");
+    } catch (err: unknown) {
+      setError((err as { response?: { data?: { message?: string } } })?.response?.data?.message || "Invalid OTP or expired");
     }
   };
 

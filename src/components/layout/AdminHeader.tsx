@@ -8,26 +8,38 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useRouter, usePathname } from "next/navigation";
 import { useUser } from "@/src/context/UserContext";
 
+interface User {
+  firstName: string;
+  lastName?: string;
+  email?: string;
+  role?: string;
+}
+
 const AdminHeader = () => {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-  const [fName, setFName] = useState<string | null>(null);
-  const {  setUser } = useUser();
+  const [menuOpen, setMenuOpen] = useState<boolean>(false);
+  const { user, setUser } = useUser();
+
   const router = useRouter();
   const pathname = usePathname();
+
   useEffect(() => {
-    setMounted(true);
     const storedUser = sessionStorage.getItem("user");
-    if (storedUser) {
-      const parsedUser = JSON.parse(storedUser);
+
+    if (!storedUser) return;
+
+    try {
+      const parsedUser: User = JSON.parse(storedUser);
       setUser(parsedUser);
-      setFName(parsedUser.firstName);
+    } catch (err) {
+      console.error("Invalid user in sessionStorage", err);
+      sessionStorage.removeItem("user");
     }
-  }, []);
+  }, [setUser]);
 
   const handleLogout = () => {
     sessionStorage.removeItem("token");
-    sessionStorage.removeItem("firstName");
+    sessionStorage.removeItem("user");
+
     setUser(null);
     router.replace("/customer/login");
   };
@@ -40,33 +52,33 @@ const AdminHeader = () => {
     { href: "/admin/clients", label: "قسم العملاء" },
   ];
 
-  if (!mounted) return null;
-
   return (
     <header className="w-2xs flex flex-col bg-thirdary text-primary font-semibold">
       <div>
         <button
           aria-label={menuOpen ? "Close menu" : "Open menu"}
           className="md:hidden text-primary absolute left-4"
-          onClick={() => setMenuOpen(!menuOpen)}
+          onClick={() => setMenuOpen((prev) => !prev)}
         >
           {menuOpen ? <CloseIcon /> : <MenuIcon />}
         </button>
       </div>
 
+      {/* DESKTOP */}
       <nav className="hidden md:flex flex-col justify-evenly items-center py-2 h-dvh">
         <Link href="/" className="flex items-center">
           <Image src="/Lilucky.svg" alt="logo" width={100} height={100} />
         </Link>
 
-        {fName && (
+        {user?.firstName && (
           <Link href="/admin/account" className="text-lg">
-            مرحباً، {fName}
+            مرحباً، {user.firstName}
           </Link>
         )}
 
         {links.map((link) => {
           const isActive = pathname === link.href;
+
           return (
             <Link
               key={link.href}
@@ -88,9 +100,12 @@ const AdminHeader = () => {
         </button>
       </nav>
 
+      {/* MOBILE */}
       {menuOpen && (
         <nav className="flex flex-col items-center gap-4 py-4 bg-thirdary md:hidden">
-          {fName && <Link href="#">مرحباً، {fName}</Link>}
+          {user?.firstName && (
+            <Link href="/admin/account">مرحباً، {user.firstName}</Link>
+          )}
 
           {links.map((link) => (
             <Link
