@@ -3,82 +3,51 @@
 import {
   createContext,
   useContext,
-  useEffect,
   useState,
+  useEffect,
   ReactNode,
 } from "react";
 
-/* ================= TYPES ================= */
+/* ================= TYPE ================= */
 
-export interface CartItem {
+export type Product = {
   id: string;
-  [key: string]: unknown;
-}
-
-export interface WishlistItem {
-  id: string;
-  [key: string]: unknown;
-}
-
-interface CartWishlistContextType {
-  cart: CartItem[];
-  wishlist: WishlistItem[];
-  addToCart: (item: CartItem) => void;
-  removeFromCart: (id: string) => void;
-  addToWishlist: (item: WishlistItem) => void;
-  removeFromWishlist: (id: string) => void;
-}
+  name?: string;
+  price?: number;
+  image?: string;
+};
 
 /* ================= CONTEXT ================= */
 
-const CartWishlistContext = createContext<
-  CartWishlistContextType | undefined
->(undefined);
+type CartWishlistContextType = {
+  cart: Product[];
+  wishlist: Product[];
+  addToCart: (item: Product) => void;
+  removeFromCart: (id: string) => void;
+  addToWishlist: (item: Product) => void;
+  removeFromWishlist: (id: string) => void;
+};
+
+const CartWishlistContext = createContext<CartWishlistContextType | null>(null);
 
 /* ================= PROVIDER ================= */
 
-interface ProviderProps {
-  children: ReactNode;
-}
+export const CartWishlistProvider = ({ children }: { children: ReactNode }) => {
+  const [cart, setCart] = useState<Product[]>([]);
+  const [wishlist, setWishlist] = useState<Product[]>([]);
 
-export const CartWishlistProvider = ({ children }: ProviderProps) => {
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
+  /* ================= LOAD ONCE ================= */
 
-  /* ================= LOAD FROM SESSION ================= */
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    const storedCart = sessionStorage.getItem("cart");
+    const storedWishlist = sessionStorage.getItem("likedProducts");
 
-    /* ===== CART ===== */
-    const rawCart = sessionStorage.getItem("cart");
-
-    let storedCart: CartItem[] = [];
-
-    try {
-      const parsedCart = rawCart ? JSON.parse(rawCart) : [];
-      storedCart = Array.isArray(parsedCart) ? parsedCart : [];
-    } catch (err) {
-      console.error("Cart parse error:", err);
-      storedCart = [];
-    }
-
-    /* ===== WISHLIST ===== */
-    const rawWishlist = sessionStorage.getItem("likedProducts");
-
-    let storedWishlist: WishlistItem[] = [];
-
-    try {
-      const parsedWishlist = rawWishlist ? JSON.parse(rawWishlist) : [];
-      storedWishlist = Array.isArray(parsedWishlist) ? parsedWishlist : [];
-    } catch (err) {
-      console.error("Wishlist parse error:", err);
-      storedWishlist = [];
-    }
-    setCart(storedCart);
-    setWishlist(storedWishlist);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCart(storedCart ? JSON.parse(storedCart) : []);
+    setWishlist(storedWishlist ? JSON.parse(storedWishlist) : []);
   }, []);
 
-  /* ================= SYNC TO SESSION ================= */
+  /* ================= SAVE ================= */
 
   useEffect(() => {
     sessionStorage.setItem("cart", JSON.stringify(cart));
@@ -88,35 +57,29 @@ export const CartWishlistProvider = ({ children }: ProviderProps) => {
     sessionStorage.setItem("likedProducts", JSON.stringify(wishlist));
   }, [wishlist]);
 
-  /* ================= CART FUNCTIONS ================= */
+  /* ================= CART ================= */
 
-  const addToCart = (item: CartItem) => {
-    setCart((prev) => {
-      const exists = prev.find((i) => i.id === item.id);
-      if (exists) return prev;
-      return [...prev, item];
-    });
+  const addToCart = (item: Product) => {
+    setCart((prev) =>
+      prev.some((i) => i.id === item.id) ? prev : [...prev, item]
+    );
   };
 
   const removeFromCart = (id: string) => {
     setCart((prev) => prev.filter((item) => item.id !== id));
   };
 
-  /* ================= WISHLIST FUNCTIONS ================= */
+  /* ================= WISHLIST ================= */
 
-  const addToWishlist = (item: WishlistItem) => {
-    setWishlist((prev) => {
-      const exists = prev.find((i) => i.id === item.id);
-      if (exists) return prev;
-      return [...prev, item];
-    });
+  const addToWishlist = (item: Product) => {
+    setWishlist((prev) =>
+      prev.some((i) => i.id === item.id) ? prev : [...prev, item]
+    );
   };
 
   const removeFromWishlist = (id: string) => {
     setWishlist((prev) => prev.filter((item) => item.id !== id));
   };
-
-  /* ================= PROVIDER ================= */
 
   return (
     <CartWishlistContext.Provider
@@ -140,9 +103,7 @@ export const useCartWishlist = () => {
   const context = useContext(CartWishlistContext);
 
   if (!context) {
-    throw new Error(
-      "useCartWishlist must be used within CartWishlistProvider"
-    );
+    throw new Error("useCartWishlist must be used within provider");
   }
 
   return context;

@@ -6,7 +6,6 @@ import Image from 'next/image';
 import {
   Typography,
   Skeleton,
-  Box,
 } from '@mui/material';
 import { apiClient } from '@/src/utils/apiClient';
 import { Endpoints } from '@/src/utils/endpoints';
