@@ -327,7 +327,7 @@ const Page = () => {
           <DataTable
             columns={columns}
             rows={filteredProducts}
-            rowKey="_id"
+             rowKey={(row) => row._id}
             viewRoute={(row) => `/admin/availableProducts/${row._id}`}
             onView={handleView}
             onEdit={handleEdit}

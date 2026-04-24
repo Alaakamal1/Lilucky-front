@@ -190,10 +190,10 @@ const Page = () => {
 
           </div>
           <div className="w-full max-w-6xl mx-auto mb-16 overflow-x-auto">
-
 <DataTable<Category>
   columns={columns}
-  rows={category}
+  rows={category || []}
+  rowKey={(row) => row._id}
   onEdit={handleEdit}
   onDelete={handleDelete}
   actions={{ view: false, edit: true, delete: true }}
