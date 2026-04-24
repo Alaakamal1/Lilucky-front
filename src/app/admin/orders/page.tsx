@@ -1,6 +1,6 @@
 'use client';
 
-import DataTable from '@/src/components/ui/DataTable';
+import DataTable, { Column } from '@/src/components/ui/DataTable';
 import { Order, OrderStatus } from '@/src/interfaces/order';
 import { apiClient } from '@/src/utils/apiClient';
 import { Endpoints } from '@/src/utils/endpoints';
@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 /* ================= UI MODEL ================= */
 type OrderRow = {
   _id: string;
+
   orderId: string;
   customerName: string;
   totalPrice: number;
@@ -22,7 +23,8 @@ const Page = () => {
   const [rows, setRows] = useState<OrderRow[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const columns = [
+  /* ================= COLUMNS ================= */
+  const columns: Column<OrderRow>[] = [
     { id: 'orderId', label: 'رقم الطلب' },
     { id: 'customerName', label: 'اسم العميل' },
     { id: 'totalPrice', label: 'اجمالي السعر' },
@@ -32,7 +34,7 @@ const Page = () => {
     { id: 'actions', label: 'تفاصيل / تعديل / حذف', isAction: true },
   ];
 
-  /* ================= FETCH ORDERS (SAFE) ================= */
+  /* ================= FETCH ORDERS ================= */
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -47,7 +49,6 @@ const Page = () => {
 
         const data = res.data;
 
-        // 🔥 SAFE NORMALIZATION (fix map error)
         const orders: Order[] =
           Array.isArray(data)
             ? data
@@ -61,6 +62,7 @@ const Page = () => {
 
         const mapped: OrderRow[] = orders.map((order) => ({
           _id: order._id,
+
           orderId: order._id.slice(-6),
 
           customerName: order.userId
@@ -70,9 +72,11 @@ const Page = () => {
             : '---',
 
           totalPrice: order.totalAmount,
+
           orderDate: new Date(order.createdAt).toLocaleDateString(),
 
           paymentMethod: 'cash',
+
           orderStatus: order.orderStatus,
         }));
 
@@ -127,7 +131,6 @@ const Page = () => {
 
   return (
     <div className="w-full px-4 md:px-10 py-6">
-
       <Typography variant="h5" className="mb-4 text-secondary-text">
         إدارة الطلبات
       </Typography>
@@ -136,12 +139,10 @@ const Page = () => {
         <div className="flex justify-center items-center h-64">
           <CircularProgress />
         </div>
-
       ) : rows.length === 0 ? (
         <Typography className="text-center text-gray-500">
           لا يوجد طلبات
         </Typography>
-
       ) : (
         <DataTable<OrderRow>
           columns={columns}
@@ -151,7 +152,6 @@ const Page = () => {
           onDelete={handleDelete}
         />
       )}
-
     </div>
   );
 };
