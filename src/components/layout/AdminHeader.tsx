@@ -24,8 +24,8 @@ const AdminHeader = () => {
     if (!storedUser) return;
 
     try {
-      const parsedUser = JSON.parse(storedUser) as User;
-      setUser(parsedUser);
+      const parsedUser = JSON.parse(storedUser);
+setUser(parsedUser);
     } catch (err) {
       console.error("Invalid user in sessionStorage", err);
       sessionStorage.removeItem("user");
