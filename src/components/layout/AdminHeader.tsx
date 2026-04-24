@@ -7,15 +7,13 @@ import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import { useRouter, usePathname } from "next/navigation";
 import { useUser } from "@/src/context/UserContext";
-import type { User } from "@/src/context/UserContext";
+import type { User } from "@/src/interfaces/user";
 
 /* ================= COMPONENT ================= */
 
 const AdminHeader = () => {
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
-
   const { user, setUser } = useUser();
-
   const router = useRouter();
   const pathname = usePathname();
 
@@ -26,7 +24,7 @@ const AdminHeader = () => {
     if (!storedUser) return;
 
     try {
-      const parsedUser: User = JSON.parse(storedUser);
+      const parsedUser = JSON.parse(storedUser) as User;
       setUser(parsedUser);
     } catch (err) {
       console.error("Invalid user in sessionStorage", err);
@@ -86,9 +84,8 @@ const AdminHeader = () => {
             <Link
               key={link.href}
               href={link.href}
-              className={`text-lg py-2 px-4 rounded-md duration-300 ease-in hover:bg-primary hover:text-background ${
-                isActive ? "bg-primary text-background font-bold" : ""
-              }`}
+              className={`text-lg py-2 px-4 rounded-md duration-300 ease-in hover:bg-primary hover:text-background ${isActive ? "bg-primary text-background font-bold" : ""
+                }`}
             >
               {link.label}
             </Link>
