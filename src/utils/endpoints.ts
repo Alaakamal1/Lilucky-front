@@ -1,7 +1,7 @@
 export class Endpoints {
   static devUrl = "http://localhost:5000";
   static prodUrl = "https://lilucky-backend.vercel.app";
-  static baseUrl = `${Endpoints.devUrl}/api`;
+  static baseUrl = `${Endpoints.prodUrl}/api`;
   static auth = `${Endpoints.baseUrl}/auth`
   static login = `${Endpoints.baseUrl}/auth/login`;
   static forgetPassword = `${Endpoints.auth}/forgot-password`;

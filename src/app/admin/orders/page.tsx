@@ -32,7 +32,7 @@ const Page = () => {
     { id: 'actions', label: 'تفاصيل / تعديل / حذف', isAction: true },
   ];
 
-  /* ================= FETCH ORDERS ================= */
+  /* ================= FETCH ORDERS (SAFE) ================= */
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -47,9 +47,17 @@ const Page = () => {
 
         const data = res.data;
 
-        const orders: Order[] = Array.isArray(data)
-          ? data
-          : data.orders || data.data || [];
+        // 🔥 SAFE NORMALIZATION (fix map error)
+        const orders: Order[] =
+          Array.isArray(data)
+            ? data
+            : Array.isArray(data?.orders)
+              ? data.orders
+              : Array.isArray(data?.data)
+                ? data.data
+                : Array.isArray(data?.data?.orders)
+                  ? data.data.orders
+                  : [];
 
         const mapped: OrderRow[] = orders.map((order) => ({
           _id: order._id,
@@ -70,7 +78,7 @@ const Page = () => {
 
         setRows(mapped);
       } catch (err) {
-        console.error(err);
+        console.error('Fetch orders error:', err);
       } finally {
         setLoading(false);
       }
