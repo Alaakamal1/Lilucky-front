@@ -103,54 +103,54 @@ const Page = () => {
     <div className="w-full px-4 sm:px-6 md:px-8">
 
       {/* Loading */}
-   
-   {loading && (
-  <div className="space-y-6 animate-pulse">
-    <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-      <div className="h-6 bg-gray-300 rounded w-40"></div>
-      <div className="h-10 bg-gray-300 rounded w-40"></div>
-    </div>
 
-    {/* Table Skeleton */}
-    <div className="w-full overflow-x-auto rounded-lg">
-      <div className="min-w-[800px] space-y-3">
+      {loading && (
+        <div className="space-y-6 animate-pulse">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div className="h-6 bg-gray-300 rounded w-40"></div>
+            <div className="h-10 bg-gray-300 rounded w-40"></div>
+          </div>
 
-        {/* Table Header */}
-        <div className="grid grid-cols-6 gap-3 bg-gray-200 p-3 rounded">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-4 bg-gray-300 rounded"></div>
-          ))}
-        </div>
+          {/* Table Skeleton */}
+          <div className="w-full overflow-x-auto rounded-lg">
+            <div className="min-w-[800px] space-y-3">
 
-        {/* Rows */}
-        {Array.from({ length: 6 }).map((_, rowIndex) => (
-          <div
-            key={rowIndex}
-            className="grid grid-cols-6 gap-3 p-3 border rounded items-center"
-          >
-            <div className="h-4 bg-gray-200 rounded"></div>
+              {/* Table Header */}
+              <div className="grid grid-cols-6 gap-3 bg-gray-200 p-3 rounded">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="h-4 bg-gray-300 rounded"></div>
+                ))}
+              </div>
 
-            {/* image */}
-            <div className="h-10 w-10 bg-gray-300 rounded"></div>
+              {/* Rows */}
+              {Array.from({ length: 6 }).map((_, rowIndex) => (
+                <div
+                  key={rowIndex}
+                  className="grid grid-cols-6 gap-3 p-3 border rounded items-center"
+                >
+                  <div className="h-4 bg-gray-200 rounded"></div>
 
-            <div className="h-4 bg-gray-200 rounded"></div>
-            <div className="h-4 bg-gray-200 rounded"></div>
+                  {/* image */}
+                  <div className="h-10 w-10 bg-gray-300 rounded"></div>
 
-            <div className="h-6 bg-gray-300 rounded w-20"></div>
+                  <div className="h-4 bg-gray-200 rounded"></div>
+                  <div className="h-4 bg-gray-200 rounded"></div>
 
-            {/* actions */}
-            <div className="flex gap-2">
-              <div className="h-8 w-8 bg-gray-300 rounded"></div>
-              <div className="h-8 w-8 bg-gray-300 rounded"></div>
-              <div className="h-8 w-8 bg-gray-300 rounded"></div>
+                  <div className="h-6 bg-gray-300 rounded w-20"></div>
+
+                  {/* actions */}
+                  <div className="flex gap-2">
+                    <div className="h-8 w-8 bg-gray-300 rounded"></div>
+                    <div className="h-8 w-8 bg-gray-300 rounded"></div>
+                    <div className="h-8 w-8 bg-gray-300 rounded"></div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-        ))}
-      </div>
-    </div>
 
-  </div>
-)}
+        </div>
+      )}
       {error && (
         <Typography align="center" className="my-6 text-red-500">
           حدث خطأ أثناء تحميل البيانات: {error}
@@ -190,14 +190,14 @@ const Page = () => {
 
           </div>
           <div className="w-full max-w-6xl mx-auto mb-16 overflow-x-auto">
-<DataTable<Category>
-  columns={columns}
-  rows={category || []}
-  rowKey={(row) => row._id}
-  onEdit={handleEdit}
-  onDelete={handleDelete}
-  actions={{ view: false, edit: true, delete: true }}
-/>
+            <DataTable<Category>
+              columns={columns}
+              rows={category || []}
+              rowKey={(row) => row._id}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              actions={{ view: false, edit: true, delete: true }}
+            />
 
           </div>
 
