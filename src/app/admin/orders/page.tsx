@@ -5,11 +5,12 @@ import { Order, OrderStatus } from '@/src/interfaces/order';
 import { apiClient } from '@/src/utils/apiClient';
 import { Endpoints } from '@/src/utils/endpoints';
 import { Typography, CircularProgress } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 /* ================= UI MODEL ================= */
 type OrderRow = {
   _id: string;
+
   orderId: string;
   customerName: string;
   totalPrice: number;
@@ -21,6 +22,7 @@ type OrderRow = {
 const Page = () => {
   const [rows, setRows] = useState<OrderRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
 
   /* ================= COLUMNS ================= */
   const columns: Column<OrderRow>[] = [
@@ -47,8 +49,8 @@ const Page = () => {
         });
 
         const data = res.data;
-        console.log("data" , data)
-        const orders =
+
+        const orders: Order[] =
           Array.isArray(data)
             ? data
             : Array.isArray(data?.orders)
@@ -59,9 +61,11 @@ const Page = () => {
                   ? data.data.orders
                   : [];
 
-        const mapped: OrderRow[] = orders.map((order : Order) => ({
+        const mapped: OrderRow[] = orders.map((order) => ({
           _id: order._id,
+
           orderId: order._id.slice(-6),
+
           customerName: order.userId
             ? typeof order.userId === 'string'
               ? order.userId
@@ -87,6 +91,14 @@ const Page = () => {
 
     fetchOrders();
   }, []);
+
+  /* ================= SEARCH (FIXED) ================= */
+  const filteredRows = useMemo(() => {
+    return rows.filter((order) =>
+      order.customerName.toLowerCase().includes(search.toLowerCase()) ||
+      order.orderId.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [rows, search]);
 
   /* ================= EDIT ================= */
   const handleEdit = async (row: OrderRow) => {
@@ -128,29 +140,41 @@ const Page = () => {
 
   return (
     <div className="w-full px-4 md:px-10 py-6">
+
       <Typography variant="h5" className="mb-4 text-secondary-text">
         إدارة الطلبات
       </Typography>
+
+      {/* SEARCH INPUT */}
+      <input
+        type="text"
+        placeholder="ابحث باسم العميل أو رقم الطلب..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="border p-2 rounded w-full md:w-1/3 mb-4"
+      />
 
       {loading ? (
         <div className="flex justify-center items-center h-64">
           <CircularProgress />
         </div>
-      ) : rows.length === 0 ? (
+
+      ) : filteredRows.length === 0 ? (
         <Typography className="text-center text-gray-500">
           لا يوجد طلبات
         </Typography>
+
       ) : (
         <DataTable<OrderRow>
           columns={columns}
-          rows={rows}
+          rows={filteredRows}
           rowKey={(row) => row._id}
           onEdit={handleEdit}
           onDelete={handleDelete}
           actions={{ view: true, edit: false, delete: false }}
-
         />
       )}
+
     </div>
   );
 };
