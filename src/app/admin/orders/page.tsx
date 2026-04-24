@@ -10,7 +10,6 @@ import { useEffect, useState } from 'react';
 /* ================= UI MODEL ================= */
 type OrderRow = {
   _id: string;
-
   orderId: string;
   customerName: string;
   totalPrice: number;
@@ -48,8 +47,8 @@ const Page = () => {
         });
 
         const data = res.data;
-
-        const orders: Order[] =
+        console.log("data" , data)
+        const orders =
           Array.isArray(data)
             ? data
             : Array.isArray(data?.orders)
@@ -60,11 +59,9 @@ const Page = () => {
                   ? data.data.orders
                   : [];
 
-        const mapped: OrderRow[] = orders.map((order) => ({
+        const mapped: OrderRow[] = orders.map((order : Order) => ({
           _id: order._id,
-
           orderId: order._id.slice(-6),
-
           customerName: order.userId
             ? typeof order.userId === 'string'
               ? order.userId
@@ -150,6 +147,8 @@ const Page = () => {
           rowKey={(row) => row._id}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          actions={{ view: true, edit: false, delete: false }}
+
         />
       )}
     </div>
