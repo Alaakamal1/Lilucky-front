@@ -17,33 +17,26 @@ import { Product } from "@/src/interfaces/product";
 
 const Page = () => {
   const router = useRouter();
-
-  const [cart, setCart] = useState<Cart[]>([]);
+  const [cart, setCart] = useState<Cart[]>(() => {
+    if (typeof window !== 'undefined') {
+      return JSON.parse(sessionStorage.getItem("cart") || "[]") as Cart[];
+    }
+    return [];
+  });
   const [suggestedProducts, setSuggestedProducts] = useState<Product[]>([]);
-
-  /* ================= LOAD CART ================= */
-  useEffect(() => {
-    const stored: Cart[] = JSON.parse(
-      sessionStorage.getItem("cart") || "[]"
-    );
-    setCart(stored);
-  }, []);
 
   /* ================= FETCH SUGGESTED ================= */
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const token = sessionStorage.getItem("token");
-
         const res = await apiClient.get(`${Endpoints.cart}/cart`, {
           headers: token
             ? { Authorization: `Bearer ${token}` }
             : undefined,
         });
-
         if (res.status !== 200) return;
-
-        setSuggestedProducts(res.data?.data?.slice(0, 4) || []);
+        setSuggestedProducts(res.data?.cart?.slice(0, 4) || []);
       } catch (err) {
         console.error(err);
       }
@@ -72,7 +65,6 @@ const Page = () => {
 
   const updateQuantity = (index: number, value: number) => {
     if (value < 1) return;
-
     const updated = [...cart];
     updated[index].quantity = value;
     saveCart(updated);
@@ -236,7 +228,7 @@ const Page = () => {
                 src={
                   product?.variants?.[0]?.images?.[0]?.startsWith("http")
                     ? product.variants[0].images[0]
-                    : `http://localhost:5000/uploads/products/${product?.variants?.[0]?.images?.[0]}`
+                    : `${Endpoints.prodUrl}/uploads/products/${product?.variants?.[0]?.images?.[0]}`
                 }
                 className="w-full h-40 object-cover rounded"
               />

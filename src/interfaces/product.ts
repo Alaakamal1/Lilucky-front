@@ -1,3 +1,5 @@
+import { Category } from "./Category";
+
 export interface ProductVariant {
   productId:string;
   color: string;
@@ -13,7 +15,7 @@ export interface Product {
   main_price: number;
   gender: 'boys' | 'girls';
   stock: number;
-  category: string | {_id: string}; 
+  category?:Category;
   material: string;
   variants: ProductVariant[];
   isActive: boolean;

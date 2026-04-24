@@ -1,26 +1,27 @@
 'use client';
 
-import { useEffect, useState } from "react";
 import CardItem from "@/src/components/ui/CardItem";
 import HeartBrokenRoundedIcon from "@mui/icons-material/HeartBrokenRounded";
+import { useEffect, useState } from "react";
 import { Typography } from "@mui/material";
+import { apiClient } from "@/src/utils/apiClient";
+import { Endpoints } from "@/src/utils/endpoints";
+import { Product } from "@/src/interfaces/product";
 
 const Page = () => {
-  const [wishlist, setWishlist] = useState<any[]>([]);
-  const [products, setProducts] = useState<any[]>([]);
-const [loading, setLoading] = useState(true);
+  const [wishlist, setWishlist] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
     useEffect(() => {
       const fetchProduct = async () => {
         setLoading(true);
         try {
           const query = new URLSearchParams();
-          const res = await fetch(
-            `http://localhost:5000/api/products/get-all?${query.toString()}`
+          const res = await apiClient.get(
+            `${Endpoints.products}/get-all-products?${query.toString()}`
           );
-  
-          if (!res.ok) throw new Error("Failed to fetch product data");
-  
-          const data = await res.json();
+          if (res.status !== 200) throw new Error("Failed to fetch product data");
+          const data = res.data;
           setProducts(data.data);
         } catch (err: unknown) {
           if (err instanceof Error) {
@@ -30,7 +31,7 @@ const [loading, setLoading] = useState(true);
           setLoading(false);
         }
       };
-  
+
       fetchProduct();
     }, []);
 
@@ -40,20 +41,19 @@ const [loading, setLoading] = useState(true);
     const wishlistLocal = JSON.parse(
       sessionStorage.getItem("likedProducts") || "[]"
     );
-
-    let products: any[] = [];
+    let products: Product[] = [];
     if (token) {
       try {
-        const res = await fetch(
-          "http://localhost:5000/api/products/wishlist",
+        const res = await apiClient.get(
+          `${Endpoints.products}/wishlist`,
           {
             headers: {
               Authorization: `Bearer ${token.trim()}`,
             },
           }
         );
-        const json = await res.json();
-        products = Array.isArray(json.data) ? json.data : [];
+        const json = res.data;
+        products = Array.isArray(json) ? json : [];
       } catch (err) {
         console.error("Wishlist fetch error:", err);
         products = [];
@@ -63,12 +63,11 @@ const [loading, setLoading] = useState(true);
       try {
         const productPromises = wishlistLocal.map(async (id: string) => {
           try {
-            const res = await fetch(
-              `http://localhost:5000/api/products/${id}`
+            const res = await apiClient.get(
+              `${Endpoints.products}/${id}`
             );
-
-            if (!res.ok) return null;
-            const json = await res.json();
+            if (res.status !== 200) return null;
+            const json = res.data;
             return json.data;
           } catch {
             return null;
@@ -81,7 +80,6 @@ const [loading, setLoading] = useState(true);
         products = [];
       }
     }
-
     setWishlist(products);
     setLoading(false);
   };

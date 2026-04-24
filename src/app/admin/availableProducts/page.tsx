@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Typography, CircularProgress } from '@mui/material';
+import { Typography } from '@mui/material';
 import MainButton from '@/src/components/ui/MainButton';
 import Link from 'next/link';
 import Filter from '@/src/components/ui/Filter';
@@ -175,11 +175,63 @@ const Page = () => {
     <div className="w-full px-3 sm:px-6 md:px-8 lg:px-10 py-4 space-y-6">
 
   {/* Loading */}
-  {loading && (
-    <div className="flex justify-center items-center py-16">
-      <CircularProgress color="primary" />
+{loading && (
+  <div className="space-y-6 animate-pulse">
+
+    {/* Filters Skeleton */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-thirdary p-4 sm:p-6 rounded-md">
+      {Array.from({ length: 4 }).map((_, i) => (
+        <div key={i} className="space-y-2">
+          <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+          <div className="h-10 bg-gray-200 rounded"></div>
+        </div>
+      ))}
     </div>
-  )}
+
+    {/* Header Skeleton */}
+    <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div className="h-6 bg-gray-300 rounded w-40"></div>
+      <div className="h-10 bg-gray-300 rounded w-40"></div>
+    </div>
+
+    {/* Table Skeleton */}
+    <div className="w-full overflow-x-auto rounded-lg">
+      <div className="space-y-3">
+
+        {/* Table Header */}
+        <div className="grid grid-cols-6 gap-3 bg-gray-200 p-3 rounded">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="h-4 bg-gray-300 rounded"></div>
+          ))}
+        </div>
+
+        {/* Rows */}
+        {Array.from({ length: 6 }).map((_, rowIndex) => (
+          <div
+            key={rowIndex}
+            className="grid grid-cols-6 gap-3 p-3 border rounded items-center"
+          >
+            <div className="h-4 bg-gray-200 rounded"></div>
+
+            {/* image */}
+            <div className="h-10 w-10 bg-gray-300 rounded"></div>
+            <div className="h-4 bg-gray-200 rounded"></div>
+            <div className="h-4 bg-gray-200 rounded"></div>
+            <div className="h-6 bg-gray-300 rounded w-20"></div>
+
+            {/* actions */}
+            <div className="flex gap-2">
+              <div className="h-8 w-8 bg-gray-300 rounded"></div>
+              <div className="h-8 w-8 bg-gray-300 rounded"></div>
+              <div className="h-8 w-8 bg-gray-300 rounded"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+  </div>
+)}
 
   {/* Error */}
   {error && (
@@ -271,7 +323,7 @@ const Page = () => {
 
       {/* Table */}
       <div className="w-full overflow-x-auto rounded-lg">
-        <div className="min-w-[700px]">
+        <div className="">
           <DataTable
             columns={columns}
             rows={filteredProducts}

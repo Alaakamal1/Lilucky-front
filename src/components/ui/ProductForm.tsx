@@ -10,27 +10,38 @@ import { useState, useEffect } from "react";
 import { apiClient } from "@/src/utils/apiClient";
 import { Endpoints } from "@/src/utils/endpoints";
 import { Category } from "@/src/interfaces/Category";
+import { Product, ProductVariant } from "@/src/interfaces/product";
+import { useId } from "react";
+/* ================= TYPES ================= */
+
+type Age = '1Y' | '2Y' | '3Y' | '4Y' | '5Y' | '6Y' | '7Y' | '8Y';
 
 interface Variant {
+  id: string; 
   color: string;
-  sizes: string[];
+  sizes: Age[];
   images: File[];
   previews: string[];
 }
 
 interface ProductFormProps {
-  initialData?: any;
-  onSubmit: (formData: FormData) => any;
+  initialData?: Product;
+  onSubmit: (formData: FormData) => Promise<boolean | void>;
 }
+
+/* ================= CONSTANTS ================= */
 
 const availableColors = ["#000000", "#ffffff", "#ff0000", "#00ff00", "#0000ff", "#f5a623"];
 
-const ageRangeOptions = [
+const ageRangeOptions: { value: Age; label: string }[] = [
   { value: "1Y", label: "سنة" },
   { value: "2Y", label: "سنتين" },
   { value: "3Y", label: "3 سنوات" },
   { value: "4Y", label: "4 سنوات" },
   { value: "5Y", label: "5 سنوات" },
+  { value: "6Y", label: "6 سنوات" },
+  { value: "7Y", label: "7 سنوات" },
+  { value: "8Y", label: "8 سنوات" },
 ];
 
 const genderOptions = [
@@ -38,26 +49,41 @@ const genderOptions = [
   { value: "girls", label: "انثى" },
 ];
 
-export default function ProductForm({ initialData, onSubmit }: ProductFormProps) {
-  const [productName, setProductName] = useState(initialData?.name || "");
-  const [gender, setGender] = useState(initialData?.gender || "");
-  const [productCategory, setProductCategory] = useState(initialData?.category || "");
-  const [productMaterial, setProductMaterial] = useState(initialData?.material || "");
-  const [productDescription, setProductDescription] = useState(initialData?.description || "");
-  const [productMainPrice, setProductMainPrice] = useState(initialData?.main_price || "");
-  const [productSitePrice, setProductSitePrice] = useState(initialData?.price || "");
-  const [stockQuantity, setStockQuantity] = useState(initialData?.stock || "");
-  const [productDataCategory, setProductDataCategory] = useState<{ value: string; label: string }[]>([]);
-  const [loadingCategories, setLoadingCategories] = useState(false);
+/* ================= COMPONENT ================= */
 
+export default function ProductForm({ initialData, onSubmit }: ProductFormProps) {
+
+  const [productName, setProductName] = useState<string>(initialData?.name || "");
+  const [gender, setGender] = useState<string>(initialData?.gender || "");
+
+  const [productCategory, setProductCategory] = useState<string>(
+    typeof initialData?.category === "object" && initialData?.category !== null
+      ? initialData.category._id
+      : initialData?.category || ""
+  );
+
+  const [productMaterial, setProductMaterial] = useState<string>(initialData?.material || "");
+  const [productDescription, setProductDescription] = useState<string>(initialData?.description || "");
+  const [productMainPrice, setProductMainPrice] = useState<string>(
+    initialData?.main_price ? String(initialData.main_price) : "");
+  const [productSitePrice, setProductSitePrice] = useState<string>(
+    initialData?.price ? String(initialData.price) : "");
+  const [stockQuantity, setStockQuantity] = useState<string>(
+    initialData?.stock ? String(initialData.stock) : "");
+  const [productDataCategory, setProductDataCategory] = useState<{ value: string; label: string }[]>([]);
+  const [loadingCategories, setLoadingCategories] = useState<boolean>(false);
   const [variants, setVariants] = useState<Variant[]>(
-    initialData?.variants?.map((v: any) => ({
+    initialData?.variants?.map((v: ProductVariant) => ({
+      id: crypto.randomUUID(),
       color: v.color || "",
       sizes: v.sizes || [],
       images: [],
       previews: v.images || [],
-    })) || [{ color: "", sizes: [], images: [], previews: [] }]
+    })) || [{id: crypto.randomUUID(), color: "", sizes: [], images: [], previews: [] }]
   );
+
+  /* ================= FETCH ================= */
+
   useEffect(() => {
     if (gender) {
       fetchCategories(gender);
@@ -67,18 +93,14 @@ export default function ProductForm({ initialData, onSubmit }: ProductFormProps)
   const fetchCategories = async (selectedGender: string) => {
     try {
       setLoadingCategories(true);
-
-      const res = await apiClient.get(
+      const res = await apiClient.get<{ data: { categoryNames: Category[] } }>(
         `${Endpoints.category}/names?lang=ar&gender=${selectedGender}`
       );
 
-      const data = res.data;
-
-      const formatted = data.data.categoryNames.map((cat: Category) => ({
+      const formatted = (res.data.data.categoryNames as Category[]).map((cat) => ({
         value: cat._id,
-        label: cat.name,
+        label: cat.arName ?? cat.name,
       }));
-
       setProductDataCategory(formatted);
     } catch (err) {
       console.error("Error fetching categories:", err);
@@ -87,43 +109,52 @@ export default function ProductForm({ initialData, onSubmit }: ProductFormProps)
     }
   };
 
+  /* ================= HANDLERS ================= */
+
   const addVariant = () =>
-    setVariants([...variants, { color: "", sizes: [], images: [], previews: [] }]);
+    setVariants((prev) => [...prev, { id: crypto.randomUUID(), color: "", sizes: [], images: [], previews: [] }]);
+  
+const handleColorChange = (id: string, color: string) => {
+  setVariants((prev) =>
+    prev.map((v) =>
+      v.id === id
+        ? { ...v, color: v.color === color ? "" : color }
+        : v
+    )
+  );
+};
 
-  const handleColorChange = (index: number, color: string) => {
-    const updated = [...variants];
-    updated[index].color =
-      updated[index].color === color ? "" : color;
-    setVariants(updated);
-  };
+const handleRemoveVariant = (id: string) => {
+  setVariants((prev) => prev.filter((v) => v.id !== id));
+};
 
-  const handleRemoveVariant = (index: number) => {
-    const updated = variants.filter((_, i) => i !== index);
-    setVariants(updated);
-  };
+const handleSizesChange = (id: string, size: Age) => {
+  setVariants((prev) =>
+    prev.map((v) =>
+      v.id === id
+        ? {
+            ...v,
+            sizes: v.sizes.includes(size)
+              ? v.sizes.filter((s) => s !== size)
+              : [...v.sizes, size],
+          }
+        : v
+    )
+  );
+};
 
-  const handleSizesChange = (index: number, size: string) => {
-    const updated = [...variants];
-    if (updated[index].sizes.includes(size)) {
-      updated[index].sizes = updated[index].sizes.filter((s) => s !== size);
-    } else {
-      updated[index].sizes.push(size);
-    }
-    setVariants(updated);
-  };
-
-  const handleImagesChange = (index: number, files: FileList | null) => {
-    if (!files) return;
-
-    const fileArray = Array.from(files);
-    const previews = fileArray.map((file) => URL.createObjectURL(file));
-
-    const updated = [...variants];
-    updated[index].images = fileArray;
-    updated[index].previews = previews;
-
-    setVariants(updated);
-  };
+ const handleImagesChange = (id: string, files: FileList | null) => {
+  if (!files) return;
+  const fileArray = Array.from(files);
+  const previews = fileArray.map((file) => URL.createObjectURL(file));
+  setVariants((prev) =>
+    prev.map((v) =>
+      v.id === id
+        ? { ...v, images: fileArray, previews }
+        : v
+    )
+  );
+};
 
   const resetForm = () => {
     setProductName("");
@@ -134,22 +165,28 @@ export default function ProductForm({ initialData, onSubmit }: ProductFormProps)
     setProductMainPrice("");
     setProductSitePrice("");
     setStockQuantity("");
-    setVariants([{ color: "", sizes: [], images: [], previews: [] }]);
+    setVariants([{id: crypto.randomUUID(), color: "", sizes: [], images: [], previews: [] }]);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleNumberChange = (value: string, setter: (val: string) => void) => {
+    if (/^\d*$/.test(value)) {
+      setter(value);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const formData = new FormData();
+
     formData.append("name", productName);
     formData.append("gender", gender);
     formData.append("category", productCategory);
     formData.append("material", productMaterial);
     formData.append("description", productDescription);
-    formData.append("main_price", productMainPrice);
-    formData.append("price", productSitePrice);
-    formData.append("stock", stockQuantity);
-
+    formData.append("main_price", String(productMainPrice));
+    formData.append("price", String(productSitePrice));
+    formData.append("stock", String(stockQuantity));
     formData.append(
       "variants",
       JSON.stringify(
@@ -170,6 +207,8 @@ export default function ProductForm({ initialData, onSubmit }: ProductFormProps)
     if (result) resetForm();
   };
 
+  /* ================= UI ================= */
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="w-full p-6 bg-background rounded-md shadow-md">
@@ -184,7 +223,7 @@ export default function ProductForm({ initialData, onSubmit }: ProductFormProps)
             onChange={(e) => {
               const value = e.target.value;
               setGender(value);
-              setProductCategory(""); 
+              setProductCategory("");
             }}
           />
 
@@ -202,9 +241,29 @@ export default function ProductForm({ initialData, onSubmit }: ProductFormProps)
         <TextArea label="الوصف" value={productDescription} onChange={(e) => setProductDescription(e.target.value)} />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <InputField label="السعر الاصلي" value={productMainPrice} onChange={(e) => setProductMainPrice(e.target.value)} />
-          <InputField label="سعر الموقع" value={productSitePrice} onChange={(e) => setProductSitePrice(e.target.value)} />
-          <InputField label="المخزون" value={stockQuantity} onChange={(e) => setStockQuantity(e.target.value)} />
+          <InputField
+            label="السعر الاصلي"
+            value={productMainPrice}
+            onChange={(e) =>
+              handleNumberChange(e.target.value, setProductMainPrice)
+            }
+          />
+
+          <InputField
+            label="سعر الموقع"
+            value={productSitePrice}
+            onChange={(e) =>
+              handleNumberChange(e.target.value, setProductSitePrice)
+            }
+          />
+
+          <InputField
+            label="المخزون"
+            value={stockQuantity}
+            onChange={(e) =>
+              handleNumberChange(e.target.value, setStockQuantity)
+            }
+          />
         </div>
 
         <Typography variant="h6" className="text-primary">الالوان والمقاسات</Typography>
@@ -215,7 +274,7 @@ export default function ProductForm({ initialData, onSubmit }: ProductFormProps)
             {variants.length > 1 && (
               <button
                 type="button"
-                onClick={() => handleRemoveVariant(index)}
+                onClick={() => handleRemoveVariant(variant.id)}
                 className="absolute top-2 left-2 text-red-500 text-2xl"
               >
                 ×
@@ -227,10 +286,9 @@ export default function ProductForm({ initialData, onSubmit }: ProductFormProps)
                 <button
                   key={c}
                   type="button"
-                  onClick={() => handleColorChange(index, c)}
-                  className={`w-8 h-8 rounded-full border-2 ${
-                    variant.color === c ? "border-blue-500" : "border-gray-300"
-                  }`}
+onClick={() => handleColorChange(variant.id, c)}
+                  className={`w-8 h-8 rounded-full border-2 ${variant.color === c ? "border-blue-500" : "border-gray-300"
+                    }`}
                   style={{ backgroundColor: c }}
                 />
               ))}
@@ -241,23 +299,33 @@ export default function ProductForm({ initialData, onSubmit }: ProductFormProps)
                 <button
                   key={age.value}
                   type="button"
-                  onClick={() => handleSizesChange(index, age.value)}
-                  className={`py-2 px-4 border rounded ${
-                    variant.sizes.includes(age.value)
-                      ? "bg-primary text-white"
-                      : "bg-gray-100"
-                  }`}
+onClick={() => handleSizesChange(variant.id, age.value)}
+                  className={`py-2 px-4 border rounded ${variant.sizes.includes(age.value)
+                    ? "bg-primary text-white"
+                    : "bg-gray-100"
+                    }`}
                 >
                   {age.label}
                 </button>
               ))}
             </div>
 
-            <input type="file" multiple onChange={(e) => handleImagesChange(index, e.target.files)} />
+            <input
+              type="file"
+              multiple
+onChange={(e) => handleImagesChange(variant.id, e.target.files)}
+/>
 
             <div className="flex gap-2 mt-2">
               {variant.previews.map((img, i) => (
-                <Image key={i} src={img} width={70} height={70} alt="preview" className="rounded border" />
+                <Image
+                  key={i}
+                  src={img}
+                  width={70}
+                  height={70}
+                  alt="preview"
+                  className="rounded border"
+                />
               ))}
             </div>
 

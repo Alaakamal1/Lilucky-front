@@ -29,23 +29,16 @@ type CategoryResponse = {
 const Page = () => {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
-
   const router = useRouter();
-
   const [arName, setArName] = useState("");
   const [enName, setEnName] = useState("");
   const [categoryType, setCategoryType] = useState<CategoryType | "">("");
   const [isActive, setIsActive] = useState(true);
-
   const [arNameError, setArNameError] = useState("");
   const [enNameError, setEnNameError] = useState("");
-
   const [loading, setLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
-
   const isEditMode = Boolean(id);
-
-  /* 🔥 Fetch category for edit */
   useEffect(() => {
     if (!id) return;
 
@@ -64,8 +57,8 @@ const Page = () => {
         setCategoryType(category.categoryType || "");
         setIsActive(category.isActive ?? true);
 
-      } catch (err: any) {
-        toast.error(err.message || "خطأ في جلب البيانات");
+      } catch (err: unknown) {
+        toast.error((err as Error).message || "خطأ في جلب البيانات");
       } finally {
         setLoading(false);
       }
@@ -74,39 +67,30 @@ const Page = () => {
     fetchCategory();
   }, [id]);
 
-  /* 🔥 Submit */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     setArNameError("");
     setEnNameError("");
-
     if (!arName.trim()) {
       setArNameError("اسم الفئة العربية مطلوب");
       return;
     }
-
     if (!enName.trim()) {
       setEnNameError("اسم الفئة الإنجليزية مطلوب");
       return;
     }
-
     const token = sessionStorage.getItem("token");
-
     if (!token) {
       toast.error("يجب تسجيل الدخول");
       return;
     }
-
     try {
       setSubmitLoading(true);
-
       const url = isEditMode
         ? `${Endpoints.category}/editCategory/${id}`
         : `${Endpoints.category}/add-category`;
 
       const method = isEditMode ? "PATCH" : "POST";
-
       const res = await fetch(url, {
         method,
         headers: {
@@ -122,7 +106,6 @@ const Page = () => {
       });
 
       const data = await res.json();
-
       if (res.ok) {
         toast.success(
           isEditMode
@@ -144,8 +127,8 @@ const Page = () => {
         toast.error(data.message || "حدث خطأ");
       }
 
-    } catch (error: any) {
-      toast.error(error.message || "فشل الاتصال بالخادم");
+    } catch (error: unknown) {
+      toast.error((error as Error).message || "فشل الاتصال بالخادم");
     } finally {
       setSubmitLoading(false);
     }

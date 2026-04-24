@@ -32,7 +32,6 @@ const Page = () => {
   const [emailError, setEmailError] = useState<string>("");
   const [passwordError, setPasswordError] = useState<string>("");
   const [formError, setFormError] = useState<string>("");
-
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setEmail(value);
@@ -107,10 +106,10 @@ const mergeWishlist = async () => {
   const token = sessionStorage.getItem("token");
   if (!wishlist.length || !token) return;
 
-  await fetch("http://localhost:5000/api/products/merge-wishlist", {
-    method: "POST",
+  await apiClient.post(`${Endpoints.products}/merge-wishlist`, {
+    productIds: wishlist,
+  }, {
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-    body: JSON.stringify({ productIds: wishlist }),
   });
 
   sessionStorage.removeItem("wishlist");
@@ -166,7 +165,7 @@ const mergeWishlist = async () => {
                   ليس لديك حساب؟ سجل الآن
                 </Typography>
               </Link>
-              <Link href="/customer/forgetPassword">
+              {/* <Link href="/customer/forgetPassword">
               <Typography
                 variant="body2"
                 gutterBottom
@@ -174,7 +173,7 @@ const mergeWishlist = async () => {
               >
                 نسيت كلمة السر؟
               </Typography>
-              </Link>
+              </Link> */}
             </div>
 
             <MainButton

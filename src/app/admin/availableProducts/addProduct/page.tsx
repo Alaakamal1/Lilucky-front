@@ -5,7 +5,6 @@ import { toast } from 'react-toastify';
 import { apiClient } from '@/src/utils/apiClient';
 import { Endpoints } from '@/src/utils/endpoints';
 export default function AddProductPage() {
-
   const handleSubmit = async (formData: FormData) => {
   try {
     const token = sessionStorage.getItem("token");
@@ -26,10 +25,8 @@ export default function AddProductPage() {
       toast.error(res.data.message || "حدث خطأ");
       return;
     }
-
     toast.success("تم اضافة المنتج");
     return true;
-
   } catch (err: unknown) {
     if (err instanceof Error) {
       toast.error(err.message);

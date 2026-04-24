@@ -13,11 +13,13 @@ import { useUser } from "@/src/context/UserContext";
 import Avatar from "../ui/Avatar";
 // import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import { useCartWishlist } from "@/src/context/CartWishlistContext";
+import { Cart } from "@/src/interfaces/Cart";
+import { Product } from "@/src/interfaces/product";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const { user, setUser } = useUser();
-  const { cart, wishlist } = useCartWishlist();
+  const { cart, wishlist } = useCartWishlist() as { cart: Cart[]; wishlist: Product[] };
   const router = useRouter();
 
   const fName =

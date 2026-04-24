@@ -45,8 +45,13 @@ const Page = () => {
     label: gov,
   }));
 
-  const cityOptions = selectedGov
-    ? egyptData[selectedGov].map((city: React.ChangeEvent<HTMLInputElement>) => ({ value: city, label: city }))
+type Gov = keyof typeof egyptData;
+const cityOptions =
+  selectedGov
+    ? (egyptData[selectedGov as Gov] ?? []).map((city: string) => ({
+        value: city,
+        label: city,
+      }))
     : [];
 
   // Handlers
@@ -118,11 +123,6 @@ const Page = () => {
     setAddress(value);
     setAddressError("");
   };
-  const handleAddressBlur = () => {
-    setAddressError(validateNotEmpty(address, "العنوان"));
-  };
-
-
   const handleGovChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
     setSelectedGov(value);
@@ -167,12 +167,12 @@ const Page = () => {
       } else {
         console.error(res.data.message || "حدث خطأ في التسجيل");
       }
-    } catch (error: any) {
-      console.error(error.response?.data?.message || "حدث خطأ في التسجيل");
-      if (error.response) {
-        console.error(error.response.data.message || "حدث خطأ في التسجيل");
+    } catch (error: unknown) {
+      console.log((error as { response?: { data?: { message?: string } } })?.response?.data?.message || "حدث خطأ في التسجيل");
+      if ((error as { response?: { data?: { message?: string } } })?.response) {
+        console.log((error as { response?: { data?: { message?: string } } })?.response?.data?.message || "حدث خطأ في التسجيل");
       } else {
-        console.error("خطأ في الاتصال بالسيرفر");
+        console.log("خطأ في الاتصال بالسيرفر");
       }
     }
   };
