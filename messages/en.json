@@ -1,0 +1,9 @@
+{
+  "header": {
+    "home": "Home",
+    "products": "Products",
+    "login": "Login",
+    "logout": "Logout",
+    "Customer": "customer"
+  }
+}

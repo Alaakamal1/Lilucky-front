@@ -1,8 +1,8 @@
 import { Alexandria } from "next/font/google";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
-import Header from "../../components/layout/Header";
-import "../globals.css";
-import Footer from "../../components/layout/Footer";
+import Header from "../../../components/layout/Header";
+import "../../globals.css";
+import Footer from "../../../components/layout/Footer";
 import { ToastContainer } from "react-toastify";
 import { CartWishlistProvider } from "@/src/context/CartWishlistContext";
 const alexSans = Alexandria({

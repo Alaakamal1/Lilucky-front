@@ -1,6 +1,5 @@
-// src/app/page.tsx
 import { redirect } from "next/navigation";
 
-export default function Home() {
-  redirect("/customer"); 
+export default function HomePage() {
+  redirect("/en"); // أو detect من cookie / headers
 }
