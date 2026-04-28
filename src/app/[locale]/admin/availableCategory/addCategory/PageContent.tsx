@@ -12,6 +12,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { useSearchParams, useRouter } from "next/navigation";
 import { apiClient } from "@/src/utils/apiClient";
 import { Endpoints } from "@/src/utils/endpoints";
+import { useTranslations } from "next-intl";
 
 type CategoryType = "boys" | "girls" | "all";
 
@@ -38,6 +39,7 @@ const Page = () => {
   const [loading, setLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
   const isEditMode = Boolean(id);
+  const t = useTranslations("categoryForm");
   useEffect(() => {
     if (!id) return;
 
@@ -57,7 +59,7 @@ const Page = () => {
         setIsActive(category.isActive ?? true);
 
       } catch (err: unknown) {
-        toast.error((err as Error).message || "خطأ في جلب البيانات");
+        toast.error((err as Error).message || t("errors.fetch"));
       } finally {
         setLoading(false);
       }
@@ -71,16 +73,16 @@ const Page = () => {
     setArNameError("");
     setEnNameError("");
     if (!arName.trim()) {
-      setArNameError("اسم الفئة العربية مطلوب");
+      setArNameError(t("validation.arNameRequired"));
       return;
     }
     if (!enName.trim()) {
-      setEnNameError("اسم الفئة الإنجليزية مطلوب");
+      setEnNameError(t("validation.enNameRequired"));
       return;
     }
     const token = sessionStorage.getItem("token");
     if (!token) {
-      toast.error("يجب تسجيل الدخول");
+      toast.error(t("errors.login"));
       return;
     }
     try {
@@ -108,8 +110,8 @@ const Page = () => {
       if (res.ok) {
         toast.success(
           isEditMode
-            ? "تم تعديل الفئة بنجاح"
-            : "تم إنشاء الفئة بنجاح"
+            ? t("success.updated")
+            : t("success.created")
         );
 
         if (isEditMode) {
@@ -123,11 +125,11 @@ const Page = () => {
           setIsActive(true);
         }
       } else {
-        toast.error(data.message || "حدث خطأ");
+        toast.error(data.message || t("errors.save"));
       }
 
     } catch (error: unknown) {
-      toast.error((error as Error).message || "فشل الاتصال بالخادم");
+      toast.error((error as Error).message || t("errors.server"));
     } finally {
       setSubmitLoading(false);
     }
@@ -139,12 +141,10 @@ const Page = () => {
 
       <Paper elevation={3} className="w-full max-w-3xl p-6 md:p-8 rounded-md">
 
-        {/* Title */}
         <Typography variant="h5" className="mb-6 text-primary text-center font-semibold">
-          {isEditMode ? "تعديل فئة" : "إضافة فئة جديدة"}
+          {isEditMode ? t("categoryForm.titleEdit") : t("titleAdd")}
         </Typography>
 
-        {/* Loading */}
         {loading ? (
           <div className="flex justify-center py-10">
             <CircularProgress />
@@ -154,10 +154,9 @@ const Page = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
 
-              {/* Arabic */}
               <div>
                 <InputField
-                  label="اسم الفئة بالعربي"
+                  label={t("arNameLabel")}
                   value={arName}
                   onChange={(e) => {
                     setArName(e.target.value);
@@ -174,7 +173,7 @@ const Page = () => {
               {/* English */}
               <div>
                 <InputField
-                  label="الاسم الإنجليزي للفئة"
+                  label={t("enNameLabel")}  
                   value={enName}
                   onChange={(e) => {
                     setEnName(e.target.value);
@@ -191,7 +190,7 @@ const Page = () => {
               {/* Type */}
               <div className="md:col-span-2">
                 <label className="block mb-2 text-sm font-medium">
-                  نوع الفئة
+                  {t("typeLabel")}
                 </label>
 
                 <select
@@ -202,10 +201,10 @@ const Page = () => {
                   className="w-full border border-gray-300 p-3 rounded-md"
                   required
                 >
-                  <option value="">اختر النوع</option>
-                  <option value="all">الكل</option>
-                  <option value="boys">أولاد</option>
-                  <option value="girls">بنات</option>
+                  <option value="">{t("typePlaceholder")}</option>
+                  <option value="all">{t("typeAll")}</option>
+                  <option value="boys">{t("typeBoys")}</option>
+                  <option value="girls">{t("typeGirls")}</option>
                 </select>
               </div>
 
@@ -216,10 +215,10 @@ const Page = () => {
               type="submit"
               text={
                 submitLoading
-                  ? "جاري الحفظ..."
+                  ? t("categoryForm.saving")
                   : isEditMode
-                  ? "تعديل الفئة"
-                  : "إضافة فئة"
+                  ? t("categoryForm.submitEdit")
+                  : t("categoryForm.submitAdd")
               }
               className="w-full bg-primary text-white py-3 rounded-md"
             />

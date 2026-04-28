@@ -1,6 +1,8 @@
 import { NextIntlClientProvider } from "next-intl";
 import { notFound } from "next/navigation";
-import { LanguageProvider } from "@/src/context/LanguageContext";
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
+import { UserProvider } from "@/src/context/UserContext";
+const locales = ["ar", "en"];
 
 export default async function LocaleLayout({
   children,
@@ -10,27 +12,25 @@ export default async function LocaleLayout({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  const locales = ["ar", "en"];
 
-  if (!locales.includes(locale)) {
+  if (!locale || !locales.includes(locale)) {
     notFound();
   }
 
-  let messages;
-
-  try {
-    messages = (await import(`@/messages/${locale}.json`)).default;
-  } catch {
-    notFound();
-  }
+  const messages = (await import(`@/src/messages/${locale}.json`)).default;
 
   return (
-    <NextIntlClientProvider locale={locale} messages={messages}>
-      <LanguageProvider>
-        <div dir={locale === "ar" ? "rtl" : "ltr"}>
+
+       <html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"}>
+      <body>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <AppRouterCacheProvider>
+            <UserProvider>
           {children}
-        </div>
-      </LanguageProvider>
-    </NextIntlClientProvider>
+          </UserProvider>
+          </AppRouterCacheProvider>
+        </NextIntlClientProvider>
+      </body>
+    </html>
   );
 }

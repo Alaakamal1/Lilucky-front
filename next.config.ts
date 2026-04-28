@@ -1,19 +1,18 @@
 
+// /** @type {import('next').NextConfig} */
 // const nextConfig = {
-//   images: {
-//     remotePatterns: [
-//       {
-//         protocol: 'http',
-//         hostname: 'localhost',
-//         port: '5000',
-//         pathname: '/uploads/**',
-//       },
-//     ],
+//   eslint: {
+//     ignoreDuringBuilds: false,
+//   },
+//   typescript: {
+//     ignoreBuildErrors: false,
 //   },
 // };
 
 // module.exports = nextConfig;
 
+
+import createNextIntlPlugin from "next-intl/plugin";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -25,4 +24,4 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+module.exports = createNextIntlPlugin()(nextConfig);

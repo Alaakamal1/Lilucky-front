@@ -142,27 +142,29 @@
 //     </>
 //   );
 // }
+
+
 "use client";
 
 import { Typography } from "@mui/material";
 import MainButton from "../../../components/ui/MainButton";
 import OptionSelector from "../../../components/ui/OptionSelector";
 import CardItem from "@/src/components/ui/CardItem";
-import Link from "next/link";
+import { Link } from "@/src/i18n/navigation";
 import { useEffect, useState } from "react";
 import { apiClient } from "@/src/utils/apiClient";
 import { Endpoints } from "@/src/utils/endpoints";
 import { Product } from "@/src/interfaces/product";
-import { useLanguage } from "@/src/context/LanguageContext";
-import { translations } from "@/src/locales";
+import { useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
+
 
 export default function Page() {
   const [size, setSize] = useState<string>("");
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-
-  const { locale } = useLanguage();
-  const t = translations[locale];
+const locale = useLocale();
+  const t = useTranslations("home");
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -174,15 +176,13 @@ export default function Page() {
           `${Endpoints.products}/get-all?${query.toString()}`
         );
 
-        if (res.status !== 200)
+        if (res.status !== 200) {
           throw new Error("Failed to fetch product data");
-
-        const data = res.data;
-        setProducts(data.data);
-      } catch (err: unknown) {
-        if (err instanceof Error) {
-          console.log("Error fetching products:", err.message);
         }
+
+        setProducts(res.data.data);
+      } catch (err) {
+        console.log("Error fetching products:", err);
       } finally {
         setLoading(false);
       }
@@ -194,89 +194,82 @@ export default function Page() {
   return (
     <>
       {/* HERO 1 */}
-      <div>
-        <div
-          className="h-screen bg-cover bg-center flex items-center justify-center"
-          style={{ backgroundImage: "url('/Home 1.jpg')" }}
-        >
-          <div className="flex flex-col min-w-10/12 items-end">
+      <div
+        className="h-screen bg-cover bg-center flex items-center justify-center"
+        style={{ backgroundImage: "url('/Home 1.jpg')" }}
+      >
+        <div className="flex flex-col min-w-10/12 items-end">
+          <Typography variant="h5">
+            {t("hero1Title")}
+          </Typography>
 
-            <Typography variant="h5">
-              {t.hero1Title}
-            </Typography>
+          <Typography variant="h5">
+            {t("hero1SubTitle")}
+          </Typography>
 
-            <Typography variant="h5">
-              {t.hero1SubTitle}
-            </Typography>
-
-            <Link href="/customer/products">
-              <MainButton
-                text={t.shopNow}
-                className="cursor-pointer bg-background hover:bg-background-hover duration-300 ease-in-out rounded-md w-40 p-3 m-6 text-2xl text-secondary-text hover:text-secondary-text-hover"
-              />
-            </Link>
-          </div>
+          <Link href={`/${locale}/customer/products`}>
+            <MainButton
+              text={t("shopNow")}
+              className="cursor-pointer bg-background hover:bg-background-hover duration-300 rounded-md w-40 p-3 m-6 text-2xl text-secondary-text"
+            />
+          </Link>
         </div>
       </div>
 
       {/* BEST SELLERS */}
       <div className="my-4">
         <Typography variant="h4" className="text-primary-text text-center">
-          {t.bestSelling}
+          {t("bestSelling")}
         </Typography>
 
-        <div className="grid grid-cols-3 md:grid-cols-3 gap-1 justify-items-center">
-          {products.length > 0
-            ? products.slice(0, 3).map((product) => (
-                <CardItem key={product._id} product={product} />
-              ))
-            : null}
+        <div className="grid grid-cols-3 gap-2 justify-items-center">
+          {products.slice(0, 3).map((product) => (
+            <CardItem key={product._id} product={product} />
+          ))}
         </div>
       </div>
 
       {/* HERO 2 */}
-      <div>
-        <div
-          className="min-h-140 bg-cover bg-center flex justify-center flex-col"
-          style={{ backgroundImage: "url('/Home 2.jpg')" }}
-        >
-          <div className="flex flex-col mx-8">
-            <Typography variant="h4">
-              {t.hero2Title}
-            </Typography>
-          </div>
-
-          <Link href="/customer/products">
-            <MainButton
-              text={t.shopNow}
-              className="cursor-pointer bg-background hover:bg-background-hover duration-300 ease-in-out rounded-md w-40 p-3 m-10 text-2xl text-secondary-text hover:text-secondary-text-hover"
-            />
-          </Link>
+      <div
+        className="min-h-140 bg-cover bg-center flex justify-center flex-col"
+        style={{ backgroundImage: "url('/Home 2.jpg')" }}
+      >
+        <div className="mx-8">
+          <Typography variant="h4">
+            {t("hero2Title")}
+          </Typography>
         </div>
+
+        <Link href={`/${locale}/customer/products`}>
+          <MainButton
+            text={t("shopNow")}
+            className="cursor-pointer bg-background hover:bg-background-hover duration-300 rounded-md w-40 p-3 m-10 text-2xl text-secondary-text"
+          />
+        </Link>
       </div>
 
       {/* AGE FILTER */}
       <div className="my-6">
         <Typography variant="h4" className="text-primary-text text-center">
-          {t.ageCategory}
+          {t("ageCategory")}
         </Typography>
 
-        <div className="flex w-full justify-center items-center gap-6 flex-col md:flex-row my-16">
+        <div className="flex justify-center gap-6 flex-col md:flex-row my-16">
           <OptionSelector
             label=""
             options={[
-              t.age1,
-              t.age2,
-              t.age3,
-              t.age4,
-              t.age5,
-              t.age6,
-              t.age7,
-              t.age8,
+              t("age1"),
+              t("age2"),
+              t("age3"),
+              t("age4"),
+              t("age5"),
+              t("age6"),
+              t("age7"),
+              t("age8"),
             ]}
             selected={size}
             onSelect={setSize}
-            className="p-6 border bg-primary-text hover:bg-primary-text-hover text-white rounded-md cursor-pointer duration-300 easy-in"
+            className="p-6 border bg-primary-text text-white rounded-md cursor-pointer"
           />
         </div>
       </div>
@@ -286,15 +279,15 @@ export default function Page() {
         className="min-h-140 bg-cover bg-center flex justify-center items-end flex-col px-12"
         style={{ backgroundImage: "url('/Home 3.jpg')" }}
       >
-        <div className="w-full h-25">
+        <div className="w-full">
           <Typography variant="h4">
-            {t.offersTitle}
+            {t("offersTitle")}
           </Typography>
 
-          <Link href="/customer/products">
+          <Link href={`/${locale}/customer/products`}>
             <MainButton
-              text={t.shopNow}
-              className="cursor-pointer bg-background hover:bg-background-hover duration-300 ease-in-out rounded-md w-40 p-3 m-10 text-2xl text-secondary-text hover:text-secondary-text-hover"
+              text={t("shopNow")}
+              className="cursor-pointer bg-background hover:bg-background-hover duration-300 rounded-md w-40 p-3 m-10 text-2xl text-secondary-text"
             />
           </Link>
         </div>

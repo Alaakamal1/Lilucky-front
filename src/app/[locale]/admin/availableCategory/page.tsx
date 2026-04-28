@@ -10,39 +10,62 @@ import { toast } from "react-toastify";
 import { useRouter } from 'next/navigation';
 import { apiClient } from '@/src/utils/apiClient';
 import { Endpoints } from '@/src/utils/endpoints';
+import { useLocale, useTranslations } from 'next-intl';
 
 export interface Category {
   _id: string;
   arName: string;
+  enName?: string;
   categoryType: string;
   isActive: boolean;
-
-  [key: string]: unknown; // 👈 تضيف دي
+  [key: string]: unknown;
 }
+
 const Page = () => {
   const [category, setCategory] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
   const router = useRouter();
+  const t = useTranslations('availableCategory');
+  const locale = useLocale();
+
   const columns = [
-    { id: 'arName', label: 'اسم الفئه' },
-    { id: 'categoryType', label: 'نوع الفئه' },
-    { id: 'isActive', label: 'الحاله' },
-    { id: 'actions', label: 'تفاصيل \\ تعديل \\ حذف', isAction: true },
+    { id: 'name', label: t('name') },
+    { id: 'categoryType', label: t('type') },
+    { id: 'isActive', label: t('status') },
+    { id: 'actions', label: t('actions'), isAction: true },
   ];
 
   useEffect(() => {
     const fetchCategory = async () => {
       try {
         setLoading(true);
+
         const res = await apiClient.get(`${Endpoints.category}/get-all`);
-        const data = res.data;
-        const categoryData = Array.isArray(data?.data?.categories)
-          ? data?.data?.categories
+
+        const categoryData = Array.isArray(res.data?.data?.categories)
+          ? res.data.data.categories
           : [];
+
         const formattedData = categoryData.map((cat: Category) => ({
           ...cat,
-          isActive: cat.isActive ? 'متوفر' : 'غير متوفر',
+
+          // الاسم حسب اللغة
+          name: locale === "ar" ? cat.arName : cat.enName || cat.arName,
+
+          // type translation
+          categoryType:
+            cat.categoryType === "boys"
+              ? t("typeBoys")
+              : cat.categoryType === "girls"
+              ? t("typeGirls")
+              : t("typeAll"),
+
+          // status translation
+          isActive: cat.isActive
+            ? t("available")
+            : t("notAvailable"),
         }));
 
         setCategory(formattedData);
@@ -52,8 +75,8 @@ const Page = () => {
           setError(err.message);
           toast.error(err.message);
         } else {
-          setError('حدث خطأ غير متوقع');
-          toast.error('حدث خطأ غير متوقع');
+          setError(t('errors.unexpected'));
+          toast.error(t('errors.unexpected'));
         }
       } finally {
         setLoading(false);
@@ -61,40 +84,48 @@ const Page = () => {
     };
 
     fetchCategory();
-  }, []);
+  }, [locale, t]);
+
   const handleEdit = (row: Category) => {
     router.push(`/admin/availableCategory/addCategory?id=${row._id}`);
   };
+
   const handleDelete = async (row: Category) => {
     const result = await Swal.fire({
-      title: "هل أنت متأكد؟",
-      text: "لن يمكنك التراجع بعد الحذف!",
+      title: t('confirm.title'),
+      text: t('confirm.text'),
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "نعم، احذف",
-      cancelButtonText: "إلغاء",
+      confirmButtonText: t('confirm.confirm'),
+      cancelButtonText: t('confirm.cancel'),
     });
-    if (!result.isConfirmed) return;
-    const token = sessionStorage.getItem("token");
-    try {
-      const res = await apiClient.delete(`${Endpoints.category}/${row._id}`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
 
-      if (res.status !== 200) throw new Error('فشل حذف الفئه');
+    if (!result.isConfirmed) return;
+
+    const token = sessionStorage.getItem("token");
+
+    try {
+      const res = await apiClient.delete(
+        `${Endpoints.category}/${row._id}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (res.status !== 200) throw new Error(t('errors.deleteFail'));
 
       setCategory((prev) => prev.filter((c) => c._id !== row._id));
 
-      toast.success("تم حذف الفئه بنجاح");
+      toast.success(t('success.delete'));
 
     } catch (err: unknown) {
       if (err instanceof Error) {
-        toast.error(err.message || "حدث خطأ أثناء الحذف");
+        toast.error(err.message || t('errors.delete'));
       } else {
-        toast.error("حدث خطأ غير متوقع");
+        toast.error(t('errors.unexpected'));
       }
     }
   };
@@ -102,107 +133,73 @@ const Page = () => {
   return (
     <div className="w-full px-4 sm:px-6 md:px-8">
 
-      {/* Loading */}
-
+      {/* LOADING */}
       {loading && (
         <div className="space-y-6 animate-pulse">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             <div className="h-6 bg-gray-300 rounded w-40"></div>
             <div className="h-10 bg-gray-300 rounded w-40"></div>
           </div>
-
-          {/* Table Skeleton */}
-          <div className="w-full overflow-x-auto rounded-lg">
-            <div className="min-w-[800px] space-y-3">
-
-              {/* Table Header */}
-              <div className="grid grid-cols-6 gap-3 bg-gray-200 p-3 rounded">
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i} className="h-4 bg-gray-300 rounded"></div>
-                ))}
-              </div>
-
-              {/* Rows */}
-              {Array.from({ length: 6 }).map((_, rowIndex) => (
-                <div
-                  key={rowIndex}
-                  className="grid grid-cols-6 gap-3 p-3 border rounded items-center"
-                >
-                  <div className="h-4 bg-gray-200 rounded"></div>
-
-                  {/* image */}
-                  <div className="h-10 w-10 bg-gray-300 rounded"></div>
-
-                  <div className="h-4 bg-gray-200 rounded"></div>
-                  <div className="h-4 bg-gray-200 rounded"></div>
-
-                  <div className="h-6 bg-gray-300 rounded w-20"></div>
-
-                  {/* actions */}
-                  <div className="flex gap-2">
-                    <div className="h-8 w-8 bg-gray-300 rounded"></div>
-                    <div className="h-8 w-8 bg-gray-300 rounded"></div>
-                    <div className="h-8 w-8 bg-gray-300 rounded"></div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
         </div>
       )}
+
+      {/* ERROR */}
       {error && (
         <Typography align="center" className="my-6 text-red-500">
-          حدث خطأ أثناء تحميل البيانات: {error}
+          {t('errors.load')}: {error}
         </Typography>
       )}
+
+      {/* EMPTY */}
       {!loading && !error && category.length === 0 && (
         <div className='flex flex-col justify-center items-center gap-4 md:h-2/4'>
 
           <Link href="/admin/availableCategory/addCategory">
             <MainButton
-              text="اضافه اول فئه"
+              text={t('addFirst')}
               className="cursor-pointer bg-primary hover:bg-primary-hover text-background duration-300 ease-in-out rounded-md px-5 py-3"
             />
           </Link>
 
-          <Typography align="center" className="text-gray-500 text-lg">
-            لا توجد بيانات حالياً
+          <Typography className="text-gray-500 text-lg">
+            {t('noData')}
           </Typography>
         </div>
       )}
 
-      {/* Table */}
+      {/* TABLE */}
       {!loading && !error && category.length > 0 && (
         <div>
 
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 m-6">
 
-            <Typography variant="h5" className="text-secondary-text font-semibold">
-              الفئات المتاحة
+            <Typography variant="h5" className="font-semibold">
+              {t('title')}
             </Typography>
+
             <Link href="/admin/availableCategory/addCategory">
               <MainButton
-                text="اضافة فئه جديدة"
-                className="cursor-pointer bg-primary hover:bg-primary-hover text-background duration-300 ease-in-out rounded-md px-5 py-3"
+                text={t('addNew')}
+                className="bg-primary text-white px-5 py-3 rounded-md"
               />
             </Link>
 
           </div>
+
           <div className="w-full max-w-6xl mx-auto mb-16 overflow-x-auto">
             <DataTable<Category>
               columns={columns}
-              rows={category || []}
+              rows={category}
               rowKey={(row) => row._id}
               onEdit={handleEdit}
               onDelete={handleDelete}
               actions={{ view: false, edit: true, delete: true }}
             />
-
           </div>
 
         </div>
       )}
+
     </div>
   );
 };

@@ -7,9 +7,9 @@ import { Product } from "@/src/interfaces/product";
 import { apiClient } from "@/src/utils/apiClient";
 import { Endpoints } from "@/src/utils/endpoints";
 import { Typography, Skeleton } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 
-// 👇 type للـ options بتاعة الفلتر
 interface Option {
   label: string;
   value: string;
@@ -18,15 +18,18 @@ interface Option {
 const Page = () => {
   const [selectedGender, setSelectedGender] = useState<string>("all");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-
   const [loading, setLoading] = useState<boolean>(true);
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Option[]>([]);
 
-  // ✅ Fetch Products
+  const t = useTranslations("products");
+  const locale = useLocale();
+
+  /* ================= PRODUCTS ================= */
   useEffect(() => {
-    const fetchProduct = async () => {
+    const fetchProducts = async () => {
       setLoading(true);
+
       try {
         const query = new URLSearchParams();
 
@@ -37,8 +40,6 @@ const Page = () => {
         if (selectedCategory !== "all") {
           query.append("category", selectedCategory);
         }
-
-        console.log("QUERY:", query.toString());
 
         const res = await apiClient.get(
           `${Endpoints.products}/get-all-products?${query.toString()}`
@@ -57,69 +58,75 @@ const Page = () => {
       }
     };
 
-    fetchProduct();
+    fetchProducts();
   }, [selectedGender, selectedCategory]);
 
-  // ✅ Fetch Categories
+  /* ================= CATEGORIES ================= */
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const res = await apiClient.get(
-          `${Endpoints.category}/names?lang=ar`
+          `${Endpoints.category}/names?lang=${locale}`
         );
 
         const categoriesData: Category[] =
           res.data?.data?.categoryNames ?? [];
 
-        const formatted: Option[] = [
-          { label: "الكل", value: "all" },
+        setCategories([
+          { label: t("all"), value: "all" },
           ...categoriesData.map((cat) => ({
             label: cat.name,
             value: cat._id,
           })),
-        ];
-
-        setCategories(formatted);
+        ]);
       } catch (err) {
         console.error("Error fetching categories:", err);
       }
     };
 
     fetchCategories();
-  }, []);
+  }, [locale, t]);
 
-  // ✅ Gender Options
-  const genderOptions: Option[] = [
-    { value: "all", label: "الكل" },
-    { value: "boys", label: "أولاد" },
-    { value: "girls", label: "بنات" },
-  ];
+  /* ================= OPTIONS ================= */
+  const genderOptions: Option[] = useMemo(
+    () => [
+      { value: "all", label: t("all") },
+      { value: "boys", label: t("boys") },
+      { value: "girls", label: t("girls") },
+    ],
+    [t]
+  );
 
-  // ✅ 🔥 فلترة فرونت (fallback)
-  const filteredProducts = products.filter((product) => {
-    const matchGender =
-      selectedGender === "all" || product.gender === selectedGender;
+  /* ================= FILTER ================= */
+  const filteredProducts = useMemo(() => {
+    return products.filter((product) => {
+      const matchGender =
+        selectedGender === "all" || product.gender === selectedGender;
 
-    const matchCategory =
-      selectedCategory === "all" ||
-      product.category?._id === selectedCategory;
+      const matchCategory =
+        selectedCategory === "all" ||
+        product.category?._id === selectedCategory;
 
-    return matchGender && matchCategory;
-  });
+      return matchGender && matchCategory;
+    });
+  }, [products, selectedGender, selectedCategory]);
 
   return (
     <div>
-      <Typography variant="h4" className="text-secondary-text mb-4">
+      {/* TITLE */}
+      <Typography variant="h5" className="text-secondary-text mb-4">
         {selectedCategory !== "all"
-          ? "منتجات"
-          : "أشيك لبس لأجمل عيال"}
+          ? t("title_products")
+          : t("title_all")}
       </Typography>
 
-      <div className="bg-thirdary py-4 rounded-xl mb-4 ">
-        <div className="flex gap-4 col px-5 md:w-200">
+      {/* FILTERS */}
+      <div className="bg-thirdary py-4 rounded-xl mb-4">
+        <div className="flex gap-4 px-5 md:w-200">
+
           {/* Gender */}
           <Filter
-            label="النوع"
+            label={t("gender")}
             options={genderOptions}
             selected={selectedGender}
             onChange={(value: Option | string) => {
@@ -132,7 +139,7 @@ const Page = () => {
 
           {/* Category */}
           <Filter
-            label="القسم"
+            label={t("category")}
             options={categories}
             selected={selectedCategory}
             onChange={(value: Option | string) => {
@@ -142,11 +149,13 @@ const Page = () => {
               setSelectedCategory(finalValue);
             }}
           />
+
         </div>
       </div>
 
-      {/* ✅ Products */}
+      {/* PRODUCTS */}
       <div className="grid grid-cols-2 md:grid-cols-3 justify-items-center gap-3">
+
         {loading ? (
           Array.from({ length: 8 }).map((_, i) => (
             <Skeleton
@@ -163,9 +172,10 @@ const Page = () => {
           ))
         ) : (
           <Typography variant="h6">
-            لا توجد منتجات في هذا القسم.
+            {t("no_products")}
           </Typography>
         )}
+
       </div>
     </div>
   );

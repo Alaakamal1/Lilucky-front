@@ -14,7 +14,7 @@ const ar = {
   topSelling: "المنتجات الأكثر مبيعًا",
   lowSelling: "المنتجات الأقل مبيعًا",
   stock: "المخزون",
-   hero1Title: "اختار الأجمل لطفلك..",
+  hero1Title: "اختار الأجمل لطفلك..",
   hero1SubTitle: "لأن كل يوم يستاهل لوك جديد",
   shopNow: "تسوق الان",
   bestSelling: "الأكتر مبيعا",

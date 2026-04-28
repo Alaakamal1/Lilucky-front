@@ -5,13 +5,15 @@ import OptionSelector from "@/src/components/ui/OptionSelector";
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import Counter from "@/src/components/ui/Counter";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Typography } from "@mui/material";
 import { toast } from "react-toastify";
 import { apiClient } from "@/src/utils/apiClient";
 import { Endpoints } from "@/src/utils/endpoints";
 import { Product } from "@/src/interfaces/product";
+import { useTranslations } from "next-intl";
+
 
 type CartItem = {
   productId: string;
@@ -30,6 +32,7 @@ export default function ProductDetails() {
   const [isLiked, setIsLiked] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [showLoginPopup, setShowLoginPopup] = useState(false);
+  const t = useTranslations("productDetails");
   const token =
     typeof window !== "undefined"
       ? sessionStorage.getItem("token")
@@ -98,7 +101,7 @@ export default function ProductDetails() {
   if (!product) {
   return (
     <div className="p-6 text-center">
-      جاري التحميل...
+      <Typography variant="h6"> {t("product_not_found") }</Typography>
     </div>
   );
 }
@@ -131,7 +134,7 @@ export default function ProductDetails() {
 
     if (!product) return;
     if (!selectedSize) {
-      toast.error("من فضلك اختار المقاس");
+      toast.error(t("size_required"));
       return;
     }
 
@@ -160,7 +163,7 @@ export default function ProductDetails() {
     }
 
     sessionStorage.setItem("cart", JSON.stringify(existingCart));
-    toast.success("تم إضافة المنتج إلى السلة ");
+    toast.success(t("toast_add_cart"));
   };
 
   return (
@@ -173,7 +176,7 @@ export default function ProductDetails() {
             <h2 className="text-lg font-semibold mb-4">تنبيه</h2>
 
             <p className="mb-4 text-gray-600">
-              لازم تعمل تسجيل دخول الأول
+            {t("login_required") }
             </p>
 
             <div className="flex gap-3 justify-center">
@@ -181,14 +184,14 @@ export default function ProductDetails() {
                 className="bg-gray-300 px-4 py-2 rounded"
                 onClick={() => setShowLoginPopup(false)}
               >
-                إلغاء
+              {t("cancel") }
               </button>
 
               <button
                 className="bg-primary text-white px-4 py-2 rounded"
                 onClick={() => router.push("/customer/login")}
               >
-                تسجيل الدخول
+                {t("login")}
               </button>
             </div>
           </div>
@@ -246,9 +249,8 @@ export default function ProductDetails() {
             {product.description}
           </Typography>
 
-          {/* الألوان */}
           <div className="mt-4">
-            <Typography className="mb-2">الالوان</Typography>
+            <Typography className="mb-2">{t("colors")}</Typography>
 
             <div className="flex gap-2">
               {availableColors.map((item) => (
@@ -272,7 +274,7 @@ export default function ProductDetails() {
 
           {/* المقاسات */}
           <div className="flex flex-col mt-4">
-            <Typography className="mb-2">المقاس</Typography>
+            <Typography className="mb-2">{t("size")}</Typography>
 
             {currentVariant?.sizes && (
               <OptionSelector
@@ -291,7 +293,7 @@ export default function ProductDetails() {
           />
 
           <MainButton
-            text="اضافه إلي السله"
+            text={t("add_to_cart")}
             type="submit"
             className="md:w-80 h-10 mt-2 rounded-md text-background hover:bg-primary-hover duration-400 ease-in my-4 px-6 bg-primary cursor-pointer"
             onClick={handleAddToCart}

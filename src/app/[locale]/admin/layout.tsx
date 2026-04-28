@@ -1,6 +1,6 @@
 import { Alexandria } from "next/font/google";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
-import "../globals.css";
+import "../../globals.css";
 import AdminHeader from "@/src/components/layout/AdminHeader";
 import { ToastContainer } from "react-toastify";
 const alexSans = Alexandria({

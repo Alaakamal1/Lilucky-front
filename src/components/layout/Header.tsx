@@ -211,10 +211,8 @@ import { useTranslations, useLocale } from "next-intl";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
-
   const { user, setUser } = useUser();
   const { cart, wishlist } = useCartWishlist();
-
   const t = useTranslations("header");
   const locale = useLocale();
   const router = useRouter();
@@ -225,8 +223,6 @@ export default function Header() {
   /* ================= LANGUAGE ================= */
   const toggleLanguage = () => {
     const newLocale = locale === "ar" ? "en" : "ar";
-
-    // مهم: نغير نفس الصفحة مش نرجع للـ home بس
     const path = window.location.pathname.replace(/^\/(ar|en)/, "");
     router.push(`/${newLocale}${path}`);
   };
@@ -241,8 +237,8 @@ export default function Header() {
 
   /* ================= LINKS ================= */
   const links = [
-    { href: `/${locale}`, label: t("home") },
-    { href: `/${locale}/products`, label: t("products") },
+    { href: `/${locale}/customer`, label: t("home") },
+    { href: `/${locale}/customer/products`, label: t("products") },
   ];
 
   return (
@@ -251,7 +247,7 @@ export default function Header() {
       {/* TOP BAR */}
       <div className="flex justify-between items-center px-4 py-2 md:justify-center relative md:bg-background">
 
-        <Link href={`/${locale}`}>
+        <Link href={`/${locale}/customer`}>
           <Image src="/Lilucky.svg" alt="logo" width={80} height={80} />
         </Link>
 
@@ -275,7 +271,7 @@ export default function Header() {
         {fName ? (
           <button onClick={handleLogout}>{t("logout")}</button>
         ) : (
-          <Link href={`/${locale}/login`}>{t("login")}</Link>
+          <Link href={`/${locale}/customer/login`}>{t("login")}</Link>
         )}
 
         <div className="flex items-center gap-4">
@@ -291,7 +287,7 @@ export default function Header() {
           </button>
 
           {/* Wishlist */}
-          <Link href={`/${locale}/wishlist`} className="relative">
+          <Link href={`/${locale}/customer/wishlist`} className="relative">
             <FavoriteBorderIcon />
             {wishlist?.length > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs min-w-[20px] h-5 px-1 flex items-center justify-center rounded-full">
@@ -301,7 +297,7 @@ export default function Header() {
           </Link>
 
           {/* Cart */}
-          <Link href={`/${locale}/cart`} className="relative">
+          <Link href={`/${locale}/customer/cart`} className="relative">
             <ShoppingCartOutlinedIcon />
             {cart?.length > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs min-w-[20px] h-5 px-1 flex items-center justify-center rounded-full">
@@ -311,7 +307,7 @@ export default function Header() {
           </Link>
 
           {isAuth && (
-            <Link href={`/${locale}/account`}>
+            <Link href={`/${locale}/customer/account`}>
               <Avatar fName={fName ?? ""} />
             </Link>
           )}
