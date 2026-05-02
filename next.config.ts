@@ -36,17 +36,18 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https" as const,
-        hostname: "res.cloudinary.com",
-        pathname: "/**",
+        hostname: "lilucky-backend.vercel.app",
+      },
+      {
+        protocol: "http" as const,
+        hostname: "localhost",
+        port: "3000",
       },
     ],
-  },
-  eslint: {
-    ignoreDuringBuilds: false,
   },
   typescript: {
     ignoreBuildErrors: false,
   },
-};
+} as const satisfies import('next').NextConfig;
 
-module.exports = withNextIntl(nextConfig);
+export default withNextIntl(nextConfig);

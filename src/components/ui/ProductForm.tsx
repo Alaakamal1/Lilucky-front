@@ -615,7 +615,7 @@ export default function ProductForm({
 
             // keep old + new
             images: fileArray,
-            previews: previews,
+            previews: [...v.previews, ...previews],
           }
           : v
       )
@@ -958,9 +958,10 @@ export default function ProductForm({
                     </button>
 
                     {/* IMAGE */}
+
                     <Image
                       src={
-                        !img
+                        !img || img === "undefined"
                           ? "/no-image.png"
                           : img.startsWith("blob:")
                             ? img
@@ -974,6 +975,7 @@ export default function ProductForm({
                       className="rounded border object-cover w-full h-full"
                       unoptimized
                     />
+
                   </div>
                 ))}
             </div>
