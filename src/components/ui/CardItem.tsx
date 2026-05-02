@@ -8,6 +8,7 @@ import Typography from "@mui/material/Typography";
 import { apiClient } from "@/src/utils/apiClient";
 import { Endpoints } from "@/src/utils/endpoints";
 import MainButton from "./MainButton";
+import { useLocale } from "next-intl";
 
 /* ================= TYPES ================= */
 
@@ -33,7 +34,7 @@ const CardItem = ({ product }: { product: Product }) => {
   const [showLoginPopup, setShowLoginPopup] = useState<boolean>(false);
   const [selectedColor, setSelectedColor] = useState<string>("");
   const [selectedSize, setSelectedSize] = useState<string>("");
-
+  const locale = useLocale();
   /* ================= LIKE ================= */
 
   useEffect(() => {
@@ -152,7 +153,7 @@ const CardItem = ({ product }: { product: Product }) => {
   return (
     <>
       {/* CARD */}
-      <Link href={`/customer/product/${product._id}`}>
+      <Link href={`/${locale}/customer/product/${product._id}`}>
         <div className="bg-white w-67 rounded-lg shadow-md text-center overflow-hidden m-6">
 
           {/* IMAGE + LIKE */}

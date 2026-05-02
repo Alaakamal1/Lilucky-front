@@ -14,5 +14,7 @@ export class Endpoints {
   static cart = `${Endpoints.baseUrl}/cart`;
   static category = `${Endpoints.baseUrl}/category`;
   static order = `${Endpoints.baseUrl}/order`;
+  static shipping = `${Endpoints.baseUrl}/shipping`;
+  static settings = `${Endpoints.baseUrl}/settings`;
 
 }

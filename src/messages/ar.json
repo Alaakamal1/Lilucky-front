@@ -1,0 +1,652 @@
+{
+  "locale": "ar",
+
+  "header": {
+    "home": "الصفحة الرئيسية",
+    "products": "منتجاتنا",
+    "login": "تسجيل الدخول",
+    "logout": "تسجيل الخروج",
+    "customer": "العملاء"
+  },
+  "footer": {
+    "categories": "التصنيفات",
+    "gender": "النوع",
+    "boys": "أولاد",
+    "girls": "بنات",
+    "help": "قسم المساعدة",
+    "shipping": "الشحن",
+    "faq": "أسئلة عنا",
+    "returns": "سياسة الإبدال والإرجاع",
+    "follow": "تابعنا"
+  },
+   "wishlist": {
+    "loading": "جاري التحميل...",
+    "empty": "قائمة المفضلة فارغة",
+    "suggested": "منتجات مقترحة ليك"
+  },
+
+  "home": {
+    "stock": "المخزون",
+    "hero1Title": "اختار الأجمل لطفلك..",
+    "hero1SubTitle": "لأن كل يوم يستاهل لوك جديد",
+    "shopNow": "تسوق الان",
+    "bestSelling": "الأكتر مبيعا",
+    "hero2Title": "اختاري اللي يليق عليكِ",
+    "ageCategory": "اختار حسب الفئه العمريه",
+    "age1": "1 سنه",
+    "age2": "2 سنه",
+    "age3": "3 سنوات",
+    "age4": "4 سنوات",
+    "age5": "5 سنوات",
+    "age6": "6 سنوات",
+    "age7": "7 سنوات",
+    "age8": "8 سنوات",
+    "offersTitle": "عروضنا مش بتتفوت"
+  },
+
+  "products": {
+    "title_all": "كل قطعة معمولة بحب .. عشان اطفالك",
+    "title_products": "منتجات",
+    "gender": "النوع",
+    "category": "القسم",
+    "all": "الكل",
+    "boys": "أولاد",
+    "girls": "بنات",
+    "no_products": "لا توجد منتجات في هذا القسم.",
+    "no_products_match": "لا توجد منتجات تطابق الفلاتر",
+    "reset_filters": "إعادة ضبط الفلاتر"
+  },
+
+  "login": {
+    "title": "تسجيل الدخول",
+    "email": "الايميل",
+    "password": "كلمة المرور",
+    "email_placeholder": "اكتب الايميل",
+    "password_placeholder": "كلمة المرور",
+    "login_button": "تسجيل الدخول",
+    "no_account": "ليس لديك حساب؟ سجل الآن",
+    "errors": {
+      "invalid_email": "الايميل غير صحيح",
+      "invalid_password": "كلمة المرور يجب أن تكون 6 أحرف على الأقل",
+      "form": "من فضلك صحح الأخطاء قبل تسجيل الدخول",
+      "server": "خطأ في الاتصال بالسيرفر",
+      "login": "حدث خطأ في تسجيل الدخول"
+    }
+  },
+
+  "register": {
+    "title": "إنشاء حساب",
+    "submit": "إنشاء حساب",
+    "success": "تم إنشاء الحساب بنجاح",
+    "login_link": "لديك حساب؟ تسجيل الدخول",
+    "have_account": "لديك حساب؟ تسجيل الدخول",
+    "select": "اختر...",
+    "errors": {
+      "invalid_name": "الاسم يجب أن يكون 3 أحرف على الأقل",
+      "invalid_email": "الايميل غير صحيح",
+      "invalid_password": "كلمة المرور يجب أن تكون 6 أحرف على الأقل",
+      "invalid_phone": "رقم التلفون غير صحيح",
+      "password_mismatc": "كلمتا المرور غير متطابقتين",
+      "invalid_gov": "الرجاء اختيار المحافظة",
+      "invalid_city": "الرجاء اختيار المدينة",
+      "invalid_street": "العنوان التفصيلي يجب أن يكون 5 أحرف على الأقل",
+      "form": "من فضلك صحح الأخطاء قبل تسجيل الدخول",
+      "server": "خطأ في الاتصال بالسيرفر",
+      "login": "حدث خطأ في تسجيل الدخول"
+    },
+
+    "fields": {
+      "first_name": {
+        "label": "الاسم الاول",
+        "placeholder": "اكتب اسمك"
+      },
+      "last_name": {
+        "label": "الاسم الثاني",
+        "placeholder": "اكتب اسمك"
+      },
+      "email": {
+        "label": "الايميل",
+        "placeholder": "اكتب الايميل"
+      },
+      "phone": {
+        "label": "رقم التلفون",
+        "placeholder": "اكتب رقم التلفون"
+      },
+      "password": {
+        "label": "كلمة المرور",
+        "placeholder": "كلمة المرور"
+      },
+      "confirm_password": {
+        "label": "تأكيد كلمة المرور",
+        "placeholder": "اكتب كلمة المرور مرة اخرى"
+      },
+      "gov": {
+        "label": "اختر المحافظة"
+      },
+      "city": {
+        "label": "اختر المدينة"
+      },
+      "street": {
+        "label": "العنوان التفصيلي",
+        "placeholder": "اكتب العنوان التفصيلي هنا"
+      }
+    },
+    
+    "governorates": {
+    "cairo": "القاهرة",
+    "alex": "الإسكندرية",
+    "giza": "الجيزة",
+    "dakahlia": "الدقهلية",
+    "sharqia": "الشرقية",
+    "qalyubia": "القليوبية",
+    "kafr_elsheikh": "كفر الشيخ",
+    "gharbia": "الغربية",
+    "menoufia": "المنوفية",
+    "beheira": "البحيرة",
+    "damietta": "دمياط",
+    "port_said": "بورسعيد",
+    "suez": "السويس",
+    "ismailia": "الإسماعيلية",
+    "beni_suef": "بني سويف",
+    "fayoum": "الفيوم",
+    "minya": "المنيا",
+    "assiut": "أسيوط",
+    "sohag": "سوهاج",
+    "qena": "قنا",
+    "luxor": "الأقصر",
+    "aswan": "أسوان",
+    "red_sea": "البحر الأحمر",
+    "new_valley": "الوادي الجديد",
+    "matrouh": "مطروح",
+    "north_sinai": "شمال سيناء",
+    "south_sinai": "جنوب سيناء"
+  },
+
+  "cities": {
+    "nasr_city": "مدينة نصر",
+    "heliopolis": "مصر الجديدة",
+    "maadi": "المعادي",
+    "helwan": "حلوان",
+    "matareya": "المطرية",
+    "shubra": "شبرا",
+    "zaitoun": "الزيتون",
+    "abbasiya": "العباسية",
+    "ain_shams": "عين شمس",
+    "tagamoa": "التجمع الخامس",
+
+    "sidi_gaber": "سيدي جابر",
+    "agamy": "العجمي",
+    "moharam_bek": "محرم بك",
+    "montaza": "المنتزه",
+    "labban": "اللبان",
+    "kafr_abdo": "كفر عبده",
+    "asafra": "العصافرة",
+    "mamoura": "المعمورة",
+
+    "haram": "الهرم",
+    "dokki": "الدقي",
+    "agouza": "العجوزة",
+    "imbaba": "إمبابة",
+    "6_october": "6 أكتوبر",
+    "sheikh_zayed": "الشيخ زايد",
+    "badrasheen": "البدرشين",
+
+    "mansoura": "المنصورة",
+    "tala": "طلخا",
+    "mit_ghamr": "ميت غمر",
+    "senbellawein": "السنبلاوين",
+    "aga": "أجا",
+    "tamay_amedid": "تمي الأمديد",
+    "dekernes": "دكرنس",
+
+    "zagazig": "الزقازيق",
+    "10_ramadan": "العاشر من رمضان",
+    "bilbeis": "بلبيس",
+    "minya_ghamr": "منيا القمح",
+    "faqous": "فاقوس",
+    "abou_hammad": "أبو حماد",
+
+    "banha": "بنها",
+    "shubra_kheima": "شبرا الخيمة",
+    "qalyub": "قليوب",
+    "khanka": "الخانكة",
+    "qanater": "القناطر الخيرية",
+    "khusus": "الخصوص",
+
+    "kafr_elsheikh": "كفر الشيخ",
+    "desouk": "دسوق",
+    "baltim": "بلطيم",
+    "beila": "بيلا",
+    "hamoul": "الحامول",
+    "fouh": "فوه",
+
+    "tanta": "طنطا",
+    "mahalla": "المحلة الكبرى",
+    "zefta": "زفتى",
+    "kafr_elzayat": "كفر الزيات",
+    "santa": "السنطة",
+
+    "shibin_elkom": "شبين الكوم",
+    "menouf": "منوف",
+    "ashmoun": "أشمون",
+    "tala_menoufia": "تلا",
+    "berket_elsaba": "بركة السبع",
+
+    "damanhour": "دمنهور",
+    "kafr_eldawar": "كفر الدوار",
+    "etay_elbaroud": "إيتاي البارود",
+    "rashid": "رشيد",
+    "abou_homs": "أبو حمص",
+
+    "damietta": "دمياط",
+    "ras_elbar": "رأس البر",
+    "kafr_saad": "كفر سعد",
+    "faraskour": "فارسكور",
+
+    "port_said": "بورسعيد",
+    "port_fouad": "بور فؤاد",
+
+    "suez": "السويس",
+    "ataqa": "عتاقة",
+
+    "ismailia": "الإسماعيلية",
+    "faid": "فايد",
+    "kantara_east": "القنطرة شرق",
+    "kantara_west": "القنطرة غرب",
+
+    "beni_suef": "بني سويف",
+    "wasta": "الواسطى",
+    "nasser": "ناصر",
+    "ihnasia": "إهناسيا",
+
+    "fayoum": "الفيوم",
+    "senors": "سنورس",
+    "tamia": "طامية",
+    "itas": "إطسا",
+
+    "minya": "المنيا",
+    "maghagha": "مغاغة",
+    "beni_mazar": "بني مزار",
+    "samalout": "سمالوط",
+    "mallawi": "ملوي",
+
+    "assiut": "أسيوط",
+    "dairout": "ديروط",
+    "manfalout": "منفلوط",
+    "abnoub": "أبنوب",
+    "qussia": "القوصية",
+
+    "sohag": "سوهاج",
+    "tahata": "طهطا",
+    "maragha": "المراغة",
+    "girga": "جرجا",
+    "akhmim": "أخميم",
+
+    "qena": "قنا",
+    "nag_hammadi": "نجع حمادي",
+    "qift": "قفط",
+    "dishna": "دشنا",
+    "qous": "قوص",
+
+    "luxor": "الأقصر",
+    "bayadiya": "البياضية",
+    "esna": "إسنا",
+    "karnak": "القرنة",
+
+    "aswan": "أسوان",
+    "edfo": "إدفو",
+    "kom_ombo": "كوم أمبو",
+    "drau": "دراو",
+    "nasr_nuba": "نصر النوبة",
+
+    "hurghada": "الغردقة",
+    "ras_ghareb": "رأس غارب",
+    "safaga": "سفاجا",
+    "quseir": "القصير",
+    "marsalam": "مرسى علم",
+    "halayeb": "حلايب",
+    "shlatin": "شلاتين",
+
+    "kharga": "الخارجة",
+    "dakhla": "الداخلة",
+    "farafra": "الفرافرة",
+    "balat": "بلاط",
+
+    "matrouh": "مرسى مطروح",
+    "hamam": "الحمام",
+    "alamain": "العلمين",
+    "dabaa": "الضبعة",
+    "nigela": "النجيلة",
+    "sidi_barrani": "سيدي براني",
+    "salloum": "السلوم",
+
+    "el_arish": "العريش",
+    "bir_abeid": "بئر العبد",
+    "rafah": "رفح",
+    "sheikh_zoeid": "الشيخ زويد",
+    "hasna": "الحسنة",
+
+    "tor": "الطور",
+    "sharm": "شرم الشيخ",
+    "dahab": "دهب",
+    "nuweiba": "نويبع",
+    "taba": "طابا",
+    "st_catherine": "سانت كاترين"
+  }
+
+  },
+  
+ "account": {
+  "loading": "جاري التحميل...",
+  "save": "حفظ",
+  "edit": "تعديل",
+  "user_account": "حساب المستخدم",
+
+  "tabs": {
+    "personal": "البيانات الشخصية",
+    "orders": "الطلبات",
+    "addresses": "العناوين"
+  },
+
+  "fields": {
+    "first_name": "الاسم الأول",
+    "last_name": "اسم العائلة",
+    "email": "البريد الإلكتروني",
+    "phone": "رقم الهاتف",
+    "city": "المدينة",
+    "governorate": "المحافظة",
+    "street": "العنوان"
+  },
+
+  "orders": {
+    "empty": "لا توجد طلبات حتى الآن"
+  },
+
+  "addresses": {
+    "empty": "لا توجد عناوين محفوظة"
+  }
+}
+  , 
+  "cart": {
+  "title": "سلة المشتريات",
+  "empty": "السلة فارغة",
+  "empty_sub": "لم تقم بإضافة أي منتجات بعد",
+  "browse": "تصفح المنتجات",
+  "table": {
+    "image": "الصورة",
+    "product": "المنتج",
+    "size": "المقاس",
+    "color": "اللون",
+    "qty": "الكمية",
+    "price": "السعر",
+    "delete": "حذف"
+  },
+  "total": "الإجمالي",
+  "checkout": "إتمام الشراء",
+  "suggested": "منتجات ممكن تعجبك"
+},
+  "productDetails": {
+    "loading": "جاري التحميل...",
+    "description": "الوصف",
+    "product_not_found": "المنتج غير موجود",
+    "toast_add_cart": "تم إضافة المنتج إلى السلة",
+    "colors": "الألوان",
+    "material":"خامه المنتج",
+    "quntity": "الكمية",
+    "size": "المقاس",
+    "add_to_cart": "إضافة إلى السلة",
+    "login_required_title": "تنبيه",
+    "login_required_desc": "لازم تعمل تسجيل دخول الأول",
+    "cancel": "إلغاء",
+    "login": "تسجيل الدخول",
+    "price": "السعر"
+  },
+  "aboutus": {
+    "title": "من نحن",
+    "intro_1": "احنا منصة متخصصة في تقديم أفضل المنتجات بجودة عالية وأسعار مناسبة.",
+    "intro_2": "هدفنا هو توفير تجربة تسوق سهلة وسريعة وآمنة لكل العملاء.",
+
+    "vision_title": "رؤيتنا",
+    "vision_desc": "نسعى لنكون من أفضل منصات التجارة الإلكترونية في المنطقة من خلال تقديم خدمات متميزة وتجربة مستخدم رائعة.",
+
+    "mission_title": "مهمتنا",
+    "mission_desc": "نوفر منتجات عالية الجودة مع دعم فني سريع وخدمة عملاء ممتازة لضمان رضا العملاء.",
+
+    "why_title": "ليه تختارنا؟",
+    "why_1": "منتجات بجودة عالية",
+    "why_2": "أسعار تنافسية",
+    "why_3": "دعم فني سريع",
+    "why_4": "تجربة استخدام سهلة",
+
+    "rights": "جميع الحقوق محفوظة"
+  },
+  "forgotPassword": {
+    "title": "نسيت كلمة المرور",
+    "email_label": "البريد الإلكتروني",
+    "email_placeholder": "اكتب بريدك الإلكتروني",
+    "send": "إرسال كود التحقق",
+    "sending": "جاري الإرسال...",
+    "error_default": "حدث خطأ",
+    "network_error": "خطأ في الاتصال"
+  },
+   "resetPassword": {
+    "title": "إعادة تعيين كلمة المرور",
+    "otp_label": "كود التحقق",
+    "password_label": "كلمة المرور الجديدة",
+    "confirm_label": "تأكيد كلمة المرور",
+    "submit": "تغيير كلمة المرور",
+    "success": "تم تغيير كلمة المرور بنجاح",
+    "error_default": "حدث خطأ، حاول مرة أخرى"
+  },
+  "common": {
+    "loading": "جاري التحميل..."
+  },
+   "adminHeader": {
+    "dashboard": "لوحة التحكم",
+    "products": "قسم المنتجات",
+    "categories": "قسم الفئات",
+    "orders": "قسم الطلبات",
+    "clients": "قسم العملاء",
+    "logout": "تسجيل الخروج",
+    "hello": "مرحباً،",
+      "settings": "الإعدادات"
+  },
+  "availableCategory": {
+    "name": "اسم الفئه",
+    "type": "نوع الفئه",
+    "status": "الحاله",
+    "actions": "تفاصيل / تعديل / حذف",
+    "available": "متوفر",
+    "notAvailable": "غير متوفر",
+    "noData": "لا توجد بيانات حالياً",
+    "addFirst": "اضافه اول فئه",
+    "addNew": "اضافة فئه جديدة",
+    "title": "الفئات المتاحة",
+    "typeAll": "الكل",
+    "typeBoys": "أولاد",
+    "typeGirls": "بنات"
+  },
+   "availableProducts": {
+    "name": "اسم المنتج",
+    "image": "صورة المنتج",
+    "price": "السعر",
+    "stock": "الكمية",
+    "status": "الحالة",
+    "actions": "تفاصيل / تعديل / حذف",
+    "title": "المنتجات المتاحة",
+    "addFirst": "إضافة أول منتج",
+    "addNew": "إضافة منتج جديد",
+    "noData": "لا توجد بيانات حالياً",
+    "age": "الفئة العمرية",
+    "category": "نوع المنتج",
+    "type": "النوع",
+
+    "typeAll": "الكل",
+    "typeBoys": "ولاد",
+    "typeGirls": "بنات",
+
+    "type1Y": "سنة",
+    "type2Y": "سنتين",
+    "type3Y": "3 سنوات",
+    "type4Y": "4 سنوات",
+    "type5Y": "5 سنوات",
+    "type6Y": "6 سنوات",
+    "type7Y": "7 سنوات",
+    "type8Y": "8 سنوات",
+
+    "available": "متوفر",
+    "notAvailable": "غير متوفر",
+
+    "errors": {
+      "load": "حدث خطأ أثناء تحميل البيانات",
+      "delete": "حدث خطأ أثناء الحذف",
+      "loginRequired": "يجب تسجيل الدخول أولاً",
+      "unexpected": "حدث خطأ غير متوقع"
+    },
+
+    "success": {
+      "delete": "تم حذف المنتج بنجاح"
+    },
+
+    "confirm": {
+      "title": "هل أنت متأكد؟",
+      "text": "لن يمكنك التراجع بعد الحذف!",
+      "confirm": "نعم، احذف",
+      "cancel": "إلغاء"
+    }
+  },
+
+  "errors": {
+    "unexpected": "حدث خطأ غير متوقع",
+    "load": "حدث خطأ أثناء تحميل البيانات",
+    "delete": "حدث خطأ أثناء الحذف",
+    "deleteFail": "فشل حذف الفئه"
+  },
+  "confirm": {
+    "title": "هل أنت متأكد؟",
+    "text": "لن يمكنك التراجع بعد الحذف!",
+    "confirm": "نعم، احذف",
+    "cancel": "إلغاء"
+  },
+  "success": {
+    "delete": "تم حذف الفئه بنجاح"
+  },
+  "categoryForm": {
+    "titleAdd": "إضافة فئة جديدة",
+    "titleEdit": "تعديل فئة",
+
+    "arNameLabel": "اسم الفئة بالعربي",
+    "enNameLabel": "اسم الفئة بالإنجليزي",
+
+    "typeLabel": "نوع الفئة",
+    "typePlaceholder": "اختر النوع",
+    "typeAll": "الكل",
+    "typeBoys": "أولاد",
+    "typeGirls": "بنات",
+
+    "submitAdd": "إضافة فئة",
+    "submitEdit": "تعديل الفئة",
+    "saving": "جاري الحفظ..."
+  },
+
+  "validation": {
+    "arNameRequired": "اسم الفئة بالعربي مطلوب",
+    "enNameRequired": "اسم الفئة بالإنجليزي مطلوب"
+  },
+  "shipping": {
+  "title": "إعدادات الشحن",
+  "governorate": "المحافظة",
+  "price": "السعر",
+  "active": "الحالة",
+  "save": "حفظ",
+  "active_btn": "مفعل",
+  "inactive_btn": "غير مفعل",
+  "loading": "جاري التحميل...",
+  "toast_update_success": "تم تحديث إعدادات الشحن بنجاح",
+  "toast_update_error": "حدث خطأ أثناء تحديث إعدادات الشحن"
+},
+"heroSettings": {
+  "title": "جدول الهوم",
+  "position": "الموقع",
+  "titleCol": "العنوان",
+  "image": "الصورة",
+  "action": "الإجراء",
+  "edit": "تعديل",
+  "noImage": "لا توجد صورة",
+  "ar": "عربي",
+  "en": "إنجليزي"
+},
+"editHero": {
+  "title": "تعديل الهيرو",
+  "loading": "جاري التحميل...",
+  "notFound": "لا يوجد بيانات",
+  "titleAr": "العنوان بالعربي",
+  "titleEn": "العنوان بالإنجليزي",
+  "subtitleAr": "الوصف بالعربي",
+  "subtitleEn": "الوصف بالإنجليزي",
+  "titleColor": "لون العنوان",
+  "subtitleColor": "لون الوصف",
+  "buttonTextColor": "لون نص الزرار",
+  "buttonBgColor": "لون خلفية الزرار",
+  "save": "حفظ التغييرات",
+  "savedSuccess": "تم الحفظ بنجاح!",
+  "saveError": "حدث خطأ أثناء الحفظ. حاول مرة أخرى."
+},
+ "cart": {
+    "title": "عربة التسوق",
+    "empty": "السلة فارغة",
+    "empty_sub": "لا توجد منتجات في سلة التسوق الخاصة بك",
+    "browse": "تصفح المنتجات",
+    "total": "الإجمالي",
+    "checkout": "إتمام الطلب",
+    "suggested": "منتجات مقترحة",
+
+    "table": {
+      "image": "الصورة",
+      "product": "المنتج",
+      "size": "المقاس",
+      "color": "اللون",
+      "qty": "الكمية",
+      "price": "السعر",
+      "delete": "حذف"
+    },
+
+    "actions": {
+      "remove": "إزالة",
+      "update": "تحديث",
+      "loading": "جاري التحميل..."
+    },
+
+    "messages": {
+      "added": "تمت إضافة المنتج إلى السلة",
+      "removed": "تم حذف المنتج من السلة",
+      "updated": "تم تحديث السلة"
+    }
+  },
+   "orderDetails": {
+    "title": "تفاصيل الطلب",
+    "loading": "جاري التحميل...",
+    "customerInfo": "بيانات العميل",
+    "orderInfo": "بيانات الطلب",
+    "address": "عنوان التوصيل",
+    "items": "المنتجات",
+    "changeStatus": "تغيير حالة الطلب",
+
+    "subtotal": "المجموع الفرعي",
+    "shipping": "الشحن",
+    "total": "الإجمالي",
+
+    "status": {
+      "pending": "قيد الانتظار",
+      "confirmed": "مؤكد",
+      "shipped": "تم الشحن",
+      "delivered": "تم التسليم",
+      "cancelled": "ملغي"
+    }
+  }
+
+
+
+  
+
+}

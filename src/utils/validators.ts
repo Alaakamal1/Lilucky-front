@@ -1,35 +1,46 @@
 export const validateFirstName = (value: string) => {
-  if (!/^[a-zA-Z\u0600-\u06FF\s]*$/.test(value)) return "الاسم يحتوي على حروف فقط";
+  if (!/^[a-zA-Z\u0600-\u06FF\s]*$/.test(value)) return "invalid_name";
   return "";
 };
 
 export const validateLastName = (value: string) => {
-  if (!/^[a-zA-Z\u0600-\u06FF\s]*$/.test(value)) return "الاسم يحتوي على حروف فقط";
+  if (!/^[a-zA-Z\u0600-\u06FF\s]*$/.test(value)) return "invalid_name";
   return "";
 };
 
 export const validateEmail = (value: string) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(value)) return "الايميل غير صحيح";
+  if (!emailRegex.test(value)) return "invalid_email";
   return "";
 };
 
 export const validatePhoneNumber = (value: string) => {
-  if (!/^\d{11}$/.test(value)) return "رقم الهاتف يجب أن يكون 11 رقم";
+  if (!/^\d{11}$/.test(value)) return "invalid_phone";
   return "";
 };
 
 export const validatePassword = (value: string) => {
-  if (value.length < 6) return "كلمة المرور يجب أن تكون 6 أحرف على الأقل";
+  if (value.length < 6) return "invalid_password";
   return "";
 };
 
 export const validateConfirmPassword = (password: string, confirm: string) => {
-  if (password !== confirm) return "كلمة المرور غير متطابقة";
+  if (password !== confirm) return "password_mismatch";
   return "";
 };
 
-export const validateNotEmpty = (value: string, fieldName: string) => {
-  if (!value) return `الرجاء إدخال ${fieldName}`;
+export const validateGov = (value: string) => {
+  if (!value) return "invalid_gov";
+  return "";
+};
+
+export const validateCity = (value: string) => {
+  if (!value) return "invalid_city";
+  return "";
+};
+
+export const validateStreet = (value: string) => {
+  if (!value.trim()) return "required";
+  if (value.length < 5) return "too_short";
   return "";
 };

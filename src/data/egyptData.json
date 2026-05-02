@@ -1,29 +1,225 @@
 {
-  "القاهرة": ["مدينة نصر", "مصر الجديدة", "المعادي", "حلوان", "المرج", "شبرا", "الزيتون", "العباسية", "عين شمس", "التجمع الخامس"],
-  "الإسكندرية": ["سيدي جابر", "العجمي", "محرم بك", "المنتزه", "اللبان", "كفر عبده", "العصافرة", "المعمورة"],
-  "الجيزة": ["الهرم", "الدقي", "العجوزة", "إمبابة", "6 أكتوبر", "الشيخ زايد", "البدرشين"],
-  "الدقهلية": ["المنصورة", "طلخا", "ميت غمر", "السنبلاوين", "أجا", "تمي الأمديد", "دكرنس"],
-  "الشرقية": ["الزقازيق", "العاشر من رمضان", "بلبيس", "منيا القمح", "فاقوس", "أبو حماد"],
-  "القليوبية": ["بنها", "شبرا الخيمة", "قليوب", "الخانكة", "القناطر الخيرية", "الخصوص"],
-  "كفر الشيخ": ["كفر الشيخ", "دسوق", "بلطيم", "بيلا", "الحامول", "فوه"],
-  "الغربية": ["طنطا", "المحلة الكبرى", "زفتى", "كفر الزيات", "السنطة"],
-  "المنوفية": ["شبين الكوم", "منوف", "أشمون", "تلا", "بركة السبع"],
-  "البحيرة": ["دمنهور", "كفر الدوار", "إيتاي البارود", "رشيد", "أبو حمص"],
-  "دمياط": ["دمياط", "رأس البر", "كفر سعد", "فارسكور"],
-  "بورسعيد": ["بورسعيد", "بور فؤاد"],
-  "السويس": ["السويس", "عتاقة"],
-  "الإسماعيلية": ["الإسماعيلية", "فايد", "القنطرة شرق", "القنطرة غرب"],
-  "بني سويف": ["بني سويف", "الواسطى", "ناصر", "إهناسيا"],
-  "الفيوم": ["الفيوم", "سنورس", "طامية", "إطسا"],
-  "المنيا": ["المنيا", "مغاغة", "بني مزار", "سمالوط", "ملوي"],
-  "أسيوط": ["أسيوط", "ديروط", "منفلوط", "أبنوب", "القوصية"],
-  "سوهاج": ["سوهاج", "طهطا", "المراغة", "جرجا", "أخميم"],
-  "قنا": ["قنا", "نجع حمادي", "قفط", "دشنا", "قوص"],
-  "الأقصر": ["الأقصر", "البياضية", "إسنا", "القرنة"],
-  "أسوان": ["أسوان", "إدفو", "كوم أمبو", "دراو", "نصر النوبة"],
-  "البحر الأحمر": ["الغردقة", "رأس غارب", "سفاجا", "القصير", "مرسى علم", "حلايب", "شلاتين"],
-  "الوادي الجديد": ["الخارجة", "الداخلة", "الفرافرة", "بلاط"],
-  "مرسى مطروح": ["مرسى مطروح", "الحمام", "العلمين", "الضبعة", "النجيلة", "سيدي براني", "السلوم"],
-  "شمال سيناء": ["العريش", "بئر العبد", "رفح", "الشيخ زويد", "الحسنة"],
-  "جنوب سيناء": ["الطور", "شرم الشيخ", "دهب", "نويبع", "طابا", "سانت كاترين"]
+  "cairo": [
+    "nasr_city",
+    "heliopolis",
+    "maadi",
+    "helwan",
+    "matareya",
+    "shubra",
+    "zaitoun",
+    "abbasiya",
+    "ain_shams",
+    "tagamoa"
+  ],
+
+  "alex": [
+    "sidi_gaber",
+    "agamy",
+    "moharam_bek",
+    "montaza",
+    "labban",
+    "kafr_abdo",
+    "asafra",
+    "mamoura"
+  ],
+
+  "giza": [
+    "haram",
+    "dokki",
+    "agouza",
+    "imbaba",
+    "6_october",
+    "sheikh_zayed",
+    "badrasheen"
+  ],
+
+  "dakahlia": [
+    "mansoura",
+    "tala",
+    "mit_ghamr",
+    "senbellawein",
+    "aga",
+    "tamay_amedid",
+    "dekernes"
+  ],
+
+  "sharqia": [
+    "zagazig",
+    "10_ramadan",
+    "bilbeis",
+    "minya_ghamr",
+    "faqous",
+    "abou_hammad"
+  ],
+
+  "qalyubia": [
+    "banha",
+    "shubra_kheima",
+    "qalyub",
+    "khanka",
+    "qanater",
+    "khusus"
+  ],
+
+  "kafr_elsheikh": [
+    "kafr_elsheikh",
+    "desouk",
+    "baltim",
+    "beila",
+    "hamoul",
+    "fouh"
+  ],
+
+  "gharbia": [
+    "tanta",
+    "mahalla",
+    "zefta",
+    "kafr_elzayat",
+    "santa"
+  ],
+
+  "menoufia": [
+    "shibin_elkom",
+    "menouf",
+    "ashmoun",
+    "tala_menoufia",
+    "berket_elsaba"
+  ],
+
+  "beheira": [
+    "damanhour",
+    "kafr_eldawar",
+    "etay_elbaroud",
+    "rashid",
+    "abou_homs"
+  ],
+
+  "damietta": [
+    "damietta",
+    "ras_elbar",
+    "kafr_saad",
+    "faraskour"
+  ],
+
+  "port_said": [
+    "port_said",
+    "port_fouad"
+  ],
+
+  "suez": [
+    "suez",
+    "ataqa"
+  ],
+
+  "ismailia": [
+    "ismailia",
+    "faid",
+    "kantara_east",
+    "kantara_west"
+  ],
+
+  "beni_suef": [
+    "beni_suef",
+    "wasta",
+    "nasser",
+    "ihnasia"
+  ],
+
+  "fayoum": [
+    "fayoum",
+    "senors",
+    "tamia",
+    "itas"
+  ],
+
+  "minya": [
+    "minya",
+    "maghagha",
+    "beni_mazar",
+    "samalout",
+    "mallawi"
+  ],
+
+  "assiut": [
+    "assiut",
+    "dairout",
+    "manfalout",
+    "abnoub",
+    "qussia"
+  ],
+
+  "sohag": [
+    "sohag",
+    "tahata",
+    "maragha",
+    "girga",
+    "akhmim"
+  ],
+
+  "qena": [
+    "qena",
+    "nag_hammadi",
+    "qift",
+    "dishna",
+    "qous"
+  ],
+
+  "luxor": [
+    "luxor",
+    "bayadiya",
+    "esna",
+    "karnak"
+  ],
+
+  "aswan": [
+    "aswan",
+    "edfo",
+    "kom_ombo",
+    "drau",
+    "nasr_nuba"
+  ],
+
+  "red_sea": [
+    "hurghada",
+    "ras_ghareb",
+    "safaga",
+    "quseir",
+    "marsalam",
+    "halayeb",
+    "shlatin"
+  ],
+
+  "new_valley": [
+    "kharga",
+    "dakhla",
+    "farafra",
+    "balat"
+  ],
+
+  "matrouh": [
+    "matrouh",
+    "hamam",
+    "alamain",
+    "dabaa",
+    "nigela",
+    "sidi_barrani",
+    "salloum"
+  ],
+
+  "north_sinai": [
+    "el_arish",
+    "bir_abeid",
+    "rafah",
+    "sheikh_zoeid",
+    "hasna"
+  ],
+
+  "south_sinai": [
+    "tor",
+    "sharm",
+    "dahab",
+    "nuweiba",
+    "taba",
+    "st_catherine"
+  ]
 }

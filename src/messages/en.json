@@ -1,0 +1,651 @@
+{
+  "locale": "en",
+
+  "header": {
+    "home": "Home",
+    "products": "Products",
+    "login": "Login",
+    "logout": "Logout",
+    "customer": "Customer"
+  },
+   "footer": {
+    "categories": "Categories",
+    "gender": "Gender",
+    "boys": "Boys",
+    "girls": "Girls",
+    "help": "Help Center",
+    "shipping": "Shipping",
+    "faq": "About us",
+    "returns": "Return & Exchange Policy",
+    "follow": "Follow us"
+  },
+   "wishlist": {
+    "loading": "Loading...",
+    "empty": "Your wishlist is empty",
+    "suggested": "Suggested for you"
+  },
+
+  "home": {
+    "hero1Title": "Choose the best for your child",
+    "hero1SubTitle": "Because every day deserves a new look",
+    "shopNow": "Shop Now",
+    "bestSelling": "Best Selling",
+    "hero2Title": "Choose what suits you",
+    "ageCategory": "Choose by age category",
+    "age1": "1 year",
+    "age2": "2 years",
+    "age3": "3 years",
+    "age4": "4 years",
+    "age5": "5 years",
+    "age6": "6 years",
+    "age7": "7 years",
+    "age8": "8 years",
+    "offersTitle": "Our offers are unmissable"
+  },
+
+  "products": {
+    "title_all": "Every piece is made with love for your children",
+    "title_products": "Products",
+    "gender": "Gender",
+    "category": "Category",
+    "all": "All",
+    "boys": "Boys",
+    "girls": "Girls",
+    "no_products": "No products in this category.",
+    "no_products_match": "No products match your filters",
+    "reset_filters": "Reset Filters"
+  },
+
+  "login": {
+    "title": "Login",
+    "email": "Email",
+    "password": "Password",
+    "email_placeholder": "Enter email",
+    "password_placeholder": "Enter password",
+    "login_button": "Login",
+    "no_account": "Don't have an account? Sign up",
+
+    "errors": {
+      "invalid_email": "Invalid email",
+      "invalid_password": "Password must be at least 6 characters",
+      "form": "Please fix errors before login",
+      "server": "Server connection error",
+      "login": "Login failed"
+    }
+  },
+
+  "register": {
+    "title": "Create Account",
+    "submit": "Create Account",
+    "success": "Account created successfully",
+    "login_link": "Already have an account? Login",
+    "have_account": "Already have an account? Login",
+    "select": "Select...",
+    "errors": {
+      "invalid_name": "Name must be at least 3 characters",
+      "invalid_email": "Invalid email",
+      "invalid_password": "Password must be at least 6 characters",
+      "invalid_phone": "Invalid phone number",
+      "password_mismatch": "Passwords do not match",
+      "invalid_gov": "Please select a governorate",
+      "invalid_city": "Please select a city",
+      "invalid_street": "Street address must be at least 5 characters",
+      "form": "Please fix all errors before submitting",
+      "server": "Server connection error"
+    },
+
+    "fields": {
+      "first_name": {
+        "label": "First Name",
+        "placeholder": "Enter your name"
+      },
+      "last_name": {
+        "label": "Last Name",
+        "placeholder": "Enter your name"
+      },
+      "email": {
+        "label": "Email",
+        "placeholder": "Enter email"
+      },
+      "phone": {
+        "label": "Phone Number",
+        "placeholder": "Enter phone number"
+      },
+      "password": {
+        "label": "Password",
+        "placeholder": "Password"
+      },
+      "confirm_password": {
+        "label": "Confirm Password",
+        "placeholder": "Re-enter password"
+      },
+      "gov": {
+        "label": "Governorate"
+      },
+      "city": {
+        "label": "City"
+      },
+      "street": {
+        "label": "Street Address",
+        "placeholder": "Enter street address"
+      }
+    }
+  ,
+  "governorates": {
+    "cairo": "Cairo",
+    "alex": "Alexandria",
+    "giza": "Giza",
+    "dakahlia": "Dakahlia",
+    "sharqia": "Sharqia",
+    "qalyubia": "Qalyubia",
+    "kafr_elsheikh": "Kafr El Sheikh",
+    "gharbia": "Gharbia",
+    "menoufia": "Menoufia",
+    "beheira": "Beheira",
+    "damietta": "Damietta",
+    "port_said": "Port Said",
+    "suez": "Suez",
+    "ismailia": "Ismailia",
+    "beni_suef": "Beni Suef",
+    "fayoum": "Fayoum",
+    "minya": "Minya",
+    "assiut": "Assiut",
+    "sohag": "Sohag",
+    "qena": "Qena",
+    "luxor": "Luxor",
+    "aswan": "Aswan",
+    "red_sea": "Red Sea",
+    "new_valley": "New Valley",
+    "matrouh": "Matrouh",
+    "north_sinai": "North Sinai",
+    "south_sinai": "South Sinai"
+  }
+  ,
+
+  "cities": {
+    "nasr_city": "Nasr City",
+    "heliopolis": "Heliopolis",
+    "maadi": "Maadi",
+    "helwan": "Helwan",
+    "matareya": "Matareya",
+    "shubra": "Shubra",
+    "zaitoun": "Zeitoun",
+    "abbasiya": "Abbasiya",
+    "ain_shams": "Ain Shams",
+    "tagamoa": "New Cairo",
+
+    "sidi_gaber": "Sidi Gaber",
+    "agamy": "Agamy",
+    "moharam_bek": "Moharam Bek",
+    "montaza": "Montaza",
+    "labban": "Labban",
+    "kafr_abdo": "Kafr Abdo",
+    "asafra": "Asafra",
+    "mamoura": "Maamoura",
+
+    "haram": "Haram",
+    "dokki": "Dokki",
+    "agouza": "Agouza",
+    "imbaba": "Imbaba",
+    "6_october": "6th of October",
+    "sheikh_zayed": "Sheikh Zayed",
+    "badrasheen": "Badrasheen",
+
+    "mansoura": "Mansoura",
+    "tala": "Tala",
+    "mit_ghamr": "Mit Ghamr",
+    "senbellawein": "Senbellawein",
+    "aga": "Aga",
+    "tamay_amedid": "Temay El Amdid",
+    "dekernes": "Dekernes",
+
+    "zagazig": "Zagazig",
+    "10_ramadan": "10th of Ramadan",
+    "bilbeis": "Bilbeis",
+    "minya_ghamr": "Minya El Qamh",
+    "faqous": "Faqous",
+    "abou_hammad": "Abu Hammad",
+
+    "banha": "Banha",
+    "shubra_kheima": "Shubra El Kheima",
+    "qalyub": "Qalyub",
+    "khanka": "Khanka",
+    "qanater": "El Qanater",
+    "khusus": "El Khosous",
+
+    "kafr_elsheikh": "Kafr El Sheikh",
+    "desouk": "Desouk",
+    "baltim": "Baltim",
+    "beila": "Beila",
+    "hamoul": "El Hamoul",
+    "fouh": "Fouh",
+
+    "tanta": "Tanta",
+    "mahalla": "El Mahalla",
+    "zefta": "Zefta",
+    "kafr_elzayat": "Kafr El Zayat",
+    "santa": "Santa",
+
+    "shibin_elkom": "Shibin El Kom",
+    "menouf": "Menouf",
+    "ashmoun": "Ashmoun",
+    "tala_menoufia": "Tala",
+    "berket_elsaba": "Berket El Sabaa",
+
+    "damanhour": "Damanhour",
+    "kafr_eldawar": "Kafr El Dawar",
+    "etay_elbaroud": "Itay El Baroud",
+    "rashid": "Rashid",
+    "abou_homs": "Abu Homs",
+
+    "damietta": "Damietta",
+    "ras_elbar": "Ras El Bar",
+    "kafr_saad": "Kafr Saad",
+    "faraskour": "Faraskour",
+
+    "port_said": "Port Said",
+    "port_fouad": "Port Fouad",
+
+    "suez": "Suez",
+    "ataqa": "Ataqa",
+
+    "ismailia": "Ismailia",
+    "faid": "Fayed",
+    "kantara_east": "East Qantara",
+    "kantara_west": "West Qantara",
+
+    "beni_suef": "Beni Suef",
+    "wasta": "Wasta",
+    "nasser": "Nasser",
+    "ihnasia": "Ihnasiya",
+
+    "fayoum": "Fayoum",
+    "senors": "Senores",
+    "tamia": "Tamia",
+    "itas": "Itsa",
+
+    "minya": "Minya",
+    "maghagha": "Maghagha",
+    "beni_mazar": "Beni Mazar",
+    "samalout": "Samalout",
+    "mallawi": "Mallawi",
+
+    "assiut": "Assiut",
+    "dairout": "Dayrout",
+    "manfalout": "Manfalout",
+    "abnoub": "Abnoub",
+    "qussia": "Qusiya",
+
+    "sohag": "Sohag",
+    "tahata": "Tahta",
+    "maragha": "Maragha",
+    "girga": "Girga",
+    "akhmim": "Akhmim",
+
+    "qena": "Qena",
+    "nag_hammadi": "Nag Hammadi",
+    "qift": "Qift",
+    "dishna": "Dishna",
+    "qous": "Qous",
+
+    "luxor": "Luxor",
+    "bayadiya": "Al Bayadiya",
+    "esna": "Esna",
+    "karnak": "Karnak",
+
+    "aswan": "Aswan",
+    "edfo": "Edfu",
+    "kom_ombo": "Kom Ombo",
+    "drau": "Drau",
+    "nasr_nuba": "Nasr Nubia",
+
+    "hurghada": "Hurghada",
+    "ras_ghareb": "Ras Ghareb",
+    "safaga": "Safaga",
+    "quseir": "El Quseir",
+    "marsalam": "Marsa Alam",
+    "halayeb": "Halayeb",
+    "shlatin": "Shalateen",
+
+    "kharga": "Kharga",
+    "dakhla": "Dakhla",
+    "farafra": "Farafra",
+    "balat": "Balat",
+
+    "matrouh": "Matrouh",
+    "hamam": "El Hamam",
+    "alamain": "El Alamein",
+    "dabaa": "El Dabaa",
+    "nigela": "Negila",
+    "sidi_barrani": "Sidi Barrani",
+    "salloum": "Salloum",
+
+    "el_arish": "El Arish",
+    "bir_abeid": "Bir El Abd",
+    "rafah": "Rafah",
+    "sheikh_zoeid": "Sheikh Zuweid",
+    "hasna": "Hasna",
+
+    "tor": "El Tor",
+    "sharm": "Sharm El Sheikh",
+    "dahab": "Dahab",
+    "nuweiba": "Nuweiba",
+    "taba": "Taba",
+    "st_catherine": "Saint Catherine"
+  }
+},
+  "account": {
+    "loading": "Loading...",
+    "save": "Save",
+    "edit": "Edit",
+    "user_account": "User Account",
+
+    "tabs": {
+      "personal": "Personal Info",
+      "orders": "Orders",
+      "addresses": "Addresses"
+    },
+
+    "fields": {
+      "first_name": "First Name",
+      "last_name": "Last Name",
+      "email": "Email",
+      "phone": "Phone Number",
+      "city": "City",
+      "governorate": "Governorate",
+      "street": "Address"
+    },
+
+    "orders": {
+      "empty": "No orders yet"
+    },
+
+    "addresses": {
+      "empty": "No saved addresses"
+    }
+  },
+  "cart": {
+  "title": "Shopping Cart",
+  "empty": "Your cart is empty",
+  "empty_sub": "You haven’t added any products yet",
+  "browse": "Browse Products",
+  "table": {
+    "image": "Image",
+    "product": "Product",
+    "size": "Size",
+    "color": "Color",
+    "qty": "Quantity",
+    "price": "Price",
+    "delete": "Delete"
+  },
+  "total": "Total",
+  "checkout": "Checkout",
+  "suggested": "You may also like"
+},
+  "productDetails": {
+    "loading": "Loading...",
+    "description": "Description",
+    "product_not_found": "Product not found",
+    "toast_add_cart": "Product added to cart",
+    "colors": "Colors",
+    "material":"Material",
+    "quntity": "Quantity",
+    "size": "Size",
+    "add_to_cart": "Add to cart",
+    "login_required_title": "Notice",
+    "login_required_desc": "You need to login first",
+    "cancel": "Cancel",
+    "login": "Login",
+    "price": "Price"
+  },
+  "aboutus": {
+    "title": "About Us",
+    "intro_1": "We are a platform specialized in offering high-quality products at affordable prices.",
+    "intro_2": "Our goal is to provide a simple, fast, and secure shopping experience for all customers.",
+
+    "vision_title": "Our Vision",
+    "vision_desc": "We aim to become one of the leading e-commerce platforms in the region by delivering excellent services and a great user experience.",
+
+    "mission_title": "Our Mission",
+    "mission_desc": "We provide high-quality products with fast support and excellent customer service to ensure customer satisfaction.",
+
+    "why_title": "Why Choose Us?",
+    "why_1": "High-quality products",
+    "why_2": "Competitive prices",
+    "why_3": "Fast support",
+    "why_4": "Easy user experience",
+
+    "rights": "All rights reserved"
+  },
+    "forgotPassword": {
+    "title": "Forgot Password",
+    "email_label": "Email",
+    "email_placeholder": "Enter your email",
+    "send": "Send OTP",
+    "sending": "Sending...",
+    "error_default": "Something went wrong",
+    "network_error": "Network error"
+  },
+    "resetPassword": {
+    "title": "Reset Password",
+    "otp_label": "OTP Code",
+    "password_label": "New Password",
+    "confirm_label": "Confirm Password",
+    "submit": "Reset Password",
+    "success": "Password changed successfully",
+    "error_default": "Something went wrong, try again"
+  },
+  "common": {
+    "loading": "Loading..."
+  },
+   "adminHeader": {
+    "dashboard": "Dashboard",
+    "products": "Products",
+    "categories": "Categories",
+    "orders": "Orders",
+    "clients": "Clients",
+    "logout": "Logout",
+    "hello": "Hello,",
+    "settings": "Settings"
+  },
+   "availableCategory": {
+    "name": "Category Name",
+    "type": "Category Type",
+    "status": "Status",
+    "actions": "Details / Edit / Delete",
+    "available": "Available",
+    "notAvailable": "Not Available",
+    "noData": "No data available",
+    "addFirst": "Add First Category",
+    "addNew": "Add New Category",
+    "title": "Available Categories",
+    "typeAll": "All",
+    "typeBoys": "Boys",
+    "typeGirls": "Girls"
+  },
+  "availableProducts": {
+    "name": "Product Name",
+    "image": "Product Image",
+    "price": "Price",
+    "stock": "Stock",
+    "status": "Status",
+    "actions": "View / Edit / Delete",
+
+    "title": "Available Products",
+
+    "addFirst": "Add First Product",
+    "addNew": "Add New Product",
+
+    "noData": "No data available",
+
+    "age": "Age Range",
+    "category": "Category",
+    "type": "Type",
+
+    "typeAll": "All",
+    "typeBoys": "Boys",
+    "typeGirls": "Girls",
+
+    "type1Y": "1 Year",
+    "type2Y": "2 Years",
+    "type3Y": "3 Years",
+    "type4Y": "4 Years",
+    "type5Y": "5 Years",
+    "type6Y": "6 Years",
+    "type7Y": "7 Years",
+    "type8Y": "8 Years",
+
+    "available": "Available",
+    "notAvailable": "Unavailable",
+
+    "errors": {
+      "load": "Error loading data",
+      "delete": "Error deleting product",
+      "loginRequired": "You must login first",
+      "unexpected": "Unexpected error occurred"
+    },
+
+    "success": {
+      "delete": "Product deleted successfully"
+    },
+
+    "confirm": {
+      "title": "Are you sure?",
+      "text": "You won't be able to revert this!",
+      "confirm": "Yes, delete",
+      "cancel": "Cancel"
+    }
+  },
+  "errors": {
+    "unexpected": "An unexpected error occurred",
+    "load": "Error loading data",
+    "delete": "Error while deleting",
+    "deleteFail": "Failed to delete category"
+  },
+  "confirm": {
+    "title": "Are you sure?",
+    "text": "You won't be able to undo this action!",
+    "confirm": "Yes, delete",
+    "cancel": "Cancel"
+  },
+  "success": {
+    "delete": "Category deleted successfully"
+  }
+  ,"categoryForm": {
+    "titleAdd": "Add New Category",
+    "titleEdit": "Edit Category",
+
+    "arNameLabel": "Category Name (Arabic)",
+    "enNameLabel": "Category Name (English)",
+
+    "typeLabel": "Category Type",
+    "typePlaceholder": "Select type",
+    "typeAll": "All",
+    "typeBoys": "Boys",
+    "typeGirls": "Girls",
+
+    "submitAdd": "Add Category",
+    "submitEdit": "Update Category",
+    "saving": "Saving..."
+  },
+
+  "validation": {
+    "arNameRequired": "Arabic category name is required",
+    "enNameRequired": "English category name is required"
+  },
+  "shipping": {
+  "title": "Shipping Settings",
+  "governorate": "Governorate",
+  "price": "Price",
+  "active": "Status",
+  "save": "Save",
+  "active_btn": "Active",
+  "inactive_btn": "Inactive",
+  "loading": "Loading...",
+  "toast_update_success": "shipping cost updated successfully",
+  "toast_update_error": "Error updating shipping cost"
+},
+"heroSettings": {
+  "title": "Home Table",
+  "position": "Position",
+  "titleCol": "Title",
+  "image": "Image",
+  "action": "Action",
+  "edit": "Edit",
+  "noImage": "No Image",
+  "ar": "Arabic",
+  "en": "English"
+},
+"editHero": {
+  "title": "Edit Hero",
+  "loading": "Loading...",
+  "notFound": "No hero found",
+  "titleAr": "Title AR",
+  "titleEn": "Title EN",
+  "subtitleAr": "Subtitle AR",
+  "subtitleEn": "Subtitle EN",
+  "titleColor": "Title Color",
+  "subtitleColor": "Subtitle Color",
+  "buttonTextColor": "Button Text Color",
+  "buttonBgColor": "Button Background",
+  "save": "Save Changes",
+  "savedSuccess": "Saved successfully!",
+  "saveError": "Error saving changes. Please try again."
+},
+ "cart": {
+    "title": "Shopping Cart",
+    "empty": "Your cart is empty",
+    "empty_sub": "You have no items in your cart",
+    "browse": "Browse Products",
+    "total": "Total",
+    "checkout": "Checkout",
+    "suggested": "Suggested Products",
+
+    "table": {
+      "image": "Image",
+      "product": "Product",
+      "size": "Size",
+      "color": "Color",
+      "qty": "Qty",
+      "price": "Price",
+      "delete": "Delete"
+    },
+
+    "actions": {
+      "remove": "Remove",
+      "update": "Update",
+      "loading": "Loading..."
+    },
+
+    "messages": {
+      "added": "Product added to cart",
+      "removed": "Product removed from cart",
+      "updated": "Cart updated"
+    }
+  },
+   "orderDetails": {
+    "title": "Order Details",
+    "loading": "Loading...",
+    "customerInfo": "Customer Info",
+    "orderInfo": "Order Info",
+    "address": "Shipping Address",
+    "items": "Items",
+    "changeStatus": "Change Status",
+
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "total": "Total",
+
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "shipped": "Shipped",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled"
+    }
+  }
+
+
+
+
+}

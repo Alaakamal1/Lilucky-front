@@ -7,71 +7,79 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
+import LanguageIcon from "@mui/icons-material/Language";
 import SearchInput from "../ui/input";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/src/context/UserContext";
 import Avatar from "../ui/Avatar";
 import { useCartWishlist } from "@/src/context/CartWishlistContext";
-
-/* ================= TYPES ================= */
-
-type User = {
-  firstName?: string;
-};
-
-/* ================= COMPONENT ================= */
+import { useTranslations, useLocale } from "next-intl";
 
 export default function Header() {
-  const [menuOpen, setMenuOpen] = useState<boolean>(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const { user, setUser } = useUser();
-  const { cart, wishlist } = useCartWishlist(); 
-  // 👈 مهم: بدون أي cast نهائيًا
+  const { cart, wishlist } = useCartWishlist();
 
+  const t = useTranslations("header");
+  const locale = useLocale();
   const router = useRouter();
 
   const fName = user?.firstName ?? null;
   const isAuth = Boolean(user);
 
+  const toggleMenu = () => setMenuOpen((p) => !p);
+  const closeMenu = () => setMenuOpen(false);
+
+  /* ================= LANGUAGE ================= */
+  const toggleLanguage = () => {
+    const newLocale = locale === "ar" ? "en" : "ar";
+    const path = window.location.pathname.replace(/^\/(ar|en)/, "");
+    router.push(`/${newLocale}${path}`);
+  };
+
   /* ================= LOGOUT ================= */
-
   const handleLogout = () => {
-    if (typeof window !== "undefined") {
-      sessionStorage.removeItem("token");
-      sessionStorage.removeItem("firstName");
-    }
-
-    setUser(null); // ✔ بدون any
-    router.replace("/customer/login");
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("firstName");
+    setUser(null);
+    router.replace(`/${locale}/customer/login`);
   };
 
   /* ================= LINKS ================= */
-
-  const links: { href: string; label: string }[] = [
-    { href: "/customer", label: "الصفحه الرئيسيه" },
-    { href: "/customer/products", label: "منتجاتنا" },
+  const links = [
+    { href: `/${locale}/customer`, label: t("home") },
+    { href: `/${locale}/customer/products`, label: t("products") },
   ];
 
   return (
-    <header className="w-full bg-thirdary text-primary font-semibold shadow-md">
+    <header className="w-full bg-thirdary  text-primary font-semibold shadow-md relative z-50">
 
       {/* TOP BAR */}
       <div className="flex justify-between items-center px-4 py-2 md:justify-center relative md:bg-background">
 
-        <Link href="/">
-          <Image src="/Lilucky.svg" alt="logo" width={80} height={80} />
+        <Link href={`/${locale}/customer`}>
+          <Image
+            src="/Lilucky.svg"
+            alt="logo"
+            width={80}
+            height={80}
+            priority
+            className="w-20 h-auto"
+          />
+
         </Link>
 
         <button
           className="md:hidden absolute left-4"
-          onClick={() => setMenuOpen((p) => !p)}
+          onClick={toggleMenu}
         >
           {menuOpen ? <CloseIcon /> : <MenuIcon />}
         </button>
       </div>
 
-      {/* DESKTOP */}
-      <nav className="hidden md:flex justify-evenly items-center py-2">
+      {/* DESKTOP NAV */}
+      <nav className="hidden md:flex justify-evenly items-center py-3">
 
         {links.map((link) => (
           <Link key={link.href} href={link.href}>
@@ -80,17 +88,23 @@ export default function Header() {
         ))}
 
         {fName ? (
-          <button onClick={handleLogout}>تسجيل الخروج</button>
+          <button onClick={handleLogout}>{t("logout")}</button>
         ) : (
-          <Link href="/customer/login">تسجيل الدخول</Link>
+          <Link href={`/${locale}/customer/login`}>{t("login")}</Link>
         )}
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 ">
 
-          <SearchInput />
+          {/* <SearchInput /> */}
 
-          {/* Wishlist */}
-          <Link href="/customer/wishlist" className="relative">
+          <button onClick={toggleLanguage} className="flex items-center gap-1">
+            <LanguageIcon />
+            <span className="text-xs">
+              {locale === "ar" ? "AR" : "EN"}
+            </span>
+          </button>
+
+          <Link href={`/${locale}/customer/wishlist`} className="relative">
             <FavoriteBorderIcon />
             {wishlist?.length > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs min-w-[20px] h-5 px-1 flex items-center justify-center rounded-full">
@@ -99,8 +113,7 @@ export default function Header() {
             )}
           </Link>
 
-          {/* Cart */}
-          <Link href="/customer/cart" className="relative">
+          <Link href={`/${locale}/customer/cart`} className="relative">
             <ShoppingCartOutlinedIcon />
             {cart?.length > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs min-w-[20px] h-5 px-1 flex items-center justify-center rounded-full">
@@ -110,7 +123,7 @@ export default function Header() {
           </Link>
 
           {isAuth && (
-            <Link href="/customer/account">
+            <Link href={`/${locale}/customer/account`}>
               <Avatar fName={fName ?? ""} />
             </Link>
           )}
@@ -118,71 +131,75 @@ export default function Header() {
         </div>
       </nav>
 
-      {/* MOBILE */}
+      {/* ================= MOBILE FLOATING MENU ================= */}
       {menuOpen && (
-        <nav className="flex flex-col items-center gap-4 py-4 md:hidden">
+        <>
+          {/* BACKDROP */}
+          <div
+            className="fixed inset-0 bg-black/40 z-40"
+            onClick={closeMenu}
+          />
 
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => setMenuOpen(false)}
-            >
-              {link.label}
-            </Link>
-          ))}
+          {/* MENU */}
+          <div className="fixed top-0 left-0 w-full z-50 bg-thirdary shadow-lg flex flex-col gap-4 px-4 py-6">
 
-          {fName ? (
-            <>
-              <span>مرحباً، {fName}</span>
-
-              <button
-                onClick={() => {
-                  handleLogout();
-                  setMenuOpen(false);
-                }}
-              >
-                تسجيل الخروج
+            {/* CLOSE BUTTON (X) */}
+            <div className="flex justify-end">
+              <button onClick={closeMenu}>
+                <CloseIcon />
               </button>
-            </>
-          ) : (
-            <Link
-              href="/customer/login"
-              onClick={() => setMenuOpen(false)}
-            >
-              تسجيل الدخول
-            </Link>
-          )}
+            </div>
 
-          <div className="flex gap-4">
+            {links.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={closeMenu}
+              >
+                {link.label}
+              </Link>
+            ))}
 
-            <Link href="/customer/wishlist" className="relative">
-              <FavoriteBorderIcon />
-              {wishlist?.length > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-                  {wishlist.length}
-                </span>
-              )}
-            </Link>
-
-            <Link href="/customer/cart" className="relative">
-              <ShoppingCartOutlinedIcon />
-              {cart?.length > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-                  {cart.length}
-                </span>
-              )}
-            </Link>
-
-            {isAuth && (
-              <Link href="/customer/account">
-                <Avatar fName={fName ?? ""} />
+            {fName ? (
+              <button onClick={() => { handleLogout(); closeMenu(); }}>
+                {t("logout")}
+              </button>
+            ) : (
+              <Link href={`/${locale}/customer/login`} onClick={closeMenu}>
+                {t("login")}
               </Link>
             )}
 
+            <div className="flex items-center gap-4">
+
+              {/* <SearchInput /> */}
+
+              <button onClick={toggleLanguage} className="flex items-center gap-1">
+                <LanguageIcon />
+                <span className="text-xs">
+                  {locale === "ar" ? "AR" : "EN"}
+                </span>
+              </button>
+
+              <Link href={`/${locale}/customer/wishlist`} onClick={closeMenu}>
+                <FavoriteBorderIcon />
+              </Link>
+
+              <Link href={`/${locale}/customer/cart`} onClick={closeMenu}>
+                <ShoppingCartOutlinedIcon />
+              </Link>
+
+              {isAuth && (
+                <Link href={`/${locale}/customer/account`} onClick={closeMenu}>
+                  <Avatar fName={fName ?? ""} />
+                </Link>
+              )}
+
+            </div>
           </div>
-        </nav>
+        </>
       )}
+
     </header>
   );
 }
