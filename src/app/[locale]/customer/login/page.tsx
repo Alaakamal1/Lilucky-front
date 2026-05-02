@@ -12,6 +12,7 @@ import { apiClient } from "@/src/utils/apiClient";
 import { useUser } from "@/src/context/UserContext";
 import { AxiosError } from "axios";
 import { useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
 
 const validateEmail = (value: string) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -35,7 +36,7 @@ const Page = () => {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [formError, setFormError] = useState("");
-
+  const locale = useLocale();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -72,9 +73,8 @@ const Page = () => {
           await mergeWishlist();
         }
 
-        if (role === "client") router.push("/customer/products");
-        else if (role === "admin") router.push("/admin");
-
+        if (role === "client") router.push(`/${locale}/customer/products`);
+        else if (role === "admin") router.push(`/${locale}/admin`);
       } else {
         setFormError(result.message || t("errors.login"));
       }
@@ -169,7 +169,7 @@ const Page = () => {
 
             {/* Signup link */}
             <div className="flex justify-between">
-              <Link href="/customer/signup">
+              <Link href={`/${locale}/customer/signup`}>
                 <Typography className="text-secondary-text hover:secondary-text-hover cursor-pointer">
                   {t("no_account")}
                 </Typography>
@@ -196,6 +196,8 @@ const Page = () => {
           className="object-cover"
           priority
         />
+
+        
       </div>
 
     </div>

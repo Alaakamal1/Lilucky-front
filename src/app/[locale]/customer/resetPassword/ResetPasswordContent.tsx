@@ -85,11 +85,11 @@ import { Endpoints } from "@/src/utils/endpoints";
 import InputField from "@/src/components/ui/InputField";
 import MainButton from "@/src/components/ui/MainButton";
 import { Typography } from "@mui/material";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 const ResetPasswordPage = () => {
   const t = useTranslations("resetPassword");
-
+  const locale = useLocale();
   const searchParams = useSearchParams();
   const email = searchParams.get("email") || "";
   const router = useRouter();
@@ -116,7 +116,7 @@ const ResetPasswordPage = () => {
 
       if (res.status === 200) {
         setMessage(t("success"));
-        router.push("/customer/login");
+        router.push(`/${locale}/customer/login`);
       }
 
     } catch (err: unknown) {

@@ -1,258 +1,3 @@
-// "use client";
-
-// import { useEffect, useState } from "react";
-// import MainButton from "@/src/components/ui/MainButton";
-// import { Typography } from "@mui/material";
-// import Link from "next/link";
-// import RemoveShoppingCartSharpIcon from "@mui/icons-material/RemoveShoppingCartSharp";
-// import { useRouter } from "next/navigation";
-// import Counter from "@/src/components/ui/Counter";
-// import { apiClient } from "@/src/utils/apiClient";
-// import { Endpoints } from "@/src/utils/endpoints";
-// import { Cart } from "@/src/interfaces/Cart";
-// import { Product } from "@/src/interfaces/product";
-
-// /* ================= TYPES ================= */
-
-
-// const Page = () => {
-//   const router = useRouter();
-//   const [cart, setCart] = useState<Cart[]>(() => {
-//     if (typeof window !== 'undefined') {
-//       return JSON.parse(sessionStorage.getItem("cart") || "[]") as Cart[];
-//     }
-//     return [];
-//   });
-//   const [suggestedProducts, setSuggestedProducts] = useState<Product[]>([]);
-
-//   /* ================= FETCH SUGGESTED ================= */
-//   useEffect(() => {
-//     const fetchProducts = async () => {
-//       try {
-//         const token = sessionStorage.getItem("token");
-//         const res = await apiClient.get(`${Endpoints.cart}/cart`, {
-//           headers: token
-//             ? { Authorization: `Bearer ${token}` }
-//             : undefined,
-//         });
-//         if (res.status !== 200) return;
-//         setSuggestedProducts(res.data?.cart?.slice(0, 4) || []);
-//       } catch (err) {
-//         console.error(err);
-//       }
-//     };
-
-//     fetchProducts();
-//   }, []);
-
-//   /* ================= TOTAL ================= */
-//   const totalPrice = cart.reduce(
-//     (sum, item) => sum + item.price * item.quantity,
-//     0
-//   );
-
-//   /* ================= SAVE ================= */
-//   const saveCart = (updated: Cart[]) => {
-//     setCart(updated);
-//     sessionStorage.setItem("cart", JSON.stringify(updated));
-//   };
-
-//   const removeItem = (index: number) => {
-//     const updated = [...cart];
-//     updated.splice(index, 1);
-//     saveCart(updated);
-//   };
-
-//   const updateQuantity = (index: number, value: number) => {
-//     if (value < 1) return;
-//     const updated = [...cart];
-//     updated[index].quantity = value;
-//     saveCart(updated);
-//   };
-
-//   /* ================= EMPTY ================= */
-//   if (!cart.length) {
-//     return (
-//       <div className="min-h-screen flex flex-col items-center justify-center text-center">
-//         <RemoveShoppingCartSharpIcon fontSize="large" />
-
-//         <Typography variant="h5" className="mt-4 text-primary">
-//           السلة فارغة
-//         </Typography>
-
-//         <Typography className="text-gray-500 mt-2">
-//           لم تقم بإضافة أي منتجات بعد
-//         </Typography>
-
-//         <Link href="/customer/products">
-//           <MainButton
-//             text="تصفح المنتجات"
-//             className="mt-6 bg-primary text-white px-6 py-2"
-//           />
-//         </Link>
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="min-h-screen px-4 md:px-10 py-6 bg-background">
-
-//       {/* TITLE */}
-//       <Typography variant="h4" className="text-primary mb-6">
-//         سلة المشتريات
-//       </Typography>
-
-//       <div className="flex flex-col lg:flex-row gap-6 items-start">
-
-//         {/* ================= TABLE ================= */}
-//         <div className="flex-1">
-
-//           <div className="overflow-x-auto rounded-lg border border-gray-200">
-
-//             <table className="w-full text-center text-sm">
-
-//               <thead className="bg-primary/10 text-primary">
-//                 <tr>
-//                   <th className="p-3">الصورة</th>
-//                   <th>المنتج</th>
-//                   <th>المقاس</th>
-//                   <th>اللون</th>
-//                   <th>الكمية</th>
-//                   <th>السعر</th>
-//                   <th>حذف</th>
-//                 </tr>
-//               </thead>
-
-//               <tbody>
-
-//                 {cart.map((item, index) => (
-//                   <tr
-//                     key={index}
-//                     className="border-b hover:bg-gray-50 transition"
-//                     onClick={() =>
-//                       router.push(`/product/${item.productId}`)
-//                     }
-//                   >
-
-//                     <td className="p-2 flex justify-center">
-//                       <img
-//                         src={item.image}
-//                         className="w-14 h-14 rounded object-cover"
-//                       />
-//                     </td>
-
-//                     <td className="text-gray-700">{item.name}</td>
-//                     <td>{item.size}</td>
-
-//                     <td>
-//                       <div
-//                         className="w-5 h-5 rounded-full mx-auto border"
-//                         style={{ backgroundColor: item.color }}
-//                       />
-//                     </td>
-
-//                     <td onClick={(e) => e.stopPropagation()}>
-//                       <Counter
-//                         value={item.quantity}
-//                         onChange={(val) =>
-//                           updateQuantity(index, val)
-//                         }
-//                         max={item.stock || 99}
-//                       />
-//                     </td>
-
-//                     {/* 💰 PRICE (smaller + styled) */}
-//                     <td className="text-primary font-medium text-sm">
-//                       {(item.price * item.quantity).toFixed(2)} EGY
-//                     </td>
-
-//                     <td>
-//                       <button
-//                         onClick={(e) => {
-//                           e.stopPropagation();
-//                           removeItem(index);
-//                         }}
-//                         className="text-red-500 hover:text-red-700 text-sm"
-//                       >
-//                         حذف
-//                       </button>
-//                     </td>
-
-//                   </tr>
-//                 ))}
-
-//               </tbody>
-//             </table>
-//           </div>
-//         </div>
-
-//         {/* ================= SUMMARY ================= */}
-//         <div className="w-full lg:w-72 border rounded-lg p-5 shadow-sm bg-white">
-
-//           <Typography variant="h6" className="text-primary mb-2">
-//             الإجمالي
-//           </Typography>
-
-//           <Typography variant="h5" className="text-secondary-text mb-4">
-//             {totalPrice.toFixed(2)} EGY
-//           </Typography>
-
-//           <Link href={"/customer/checkout"}>
-//           <MainButton
-//             text="إتمام الشراء"
-//             className="w-full bg-primary text-white py-3 cursor-pointer duration-300 ease-in-out rounded-md  text-xl my-4 hover:bg-primary-hover"
-//           />
-//           </Link>
-
-//         </div>
-//       </div>
-
-//       {/* ================= SUGGESTED ================= */}
-//       <div className="mt-10">
-
-//         <Typography variant="h5" className="text-primary text-center mb-6">
-//           منتجات ممكن تعجبك
-//         </Typography>
-
-//         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-
-//           {suggestedProducts.map((product) => (
-//             <div
-//               key={product._id}
-//               className="border rounded-lg p-3 cursor-pointer hover:shadow-md transition"
-//               onClick={() =>
-//                 router.push(`/product/${product._id}`)
-//               }
-//             >
-//               <img
-//                 src={
-//                   product?.variants?.[0]?.images?.[0]?.startsWith("http")
-//                     ? product.variants[0].images[0]
-//                     : `${Endpoints.prodUrl}/uploads/products/${product?.variants?.[0]?.images?.[0]}`
-//                 }
-//                 className="w-full h-40 object-cover rounded"
-//               />
-
-//               <p className="mt-2 font-medium text-sm">
-//                 {product.name}
-//               </p>
-
-//               <p className="text-primary text-sm">
-//                 {product.price} EGY
-//               </p>
-
-//             </div>
-//           ))}
-
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Page;
-
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -260,77 +5,124 @@ import MainButton from "@/src/components/ui/MainButton";
 import { Typography } from "@mui/material";
 import Link from "next/link";
 import RemoveShoppingCartSharpIcon from "@mui/icons-material/RemoveShoppingCartSharp";
-import { useRouter } from "next/navigation";
 import Counter from "@/src/components/ui/Counter";
 import { apiClient } from "@/src/utils/apiClient";
 import { Endpoints } from "@/src/utils/endpoints";
-import { Cart } from "@/src/interfaces/Cart";
-import { Product } from "@/src/interfaces/product";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 
-const Page = () => {
+/* ================= TYPES ================= */
+
+type CartItem = {
+  _id: string;
+
+  productId: {
+    _id: string;
+    name: string;
+    price: number;
+    stock?: number;
+    variants?: {
+      images?: string[];
+    }[];
+  } | null;
+
+  quantity: number;
+};
+
+export default function CartPage() {
   const t = useTranslations("cart");
-  const router = useRouter();
+  const locale = useLocale();
 
-  const [cart, setCart] = useState<Cart[]>(() => {
-    if (typeof window !== "undefined") {
-      return JSON.parse(sessionStorage.getItem("cart") || "[]") as Cart[];
-    }
-    return [];
-  });
+  const [items, setItems] = useState<CartItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const [suggestedProducts, setSuggestedProducts] = useState<Product[]>([]);
+  /* ================= FETCH CART ================= */
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchCart = async () => {
       try {
         const token = sessionStorage.getItem("token");
 
-        const res = await apiClient.get(`${Endpoints.cart}/cart`, {
-          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        const res = await apiClient.get(`${Endpoints.cart}/get-cart`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
 
-        if (res.status !== 200) return;
+        const cart = res.data?.data?.cart;
 
-        setSuggestedProducts(res.data?.cart?.slice(0, 4) || []);
+        setItems(cart?.items || []);
       } catch (err) {
-        console.error(err);
+        console.error("cart error:", err);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchProducts();
+    fetchCart();
   }, []);
 
-  const totalPrice = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
+  /* ================= REMOVE ITEM ================= */
 
-  const saveCart = (updated: Cart[]) => {
-    setCart(updated);
-    sessionStorage.setItem("cart", JSON.stringify(updated));
+  const removeItem = async (index: number) => {
+    try {
+      const token = sessionStorage.getItem("token");
+
+      const item = items[index];
+
+      if (!item?.productId) return;
+
+      await apiClient.delete(
+        `${Endpoints.cart}/remove-from-cart/${item.productId._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const updated = [...items];
+      updated.splice(index, 1);
+
+      setItems(updated);
+    } catch (err) {
+      console.error("delete error:", err);
+    }
   };
 
-  const removeItem = (index: number) => {
-    const updated = [...cart];
-    updated.splice(index, 1);
-    saveCart(updated);
-  };
+  /* ================= UPDATE QTY ================= */
 
   const updateQuantity = (index: number, value: number) => {
     if (value < 1) return;
-    const updated = [...cart];
+
+    const updated = [...items];
     updated[index].quantity = value;
-    saveCart(updated);
+
+    setItems(updated);
   };
 
+  /* ================= TOTAL ================= */
+
+  const totalPrice = items.reduce((sum, item) => {
+    if (!item.productId) return sum;
+
+    return sum + item.productId.price * item.quantity;
+  }, 0);
+
   /* ================= EMPTY ================= */
-  if (!cart.length) {
+
+  if (!loading && items.length === 0) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center text-center">
-        <RemoveShoppingCartSharpIcon fontSize="large" />
 
-        <Typography variant="h5" className="mt-4 text-primary">
+        <RemoveShoppingCartSharpIcon
+          className="text-primary"
+          sx={{ fontSize: 80 }}
+        />
+
+        <Typography
+          variant="h5"
+          className="mt-4 text-primary font-bold"
+        >
           {t("empty")}
         </Typography>
 
@@ -338,144 +130,174 @@ const Page = () => {
           {t("empty_sub")}
         </Typography>
 
-        <Link href="/customer/products">
+        <Link href={`/${locale}/customer/products`}>
           <MainButton
             text={t("browse")}
-            className="mt-6 bg-primary text-white px-6 py-2"
+            className="mt-6 bg-primary text-white px-6 py-3"
           />
         </Link>
+
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen px-4 md:px-10 py-6 bg-background">
+  /* ================= UI ================= */
 
-      <Typography variant="h4" className="text-primary mb-6">
+  return (
+    <div className="min-h-screen bg-background px-4 md:px-10 py-8">
+
+      {/* TITLE */}
+      <Typography
+        variant="h4"
+        className="text-primary mb-8 font-bold"
+      >
         {t("title")}
       </Typography>
 
-      <div className="flex flex-col lg:flex-row gap-6 items-start">
+      <div className="flex flex-col lg:flex-row gap-6">
 
-        {/* TABLE */}
-        <div className="flex-1 overflow-x-auto rounded-lg border">
+        {/* ================= TABLE ================= */}
+        <div className="flex-1 overflow-x-auto rounded-2xl border border-gray-200 bg-white shadow-sm">
 
-          <table className="w-full text-center text-sm">
+          <table className="w-full min-w-[700px] text-sm">
 
-            <thead className="bg-primary/10 text-primary">
+            <thead className="bg-thirdary text-primary">
               <tr>
-                <th>{t("table.image")}</th>
-                <th>{t("table.product")}</th>
-                <th>{t("table.size")}</th>
-                <th>{t("table.color")}</th>
-                <th>{t("table.qty")}</th>
-                <th>{t("table.price")}</th>
-                <th>{t("table.delete")}</th>
+                <th className="py-4 px-4 text-start">
+                  Image
+                </th>
+
+                <th className="py-4 px-4 text-start">
+                  {t("table.product")}
+                </th>
+
+                <th className="py-4 px-4 text-center">
+                  {t("table.qty")}
+                </th>
+
+                <th className="py-4 px-4 text-center">
+                  {t("table.price")}
+                </th>
+
+                <th className="py-4 px-4 text-center">
+                  {t("table.delete")}
+                </th>
               </tr>
             </thead>
 
             <tbody>
-              {cart.map((item, index) => (
-                <tr
-                  key={index}
-                  className="border-b hover:bg-gray-50"
-                  onClick={() => router.push(`/product/${item.productId}`)}
-                >
-                  <td>
-                    <img src={item.image} className="w-14 h-14 rounded" />
-                  </td>
 
-                  <td>{item.name}</td>
-                  <td>{item.size}</td>
+              {items.map((item, index) => {
 
-                  <td>
-                    <div
-                      className="w-5 h-5 rounded-full mx-auto border"
-                      style={{ backgroundColor: item.color }}
-                    />
-                  </td>
+                const image =
+                  item.productId?.variants?.[0]?.images?.[0];
 
-                  <td onClick={(e) => e.stopPropagation()}>
-                    <Counter
-                      value={item.quantity}
-                      onChange={(val) => updateQuantity(index, val)}
-                      max={item.stock || 99}
-                    />
-                  </td>
+                return (
+                  <tr
+                    key={item._id}
+                    className="border-b border-gray-100 hover:bg-gray-50 duration-200"
+                  >
 
-                  <td className="text-primary font-medium text-sm">
-                    {(item.price * item.quantity).toFixed(2)} EGY
-                  </td>
+                    {/* IMAGE */}
+                    <td className="px-4 py-4">
 
-                  <td>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        removeItem(index);
-                      }}
-                      className="text-red-500"
-                    >
-                      {t("table.delete")}
-                    </button>
-                  </td>
-                </tr>
-              ))}
+                      {image ? (
+                        <img
+                          src={image}
+                          alt={item.productId?.name}
+                          className="w-16 h-16 rounded-xl object-cover border"
+                        />
+                      ) : (
+                        <div className="w-16 h-16 rounded-xl bg-gray-200" />
+                      )}
+
+                    </td>
+
+                    {/* PRODUCT */}
+                    <td className="px-4 py-4 font-semibold text-primary-text">
+
+                      {item.productId?.name || "Deleted product"}
+
+                    </td>
+
+                    {/* QTY */}
+                    <td className="px-4 py-4 text-center">
+
+                      <Counter
+                        value={item.quantity}
+                        onChange={(val) =>
+                          updateQuantity(index, val)
+                        }
+                        max={item.productId?.stock || 99}
+                      />
+
+                    </td>
+
+                    {/* PRICE */}
+                    <td className="px-4 py-4 text-center font-bold text-primary">
+
+                      {item.productId
+                        ? (
+                            item.productId.price *
+                            item.quantity
+                          ).toFixed(2)
+                        : 0}{" "}
+                      EGP
+
+                    </td>
+
+                    {/* DELETE */}
+                    <td className="px-4 py-4 text-center">
+
+                      <button
+                        className="text-danger hover:opacity-70 duration-200"
+                        onClick={() => removeItem(index)}
+                      >
+                        {t("table.delete")}
+                      </button>
+
+                    </td>
+
+                  </tr>
+                );
+              })}
+
             </tbody>
 
           </table>
+
         </div>
 
-        {/* SUMMARY */}
-        <div className="w-full lg:w-72 border rounded-lg p-5 bg-white">
+        {/* ================= SUMMARY ================= */}
+        <div className="w-full lg:w-80 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm h-fit">
 
-          <Typography variant="h6" className="text-primary">
+          <Typography
+            variant="h6"
+            className="text-primary font-bold mb-4"
+          >
             {t("total")}
           </Typography>
 
-          <Typography variant="h5">
-            {totalPrice.toFixed(2)} EGY
+          <Typography
+            variant="h4"
+            className="font-bold text-primary"
+          >
+            {totalPrice.toFixed(2)} EGP
           </Typography>
 
-          <Link href="/customer/checkout">
+          <Link href={`/${locale}/customer/checkout`}>
+
             <MainButton
               text={t("checkout")}
-              className="w-full bg-primary text-white py-3 mt-4"
+              className="w-full bg-primary text-white py-3 mt-6"
             />
+
           </Link>
 
         </div>
+
       </div>
 
-      {/* SUGGESTED */}
-      <div className="mt-10">
-
-        <Typography variant="h5" className="text-primary text-center mb-6">
-          {t("suggested")}
-        </Typography>
-
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-
-          {suggestedProducts.map((product) => (
-            <div
-              key={product._id}
-              className="border rounded-lg p-3 cursor-pointer"
-              onClick={() => router.push(`/product/${product._id}`)}
-            >
-              <img
-                src={product?.variants?.[0]?.images?.[0]}
-                className="w-full h-40 object-cover"
-              />
-
-              <p>{product.name}</p>
-              <p className="text-primary">{product.price} EGY</p>
-
-            </div>
-          ))}
-
-        </div>
-      </div>
     </div>
   );
-};
-
-export default Page;
+}

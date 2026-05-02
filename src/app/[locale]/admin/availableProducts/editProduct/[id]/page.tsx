@@ -15,7 +15,7 @@ export default function EditProductPage() {
     const fetchProduct = async () => {
       try {
         const res = await apiClient.get(
-          `${Endpoints.products}/${productId}`
+          `${Endpoints.products}/get/${productId}`
         );
         const data = res.data;
         const product = data.data;
@@ -32,7 +32,7 @@ export default function EditProductPage() {
     try {
       const token = sessionStorage.getItem("token");
       const res = await apiClient.patch(
-        `${Endpoints.products}/${productId}`,
+        `${Endpoints.products}/update/${productId}`,
         formData,
         {
           headers: {

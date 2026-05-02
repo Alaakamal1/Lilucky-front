@@ -45,14 +45,16 @@
   },
 
   "products": {
-    "title_all": "أشيك لبس لأجمل عيال",
+    "title_all": "كل قطعة معمولة بحب .. عشان اطفالك",
     "title_products": "منتجات",
     "gender": "النوع",
     "category": "القسم",
     "all": "الكل",
     "boys": "أولاد",
     "girls": "بنات",
-    "no_products": "لا توجد منتجات في هذا القسم."
+    "no_products": "لا توجد منتجات في هذا القسم.",
+    "no_products_match": "لا توجد منتجات تطابق الفلاتر",
+    "reset_filters": "إعادة ضبط الفلاتر"
   },
 
   "login": {
@@ -87,7 +89,7 @@
       "password_mismatc": "كلمتا المرور غير متطابقتين",
       "invalid_gov": "الرجاء اختيار المحافظة",
       "invalid_city": "الرجاء اختيار المدينة",
-      "invalid_address": "العنوان التفصيلي يجب أن يكون 10 أحرف على الأقل",
+      "invalid_street": "العنوان التفصيلي يجب أن يكون 5 أحرف على الأقل",
       "form": "من فضلك صحح الأخطاء قبل تسجيل الدخول",
       "server": "خطأ في الاتصال بالسيرفر",
       "login": "حدث خطأ في تسجيل الدخول"
@@ -124,7 +126,7 @@
       "city": {
         "label": "اختر المدينة"
       },
-      "address": {
+      "street": {
         "label": "العنوان التفصيلي",
         "placeholder": "اكتب العنوان التفصيلي هنا"
       }
@@ -334,36 +336,36 @@
 
   },
   
-  "account": {
-    "loading": "Loading...",
-    "save": "Save",
-    "edit": "Edit",
-    "user_account": "User Account",
+ "account": {
+  "loading": "جاري التحميل...",
+  "save": "حفظ",
+  "edit": "تعديل",
+  "user_account": "حساب المستخدم",
 
-    "tabs": {
-      "personal": "Personal Info",
-      "orders": "Orders",
-      "addresses": "Addresses"
-    },
+  "tabs": {
+    "personal": "البيانات الشخصية",
+    "orders": "الطلبات",
+    "addresses": "العناوين"
+  },
 
-    "fields": {
-      "first_name": "First Name",
-      "last_name": "Last Name",
-      "email": "Email",
-      "phone": "Phone Number",
-      "city": "City",
-      "governorate": "Governorate",
-      "address": "Address"
-    },
+  "fields": {
+    "first_name": "الاسم الأول",
+    "last_name": "اسم العائلة",
+    "email": "البريد الإلكتروني",
+    "phone": "رقم الهاتف",
+    "city": "المدينة",
+    "governorate": "المحافظة",
+    "street": "العنوان"
+  },
 
-    "orders": {
-      "empty": "No orders yet"
-    },
+  "orders": {
+    "empty": "لا توجد طلبات حتى الآن"
+  },
 
-    "addresses": {
-      "empty": "No saved addresses"
-    }
+  "addresses": {
+    "empty": "لا توجد عناوين محفوظة"
   }
+}
   , 
   "cart": {
   "title": "سلة المشتريات",
@@ -389,12 +391,15 @@
     "product_not_found": "المنتج غير موجود",
     "toast_add_cart": "تم إضافة المنتج إلى السلة",
     "colors": "الألوان",
+    "material":"خامه المنتج",
+    "quntity": "الكمية",
     "size": "المقاس",
     "add_to_cart": "إضافة إلى السلة",
     "login_required_title": "تنبيه",
     "login_required_desc": "لازم تعمل تسجيل دخول الأول",
     "cancel": "إلغاء",
-    "login": "تسجيل الدخول"
+    "login": "تسجيل الدخول",
+    "price": "السعر"
   },
   "aboutus": {
     "title": "من نحن",
@@ -443,7 +448,8 @@
     "orders": "قسم الطلبات",
     "clients": "قسم العملاء",
     "logout": "تسجيل الخروج",
-    "hello": "مرحباً،"
+    "hello": "مرحباً،",
+      "settings": "الإعدادات"
   },
   "availableCategory": {
     "name": "اسم الفئه",
@@ -460,6 +466,56 @@
     "typeBoys": "أولاد",
     "typeGirls": "بنات"
   },
+   "availableProducts": {
+    "name": "اسم المنتج",
+    "image": "صورة المنتج",
+    "price": "السعر",
+    "stock": "الكمية",
+    "status": "الحالة",
+    "actions": "تفاصيل / تعديل / حذف",
+    "title": "المنتجات المتاحة",
+    "addFirst": "إضافة أول منتج",
+    "addNew": "إضافة منتج جديد",
+    "noData": "لا توجد بيانات حالياً",
+    "age": "الفئة العمرية",
+    "category": "نوع المنتج",
+    "type": "النوع",
+
+    "typeAll": "الكل",
+    "typeBoys": "ولاد",
+    "typeGirls": "بنات",
+
+    "type1Y": "سنة",
+    "type2Y": "سنتين",
+    "type3Y": "3 سنوات",
+    "type4Y": "4 سنوات",
+    "type5Y": "5 سنوات",
+    "type6Y": "6 سنوات",
+    "type7Y": "7 سنوات",
+    "type8Y": "8 سنوات",
+
+    "available": "متوفر",
+    "notAvailable": "غير متوفر",
+
+    "errors": {
+      "load": "حدث خطأ أثناء تحميل البيانات",
+      "delete": "حدث خطأ أثناء الحذف",
+      "loginRequired": "يجب تسجيل الدخول أولاً",
+      "unexpected": "حدث خطأ غير متوقع"
+    },
+
+    "success": {
+      "delete": "تم حذف المنتج بنجاح"
+    },
+
+    "confirm": {
+      "title": "هل أنت متأكد؟",
+      "text": "لن يمكنك التراجع بعد الحذف!",
+      "confirm": "نعم، احذف",
+      "cancel": "إلغاء"
+    }
+  },
+
   "errors": {
     "unexpected": "حدث خطأ غير متوقع",
     "load": "حدث خطأ أثناء تحميل البيانات",
@@ -496,6 +552,97 @@
   "validation": {
     "arNameRequired": "اسم الفئة بالعربي مطلوب",
     "enNameRequired": "اسم الفئة بالإنجليزي مطلوب"
+  },
+  "shipping": {
+  "title": "إعدادات الشحن",
+  "governorate": "المحافظة",
+  "price": "السعر",
+  "active": "الحالة",
+  "save": "حفظ",
+  "active_btn": "مفعل",
+  "inactive_btn": "غير مفعل",
+  "loading": "جاري التحميل...",
+  "toast_update_success": "تم تحديث إعدادات الشحن بنجاح",
+  "toast_update_error": "حدث خطأ أثناء تحديث إعدادات الشحن"
+},
+"heroSettings": {
+  "title": "جدول الهوم",
+  "position": "الموقع",
+  "titleCol": "العنوان",
+  "image": "الصورة",
+  "action": "الإجراء",
+  "edit": "تعديل",
+  "noImage": "لا توجد صورة",
+  "ar": "عربي",
+  "en": "إنجليزي"
+},
+"editHero": {
+  "title": "تعديل الهيرو",
+  "loading": "جاري التحميل...",
+  "notFound": "لا يوجد بيانات",
+  "titleAr": "العنوان بالعربي",
+  "titleEn": "العنوان بالإنجليزي",
+  "subtitleAr": "الوصف بالعربي",
+  "subtitleEn": "الوصف بالإنجليزي",
+  "titleColor": "لون العنوان",
+  "subtitleColor": "لون الوصف",
+  "buttonTextColor": "لون نص الزرار",
+  "buttonBgColor": "لون خلفية الزرار",
+  "save": "حفظ التغييرات",
+  "savedSuccess": "تم الحفظ بنجاح!",
+  "saveError": "حدث خطأ أثناء الحفظ. حاول مرة أخرى."
+},
+ "cart": {
+    "title": "عربة التسوق",
+    "empty": "السلة فارغة",
+    "empty_sub": "لا توجد منتجات في سلة التسوق الخاصة بك",
+    "browse": "تصفح المنتجات",
+    "total": "الإجمالي",
+    "checkout": "إتمام الطلب",
+    "suggested": "منتجات مقترحة",
+
+    "table": {
+      "image": "الصورة",
+      "product": "المنتج",
+      "size": "المقاس",
+      "color": "اللون",
+      "qty": "الكمية",
+      "price": "السعر",
+      "delete": "حذف"
+    },
+
+    "actions": {
+      "remove": "إزالة",
+      "update": "تحديث",
+      "loading": "جاري التحميل..."
+    },
+
+    "messages": {
+      "added": "تمت إضافة المنتج إلى السلة",
+      "removed": "تم حذف المنتج من السلة",
+      "updated": "تم تحديث السلة"
+    }
+  },
+   "orderDetails": {
+    "title": "تفاصيل الطلب",
+    "loading": "جاري التحميل...",
+    "customerInfo": "بيانات العميل",
+    "orderInfo": "بيانات الطلب",
+    "address": "عنوان التوصيل",
+    "items": "المنتجات",
+    "changeStatus": "تغيير حالة الطلب",
+
+    "subtotal": "المجموع الفرعي",
+    "shipping": "الشحن",
+    "total": "الإجمالي",
+
+    "status": {
+      "pending": "قيد الانتظار",
+      "confirmed": "مؤكد",
+      "shipped": "تم الشحن",
+      "delivered": "تم التسليم",
+      "cancelled": "ملغي"
+    }
   }
 
 

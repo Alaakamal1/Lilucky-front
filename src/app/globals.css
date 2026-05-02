@@ -13,6 +13,10 @@
   --color-primary-text-hover: #F494A6;
   --color-secondary-text: #403C3C; /* Custom color with a shade name */
   --color-secondary-text-hover: #484242;
+  --color-danger: #EB4C4C;
+  --color-success: #6CA651;
+
+
 }
 
 /* Optional: add any base styles within a layer */
@@ -20,4 +24,12 @@
   body {
     /* ... your base styles ... */
   }
+}
+
+:root {
+  --font-a: 'Almarai';
+}
+
+.MuiTypography-root {
+  font-family: var(--font-a) !important;
 }

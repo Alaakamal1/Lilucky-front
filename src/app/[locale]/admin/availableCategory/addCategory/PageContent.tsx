@@ -12,7 +12,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { useSearchParams, useRouter } from "next/navigation";
 import { apiClient } from "@/src/utils/apiClient";
 import { Endpoints } from "@/src/utils/endpoints";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 type CategoryType = "boys" | "girls" | "all";
 
@@ -40,6 +40,7 @@ const Page = () => {
   const [submitLoading, setSubmitLoading] = useState(false);
   const isEditMode = Boolean(id);
   const t = useTranslations("categoryForm");
+  const locale = useLocale();
   useEffect(() => {
     if (!id) return;
 
@@ -116,7 +117,7 @@ const Page = () => {
 
         if (isEditMode) {
           setTimeout(() => {
-            router.push("/admin/availableCategory");
+            router.push(`/${locale}/admin/availableCategory`);
           }, 800);
         } else {
           setArName("");
@@ -142,7 +143,7 @@ const Page = () => {
       <Paper elevation={3} className="w-full max-w-3xl p-6 md:p-8 rounded-md">
 
         <Typography variant="h5" className="mb-6 text-primary text-center font-semibold">
-          {isEditMode ? t("categoryForm.titleEdit") : t("titleAdd")}
+          {isEditMode ? t("titleEdit") : t("titleAdd")}
         </Typography>
 
         {loading ? (
@@ -215,10 +216,10 @@ const Page = () => {
               type="submit"
               text={
                 submitLoading
-                  ? t("categoryForm.saving")
+                  ? t("saving")
                   : isEditMode
-                  ? t("categoryForm.submitEdit")
-                  : t("categoryForm.submitAdd")
+                  ? t("submitEdit")
+                  : t("submitAdd")
               }
               className="w-full bg-primary text-white py-3 rounded-md"
             />

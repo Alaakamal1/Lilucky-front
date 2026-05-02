@@ -21,8 +21,7 @@ export default async function LocaleLayout({
 
   return (
 
-       <html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"}>
-      <body>
+       <div lang={locale} dir={locale === "ar" ? "rtl" : "ltr"}>
         <NextIntlClientProvider locale={locale} messages={messages}>
           <AppRouterCacheProvider>
             <UserProvider>
@@ -30,7 +29,6 @@ export default async function LocaleLayout({
           </UserProvider>
           </AppRouterCacheProvider>
         </NextIntlClientProvider>
-      </body>
-    </html>
+    </div>
   );
 }

@@ -16,6 +16,7 @@ import DataTable from '@/src/components/ui/DataTable';
 import { apiClient } from '@/src/utils/apiClient';
 import { Endpoints } from '@/src/utils/endpoints';
 import { User } from '@/src/interfaces';
+import { useLocale } from 'next-intl';
 
 type UserRow = {
   _id: string;
@@ -32,6 +33,7 @@ const Page = () => {
   const [openDelete, setOpenDelete] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserRow | null>(null);
   const [search, setSearch] = useState('');
+  const locale = useLocale();
 
   const columns = [
     { id: 'name', label: 'اسم المستخدم' },
@@ -146,7 +148,7 @@ const Page = () => {
           columns={columns}
           rows={filteredRows}
           rowKey={(row) => row._id}
-          viewRoute={(row) => `/admin/clients/${row._id}`}
+          viewRoute={(row) => `/${locale}/admin/clients/${row._id}`}
           onDelete={handleDeleteClick}
           actions={{ view: true, edit: false, delete: true }}
         />

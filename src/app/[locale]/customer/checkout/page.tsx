@@ -6,149 +6,209 @@ import MainButton from "@/src/components/ui/MainButton";
 import { useRouter } from "next/navigation";
 import { apiClient } from "@/src/utils/apiClient";
 import { Endpoints } from "@/src/utils/endpoints";
+import { useTranslations, useLocale } from "next-intl";
 
 /* ================= TYPES ================= */
 
 type CartItem = {
   productId: {
+    _id: string;
     name: string;
     price: number;
-  };
+  } | null;
   quantity: number;
+};
+
+type User = {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  address?: {
+    city?: string;
+    governorate?: string;
+    street?: string;
+  };
 };
 
 export default function CheckoutPage() {
   const router = useRouter();
+  const locale = useLocale();
+  const t = useTranslations("checkout");
 
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [user, setUser] = useState<User | null>(null);
+  const [shippingPrice, setShippingPrice] = useState(0);
+
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
-  /* ================= LOAD CART ================= */
+  /* ================= FETCH DATA ================= */
 
   useEffect(() => {
-    const fetchCart = async () => {
+    const fetchData = async () => {
       const token = sessionStorage.getItem("token");
       if (!token) return;
 
       try {
-        const res = await apiClient.get(`${Endpoints.cart}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const [cartRes, userRes] = await Promise.all([
+          apiClient.get(`${Endpoints.cart}/get-cart`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          apiClient.get(`${Endpoints.user}/account`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
 
-        setCart(res.data?.cart?.items || []);
+        setCart(cartRes.data?.data?.cart?.items || []);
+        setUser(userRes.data?.data);
+
       } catch (err) {
-        console.error(err);
+        setError("Failed to load data");
       }
     };
 
-    fetchCart();
+    fetchData();
   }, []);
 
-  /* ================= TOTAL PRICE ================= */
+  /* ================= SHIPPING ================= */
 
-  const totalPrice = cart.reduce(
-    (total, item) => total + item.productId.price * item.quantity,
-    0
-  );
+  useEffect(() => {
+    const fetchShipping = async () => {
+      const token = sessionStorage.getItem("token");
+      if (!token || !user?.address?.governorate) return;
+
+      try {
+        const res = await apiClient.get(
+          `${Endpoints.shipping}/get-all-shipping`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        const match = res.data.find(
+          (item: any) =>
+            item.governorate?.toLowerCase() ===
+            user.address?.governorate?.toLowerCase()
+        );
+
+        setShippingPrice(match?.price || 0);
+      } catch {}
+    };
+
+    fetchShipping();
+  }, [user]);
+
+  /* ================= TOTAL ================= */
+
+  const productsTotal = cart.reduce((sum, item) => {
+    if (!item.productId) return sum;
+    return sum + item.productId.price * item.quantity;
+  }, 0);
+
+  const totalPrice = productsTotal + shippingPrice;
 
   /* ================= CHECKOUT ================= */
 
   const handleCheckout = async () => {
     const token = sessionStorage.getItem("token");
-    if (!token) return;
+
+    if (!token) return setError("Login required");
+    if (!user?.address) return setError("Address missing");
 
     setLoading(true);
 
     try {
       const res = await apiClient.post(
-        `${Endpoints.order}/create`,
+        `${Endpoints.order}/create-order`,
         {
           paymentMethod: "cash",
+          deliveryAddress: {
+            city: user.address.city,
+            governorate: user.address.governorate,
+            street: user.address.street,
+          }
         },
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
       if (res.status === 201) {
-        sessionStorage.removeItem("cart");
-
-        setSuccessMessage("تم تأكيد طلبك، طلبك قيد الانتظار ⏳");
+        setSuccessMessage("Order created successfully");
 
         setTimeout(() => {
-          router.push("/customer/success");
-        }, 2000);
+          router.push(`/${locale}/customer/success`);
+        }, 1500);
       }
-    } catch (err) {
-      console.error(err);
+
+    } catch {
+      setError("Something went wrong");
     } finally {
       setLoading(false);
     }
   };
 
-  /* ================= UI ================= */
-
   return (
-    <div className="p-6 max-w-6xl mx-auto">
-      {/* TITLE */}
+    <div className="p-6 max-w-5xl mx-auto">
+
       <Typography variant="h4" className="text-primary mb-6">
         Checkout
       </Typography>
 
+      {error && <p className="text-red-500">{error}</p>}
+      {successMessage && <p className="text-green-500">{successMessage}</p>}
+
       <div className="grid md:grid-cols-2 gap-6">
-        {/* ================= SUMMARY ================= */}
-        <div className="border rounded-lg p-4 bg-white shadow-sm">
-          <Typography variant="h6" className="mb-4">
-            ملخص الطلب
-          </Typography>
 
-          {/* SUCCESS MESSAGE */}
-          {successMessage && (
-            <div className="mb-4 p-3 bg-green-100 text-green-700 rounded-md text-center font-medium">
-              {successMessage}
+        {/* CART */}
+        <div className="border p-4 rounded-lg">
+
+          <h2 className="font-bold mb-3">Order Summary</h2>
+
+          {cart.map((item, i) => (
+            <div key={i} className="flex justify-between py-2 border-b">
+
+              <span>{item.productId?.name}</span>
+
+              <span>
+                {item.quantity} × {item.productId?.price}
+              </span>
+
             </div>
-          )}
+          ))}
 
-          <div className="space-y-3 max-h-80 overflow-auto">
-            {cart.map((item, index) => (
-              <div
-                key={index}
-                className="flex justify-between items-center border-b pb-2 text-sm"
-              >
-                <div>
-                  <p className="font-medium">{item.productId.name}</p>
-                  <p className="text-gray-500">
-                    {item.quantity} × {item.productId.price}
-                  </p>
-                </div>
-
-                <span className="text-primary font-semibold">
-                  {(item.productId.price * item.quantity).toFixed(2)} EGY
-                </span>
-              </div>
-            ))}
+          <div className="flex justify-between mt-3">
+            <span>Shipping</span>
+            <span>{shippingPrice}</span>
           </div>
 
-          {/* TOTAL */}
-          <div className="flex justify-between mt-5 font-bold text-lg">
-            <span>الإجمالي</span>
-            <span className="text-primary">
-              {totalPrice.toFixed(2)} EGY
-            </span>
+          <div className="flex justify-between mt-4 font-bold">
+            <span>Total</span>
+            <span>{totalPrice}</span>
           </div>
 
-          {/* BUTTON */}
+        </div>
+
+        {/* ADDRESS */}
+        <div className="border p-4 rounded-lg">
+
+          <h2 className="font-bold mb-3">Shipping Address</h2>
+
+          <p>{user?.address?.city}</p>
+          <p>{user?.address?.governorate}</p>
+          <p>{user?.address?.street}</p>
+
           <MainButton
-            text={loading ? "جاري التنفيذ..." : "تأكيد الطلب"}
+            text={loading ? "Processing..." : "Confirm Order"}
             onClick={handleCheckout}
             className="w-full mt-5 bg-primary text-white"
           />
+
         </div>
+
       </div>
     </div>
   );

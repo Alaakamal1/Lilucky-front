@@ -3,11 +3,7 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import "../../globals.css";
 import AdminHeader from "@/src/components/layout/AdminHeader";
 import { ToastContainer } from "react-toastify";
-const alexSans = Alexandria({
-  variable: "--font-alexandria",
-  subsets: ["arabic"],
-  weight: ["400", "700"],
-});
+
 
 export default function RootLayout({
   children,
@@ -15,15 +11,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-      <section className={`${alexSans.variable} antialiased bg-background `}>
-        <AppRouterCacheProvider>
-          <div className="flex">
-            <AdminHeader />
-            {children}
-          </div>
-          <ToastContainer position="top-right" autoClose={3000} />
-        </AppRouterCacheProvider>
+   <section className="bg-background antialiased">
+  <AppRouterCacheProvider>
 
-      </section >
+    <div className="md:flex min-h-screen">
+
+      <AdminHeader />
+
+      {/* 👇 ده المهم */}
+      <main className="flex-1 w-full md:w-auto">
+        {children}
+      </main>
+
+    </div>
+    <ToastContainer position="top-right" autoClose={3000} />
+  </AppRouterCacheProvider>
+</section>
   );
 }

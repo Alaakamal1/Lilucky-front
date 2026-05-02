@@ -10,7 +10,7 @@ export default function LetterAvatars({ className, fName }: LetterAvatarsProps) 
     return (
         <Stack direction="row" spacing={2} className={className}>
             <Avatar sx={{
-                    bgcolor: "#FBEFEF", width: 30, height: 30, fontSize: "1rem",
+                    bgcolor: "#FBEFEF", width: 100, height: 30, fontSize: "1rem",
                     color: "#F5AFAF", cursor: "pointer",
                     transition: "0.3s",
                     "&:hover": {

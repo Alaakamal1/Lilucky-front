@@ -6,24 +6,51 @@ import { Category } from "@/src/interfaces/Category";
 import { Product } from "@/src/interfaces/product";
 import { apiClient } from "@/src/utils/apiClient";
 import { Endpoints } from "@/src/utils/endpoints";
-import { Typography, Skeleton } from "@mui/material";
+import { Typography, Skeleton, Button } from "@mui/material";
+import SentimentDissatisfiedIcon from "@mui/icons-material/SentimentDissatisfied";
 import { useEffect, useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
 
 interface Option {
   label: string;
   value: string;
 }
 
+type AgeOption =
+  | "all"
+  | "1Y"
+  | "2Y"
+  | "3Y"
+  | "4Y"
+  | "5Y"
+  | "6Y"
+  | "7Y"
+  | "8Y";
+
 const Page = () => {
   const [selectedGender, setSelectedGender] = useState<string>("all");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [selectedAge, setSelectedAge] = useState<AgeOption>("all");
+
   const [loading, setLoading] = useState<boolean>(true);
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Option[]>([]);
 
   const t = useTranslations("products");
   const locale = useLocale();
+  const searchParams = useSearchParams();
+
+  /* ================= INIT FROM URL ================= */
+  useEffect(() => {
+    const categoryFromUrl = searchParams.get("category");
+    const genderFromUrl = searchParams.get("gender");
+    const ageFromUrl = searchParams.get("age");
+
+    if (categoryFromUrl) setSelectedCategory(categoryFromUrl);
+    if (genderFromUrl) setSelectedGender(genderFromUrl);
+    if (ageFromUrl) setSelectedAge(ageFromUrl as AgeOption);
+  }, [searchParams]);
 
   /* ================= PRODUCTS ================= */
   useEffect(() => {
@@ -45,13 +72,9 @@ const Page = () => {
           `${Endpoints.products}/get-all-products?${query.toString()}`
         );
 
-        if (res?.status === 200) {
-          setProducts(res.data?.data ?? []);
-        } else {
-          setProducts([]);
-        }
+        setProducts(res.data?.data ?? []);
       } catch (err) {
-        console.error("Error fetching products:", err);
+        console.error(err);
         setProducts([]);
       } finally {
         setLoading(false);
@@ -80,7 +103,7 @@ const Page = () => {
           })),
         ]);
       } catch (err) {
-        console.error("Error fetching categories:", err);
+        console.error(err);
       }
     };
 
@@ -107,76 +130,80 @@ const Page = () => {
         selectedCategory === "all" ||
         product.category?._id === selectedCategory;
 
-      return matchGender && matchCategory;
+      const matchAge =
+        selectedAge === "all" ||
+        product.variants?.some((variant) =>
+          variant.sizes?.includes(selectedAge)
+        );
+
+      return matchGender && matchCategory && matchAge;
     });
-  }, [products, selectedGender, selectedCategory]);
+  }, [products, selectedGender, selectedCategory, selectedAge]);
 
   return (
     <div>
+
       {/* TITLE */}
-      <Typography variant="h5" className="text-secondary-text mb-4">
-        {selectedCategory !== "all"
-          ? t("title_products")
-          : t("title_all")}
-      </Typography>
+    
 
       {/* FILTERS */}
-      <div className="bg-thirdary py-4 rounded-xl mb-4">
-        <div className="flex gap-4 px-5 md:w-200">
+      <div className="bg-thirdary py-3 rounded-xl my-6 ">
+        <div className="flex gap-4 px-5 md:w-200 ">
 
-          {/* Gender */}
           <Filter
             label={t("gender")}
             options={genderOptions}
             selected={selectedGender}
-            onChange={(value: Option | string) => {
-              const finalValue =
-                typeof value === "string" ? value : value.value;
-
-              setSelectedGender(finalValue);
-            }}
+            onChange={(value: any) =>
+              setSelectedGender(value.value || value)
+            }
           />
 
-          {/* Category */}
           <Filter
             label={t("category")}
             options={categories}
             selected={selectedCategory}
-            onChange={(value: Option | string) => {
-              const finalValue =
-                typeof value === "string" ? value : value.value;
-
-              setSelectedCategory(finalValue);
-            }}
+            onChange={(value: any) =>
+              setSelectedCategory(value.value || value)
+            }
           />
 
         </div>
       </div>
+      <Typography variant="h5" className="text-secondary-text p-2">
+        {t("title_all")}
+      </Typography>
 
       {/* PRODUCTS */}
-      <div className="grid grid-cols-2 md:grid-cols-3 justify-items-center gap-3">
+<div className="grid grid-cols-2 md:grid-cols-3 gap-3">
 
-        {loading ? (
-          Array.from({ length: 8 }).map((_, i) => (
-            <Skeleton
-              key={i}
-              variant="rectangular"
-              width={160}
-              height={220}
-              className="rounded-xl"
-            />
-          ))
-        ) : filteredProducts.length > 0 ? (
-          filteredProducts.map((product) => (
-            <CardItem key={product._id} product={product} />
-          ))
-        ) : (
-          <Typography variant="h6">
+  {loading
+    ? Array.from({ length: 8 }).map((_, i) => (
+        <div key={i} className="flex justify-center">
+          <Skeleton
+            variant="rectangular"
+            width={160}
+            height={220}
+            sx={{
+              borderRadius: 2,
+            }}
+          />
+        </div>
+      ))
+    : filteredProducts.length > 0
+    ? filteredProducts.map((product) => (
+        <CardItem key={product._id} product={product} />
+      ))
+    : products.length === 0 && (
+        <div className="col-span-full flex flex-col items-center justify-center py-20 text-gray-500">
+          <SentimentDissatisfiedIcon sx={{ fontSize: 60 }} />
+          <Typography variant="h6" className="mt-3">
             {t("no_products")}
           </Typography>
-        )}
+        </div>
+      )}
+</div>
 
-      </div>
     </div>
   );
 };

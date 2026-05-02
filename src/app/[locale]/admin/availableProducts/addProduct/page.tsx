@@ -1,6 +1,6 @@
 'use client';
 
-import ProductForm from '../../../../components/ui/ProductForm';
+import ProductForm from '../../../../../components/ui/ProductForm';
 import { toast } from 'react-toastify';
 import { apiClient } from '@/src/utils/apiClient';
 import { Endpoints } from '@/src/utils/endpoints';

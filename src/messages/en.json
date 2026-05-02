@@ -44,14 +44,16 @@
   },
 
   "products": {
-    "title_all": "Best outfits for the coolest kids",
+    "title_all": "Every piece is made with love for your children",
     "title_products": "Products",
     "gender": "Gender",
     "category": "Category",
     "all": "All",
     "boys": "Boys",
     "girls": "Girls",
-    "no_products": "No products in this category."
+    "no_products": "No products in this category.",
+    "no_products_match": "No products match your filters",
+    "reset_filters": "Reset Filters"
   },
 
   "login": {
@@ -87,7 +89,7 @@
       "password_mismatch": "Passwords do not match",
       "invalid_gov": "Please select a governorate",
       "invalid_city": "Please select a city",
-      "invalid_address": "Full address must be at least 10 characters",
+      "invalid_street": "Street address must be at least 5 characters",
       "form": "Please fix all errors before submitting",
       "server": "Server connection error"
     },
@@ -123,9 +125,9 @@
       "city": {
         "label": "City"
       },
-      "address": {
-        "label": "Full Address",
-        "placeholder": "Enter full address"
+      "street": {
+        "label": "Street Address",
+        "placeholder": "Enter street address"
       }
     }
   ,
@@ -351,7 +353,7 @@
       "phone": "Phone Number",
       "city": "City",
       "governorate": "Governorate",
-      "address": "Address"
+      "street": "Address"
     },
 
     "orders": {
@@ -386,12 +388,15 @@
     "product_not_found": "Product not found",
     "toast_add_cart": "Product added to cart",
     "colors": "Colors",
+    "material":"Material",
+    "quntity": "Quantity",
     "size": "Size",
     "add_to_cart": "Add to cart",
     "login_required_title": "Notice",
     "login_required_desc": "You need to login first",
     "cancel": "Cancel",
-    "login": "Login"
+    "login": "Login",
+    "price": "Price"
   },
   "aboutus": {
     "title": "About Us",
@@ -440,7 +445,8 @@
     "orders": "Orders",
     "clients": "Clients",
     "logout": "Logout",
-    "hello": "Hello,"
+    "hello": "Hello,",
+    "settings": "Settings"
   },
    "availableCategory": {
     "name": "Category Name",
@@ -456,6 +462,59 @@
     "typeAll": "All",
     "typeBoys": "Boys",
     "typeGirls": "Girls"
+  },
+  "availableProducts": {
+    "name": "Product Name",
+    "image": "Product Image",
+    "price": "Price",
+    "stock": "Stock",
+    "status": "Status",
+    "actions": "View / Edit / Delete",
+
+    "title": "Available Products",
+
+    "addFirst": "Add First Product",
+    "addNew": "Add New Product",
+
+    "noData": "No data available",
+
+    "age": "Age Range",
+    "category": "Category",
+    "type": "Type",
+
+    "typeAll": "All",
+    "typeBoys": "Boys",
+    "typeGirls": "Girls",
+
+    "type1Y": "1 Year",
+    "type2Y": "2 Years",
+    "type3Y": "3 Years",
+    "type4Y": "4 Years",
+    "type5Y": "5 Years",
+    "type6Y": "6 Years",
+    "type7Y": "7 Years",
+    "type8Y": "8 Years",
+
+    "available": "Available",
+    "notAvailable": "Unavailable",
+
+    "errors": {
+      "load": "Error loading data",
+      "delete": "Error deleting product",
+      "loginRequired": "You must login first",
+      "unexpected": "Unexpected error occurred"
+    },
+
+    "success": {
+      "delete": "Product deleted successfully"
+    },
+
+    "confirm": {
+      "title": "Are you sure?",
+      "text": "You won't be able to revert this!",
+      "confirm": "Yes, delete",
+      "cancel": "Cancel"
+    }
   },
   "errors": {
     "unexpected": "An unexpected error occurred",
@@ -493,6 +552,97 @@
   "validation": {
     "arNameRequired": "Arabic category name is required",
     "enNameRequired": "English category name is required"
+  },
+  "shipping": {
+  "title": "Shipping Settings",
+  "governorate": "Governorate",
+  "price": "Price",
+  "active": "Status",
+  "save": "Save",
+  "active_btn": "Active",
+  "inactive_btn": "Inactive",
+  "loading": "Loading...",
+  "toast_update_success": "shipping cost updated successfully",
+  "toast_update_error": "Error updating shipping cost"
+},
+"heroSettings": {
+  "title": "Home Table",
+  "position": "Position",
+  "titleCol": "Title",
+  "image": "Image",
+  "action": "Action",
+  "edit": "Edit",
+  "noImage": "No Image",
+  "ar": "Arabic",
+  "en": "English"
+},
+"editHero": {
+  "title": "Edit Hero",
+  "loading": "Loading...",
+  "notFound": "No hero found",
+  "titleAr": "Title AR",
+  "titleEn": "Title EN",
+  "subtitleAr": "Subtitle AR",
+  "subtitleEn": "Subtitle EN",
+  "titleColor": "Title Color",
+  "subtitleColor": "Subtitle Color",
+  "buttonTextColor": "Button Text Color",
+  "buttonBgColor": "Button Background",
+  "save": "Save Changes",
+  "savedSuccess": "Saved successfully!",
+  "saveError": "Error saving changes. Please try again."
+},
+ "cart": {
+    "title": "Shopping Cart",
+    "empty": "Your cart is empty",
+    "empty_sub": "You have no items in your cart",
+    "browse": "Browse Products",
+    "total": "Total",
+    "checkout": "Checkout",
+    "suggested": "Suggested Products",
+
+    "table": {
+      "image": "Image",
+      "product": "Product",
+      "size": "Size",
+      "color": "Color",
+      "qty": "Qty",
+      "price": "Price",
+      "delete": "Delete"
+    },
+
+    "actions": {
+      "remove": "Remove",
+      "update": "Update",
+      "loading": "Loading..."
+    },
+
+    "messages": {
+      "added": "Product added to cart",
+      "removed": "Product removed from cart",
+      "updated": "Cart updated"
+    }
+  },
+   "orderDetails": {
+    "title": "Order Details",
+    "loading": "Loading...",
+    "customerInfo": "Customer Info",
+    "orderInfo": "Order Info",
+    "address": "Shipping Address",
+    "items": "Items",
+    "changeStatus": "Change Status",
+
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "total": "Total",
+
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "shipped": "Shipped",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled"
+    }
   }
 
 

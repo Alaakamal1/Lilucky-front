@@ -12,6 +12,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiClient } from "@/src/utils/apiClient";
 import { Endpoints } from "@/src/utils/endpoints";
+
 import {
   validateFirstName,
   validateLastName,
@@ -21,13 +22,15 @@ import {
   validateConfirmPassword,
   validateGov,
   validateCity,
-  validateAddress
+  validateStreet
 } from "@/src/utils/validators";
-import { useTranslations } from "next-intl";
+
+import { useLocale, useTranslations } from "next-intl";
 
 const Page = () => {
   const t = useTranslations("register");
   const router = useRouter();
+  const local = useLocale();
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -35,19 +38,17 @@ const Page = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [address, setAddress] = useState("");
+
+  const [street, setStreet] = useState("");
   const [selectedGov, setSelectedGov] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
-  const [firstNameError, setFirstNameError] = useState("");
-  const [lastNameError, setLastNameError] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const [confirmPasswordError, setConfirmPasswordError] = useState("");
-  const [phoneNumberError, setPhoneNumberError] = useState("");
+
   const [formError, setFormError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+
   const translateGov = (gov: string) => t(`governorates.${gov}`);
   const translateCity = (city: string) => t(`cities.${city}`);
+
   const governorateOptions = Object.keys(egyptData).map((gov) => ({
     value: gov,
     label: translateGov(gov)
@@ -63,7 +64,8 @@ const Page = () => {
       }))
       : [];
 
-  // handlers
+  /* ================= SUBMIT ================= */
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -74,13 +76,13 @@ const Page = () => {
       validatePhoneNumber(phoneNumber),
       validatePassword(password),
       validateConfirmPassword(password, confirmPassword),
-      validateAddress(address),
       validateGov(selectedGov),
       validateCity(selectedCity),
+      validateStreet(street),
     ];
 
     if (errors.some(err => err !== "")) {
-      setFormError(t("form_error"));
+      setFormError(t("errors.form"));
       return;
     }
 
@@ -94,28 +96,31 @@ const Page = () => {
           phoneNumber,
           password,
           confirmPassword,
-          address,
-          governorate: selectedGov,
-          city: selectedCity
-        },
-        { headers: { "Content-Type": "application/json" } }
+          address: {
+            city: selectedCity,
+            governorate: selectedGov,
+            street: street
+          }
+        }
       );
 
       if (res.status === 200 || res.status === 201) {
         setSuccessMessage(t("success"));
 
         setTimeout(() => {
-          router.push("/customer/login");
-        }, 1500);
-
+          router.push(`/${local}/customer/login`);
+        }, 1200);
       } else {
-        setFormError(t("server_error"));
+        setFormError(t("errors.server"));
       }
 
-    } catch {
-      setFormError(t("server_error"));
+    } catch (err) {
+      console.error(err);
+      setFormError(t("errors.server"));
     }
   };
+
+  /* ================= UI ================= */
 
   return (
     <div className="flex h-200 flex-col md:flex-row justify-between items-center">
@@ -140,162 +145,85 @@ const Page = () => {
             </Typography>
           )}
 
-          {/* Names */}
+          {/* NAME */}
+          <div className="grid grid-cols-2 gap-4">
+            <InputField
+              label={t("fields.first_name.label")}
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+            />
+
+            <InputField
+              label={t("fields.last_name.label")}
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+            />
+          </div>
+
+          {/* EMAIL / PHONE */}
+          <div className="grid grid-cols-2 gap-4">
+            <InputField
+              label={t("fields.email.label")}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+
+            <InputField
+              label={t("fields.phone.label")}
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+            />
+          </div>
+
+          {/* PASSWORD */}
+          <div className="grid grid-cols-2 gap-4">
+            <InputField
+              label={t("fields.password.label")}
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+
+            <InputField
+              label={t("fields.confirm_password.label")}
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+          </div>
+
+          {/* LOCATION */}
           <div className="grid grid-cols-2 gap-4">
 
-            <div>
-              <InputField
-                label={t("fields.first_name.label")}
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                onBlur={() => setFirstNameError(validateFirstName(firstName))}
-                placeholder={t("fields.first_name.placeholder")}
-              />
-              {firstNameError && (
-                <Typography className="text-red-500 text-sm mt-1">
-                  {t(`errors.${firstNameError}`)}
-                </Typography>
-              )}
-            </div>
+            <Dropdown
+              label={t("fields.gov.label")}
+              options={governorateOptions}
+              value={selectedGov}
+              onChange={(e) => setSelectedGov(e.target.value)}
+            />
 
-            <div>
-              <InputField
-                label={t("fields.last_name.label")}
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                onBlur={() => setLastNameError(validateLastName(lastName))}
-                placeholder={t("fields.last_name.placeholder")}
-              />
-              {lastNameError && (
-                <Typography className="text-red-500 text-sm mt-1">
-                  {t(`errors.${lastNameError}`)}
-                </Typography>
-              )}
-            </div>
+            <Dropdown
+              label={t("fields.city.label")}
+              options={cityOptions}
+              value={selectedCity}
+              onChange={(e) => setSelectedCity(e.target.value)}
+              disabled={!selectedGov}
+            />
 
           </div>
 
-          {/* Email / Phone */}
-          <div className="grid grid-cols-2 gap-4">
-
-            <div>
-              <InputField
-                label={t("fields.email.label")}
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                onBlur={() => setEmailError(validateEmail(email))}
-                placeholder={t("fields.email.placeholder")}
-              />
-              {emailError && (
-                <Typography className="text-red-500 text-sm mt-1">
-                  {t(`errors.${emailError}`)}
-                </Typography>
-              )}
-            </div>
-
-            <div>
-              <InputField
-                label={t("fields.phone.label")}
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-                onBlur={() => setPhoneNumberError(validatePhoneNumber(phoneNumber))}
-                placeholder={t("fields.phone.placeholder")}
-              />
-              {phoneNumberError && (
-                <Typography className="text-red-500 text-sm mt-1">
-                  {t(`errors.${phoneNumberError}`)}
-                </Typography>
-              )}
-            </div>
-
-          </div>
-
-          {/* Password */}
-          <div className="grid grid-cols-2 gap-4">
-
-            <div>
-              <InputField
-                label={t("fields.password.label")}
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                onBlur={() => setPasswordError(validatePassword(password))}
-                placeholder={t("fields.password.placeholder")}
-              />
-              {passwordError && (
-                <Typography className="text-red-500 text-sm mt-1">
-                  {t(`errors.${passwordError}`)}
-                </Typography>
-              )}
-            </div>
-
-            <div>
-              <InputField
-                label={t("fields.confirm_password.label")}
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                onBlur={() =>
-                  setConfirmPasswordError(
-                    validateConfirmPassword(password, confirmPassword)
-                  )
-                }
-                placeholder={t("fields.confirm_password.placeholder")}
-              />
-              {confirmPasswordError && (
-                <Typography className="text-red-500 text-sm mt-1">
-                  {t(`errors.${confirmPasswordError}`)}
-                </Typography>
-              )}
-            </div>
-
-          </div>
-
-          {/* Location */}
-          <div className="grid grid-cols-2 gap-4">
-
-            <div>
-              <Dropdown
-                label={t("fields.gov.label")}
-                options={governorateOptions}
-                value={selectedGov}
-                onChange={(e) => setSelectedGov(e.target.value)}
-              />
-            </div>
-
-            <div>
-              <Dropdown
-                label={t("fields.city.label")}
-                options={cityOptions}
-                value={selectedCity}
-                onChange={(e) => setSelectedCity(e.target.value)}
-                disabled={!selectedGov}
-              />
-            </div>
-
-          </div>
-
-          {/* Address */}
+          {/* STREET */}
           <TextArea
-            label={t("fields.address.label")}
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            placeholder={t("fields.address.placeholder")}
+            label={t("fields.street.label")}
+            value={street}
+            onChange={(e) => setStreet(e.target.value)}
           />
 
-          {/* Login link */}
-          <Link href="/customer/login">
-            <Typography className="text-secondary-text hover:secondary-text-hover cursor-pointer">
-              {t("have_account")}
-            </Typography>
-          </Link>
-
-          {/* Submit */}
+          {/* SUBMIT */}
           <MainButton
             text={t("submit")}
             type="submit"
-            className="w-full h-12 rounded-md bg-primary text-white mt-4"
+            className="w-full h-12 bg-primary text-white mt-4"
           />
 
         </form>

@@ -39,8 +39,8 @@ export const validateCity = (value: string) => {
   return "";
 };
 
-export const validateAddress = (value: string) => {
-  if (!value) return "invalid_address";
-  if (value.length < 10) return "invalid_address";
+export const validateStreet = (value: string) => {
+  if (!value.trim()) return "required";
+  if (value.length < 5) return "too_short";
   return "";
 };

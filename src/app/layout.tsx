@@ -1,5 +1,13 @@
 import type { ReactNode } from "react";
 import { LanguageProvider } from "../context/LanguageContext";
+
+import { Almarai } from "next/font/google";
+
+const almarai = Almarai({
+  subsets: ["arabic"],
+  weight: ["400", "700"],
+});
+
 export default function RootLayout({
   children,
 }: {
@@ -7,7 +15,7 @@ export default function RootLayout({
 }) {
   return (
     <html>
-      <body>
+      <body  className={`${almarai.className} MuiTypography-root`}>
         <LanguageProvider>
           {children}
         </LanguageProvider>

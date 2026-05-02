@@ -81,10 +81,12 @@ import MainButton from "@/src/components/ui/MainButton";
 import { Typography } from "@mui/material";
 import { apiClient } from "@/src/utils/apiClient";
 import { Endpoints } from "@/src/utils/endpoints";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+
 
 const ForgotPasswordPage = () => {
   const t = useTranslations("forgotPassword");
+  const locale = useLocale();
 
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
@@ -110,7 +112,7 @@ const ForgotPasswordPage = () => {
       const data = res.data;
 
       if (res.status === 200) {
-        router.push(`/customer/resetPassword?email=${email}`);
+        router.push(`/${locale}/customer/resetPassword?email=${email}`);
       } else {
         setError(data.message || t("error_default"));
       }

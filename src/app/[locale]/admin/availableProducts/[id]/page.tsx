@@ -42,7 +42,7 @@ const ProductDetailsPage = () => {
         setLoading(true);
 
         const res = await apiClient.get<ApiResponse<Product>>(
-          `${Endpoints.products}/${id}`
+          `${Endpoints.products}/get/${id}`
         );
 
         const productData = res.data.data;
@@ -150,13 +150,13 @@ if (loading) {
   return (
     <div className="w-full p-4 md:p-6 flex justify-center">
       <div className="w-full max-w-5xl">
+        <div className="bg-white rounded-xl shadow p-4 md:p-6">
         <Typography
           variant="h4"
-          className="mb-6 text-center text-primary"
+          className="my-8 text-center text-primary"
         >
           تفاصيل المنتج
         </Typography>
-        <div className="bg-white rounded-xl shadow p-4 md:p-6">
           <div className="grid md:grid-cols-2 gap-10">
 
             {/* ================= IMAGES ================= */}

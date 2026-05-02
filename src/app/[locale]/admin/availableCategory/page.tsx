@@ -59,8 +59,8 @@ const Page = () => {
             cat.categoryType === "boys"
               ? t("typeBoys")
               : cat.categoryType === "girls"
-              ? t("typeGirls")
-              : t("typeAll"),
+                ? t("typeGirls")
+                : t("typeAll"),
 
           // status translation
           isActive: cat.isActive
@@ -87,7 +87,7 @@ const Page = () => {
   }, [locale, t]);
 
   const handleEdit = (row: Category) => {
-    router.push(`/admin/availableCategory/addCategory?id=${row._id}`);
+router.push(`/${locale}/admin/availableCategory/addCategory?id=${row._id}`);
   };
 
   const handleDelete = async (row: Category) => {
@@ -154,7 +154,7 @@ const Page = () => {
       {!loading && !error && category.length === 0 && (
         <div className='flex flex-col justify-center items-center gap-4 md:h-2/4'>
 
-          <Link href="/admin/availableCategory/addCategory">
+          <Link href={`/${locale}/admin/availableCategory/addCategory`}>
             <MainButton
               text={t('addFirst')}
               className="cursor-pointer bg-primary hover:bg-primary-hover text-background duration-300 ease-in-out rounded-md px-5 py-3"
@@ -177,7 +177,7 @@ const Page = () => {
               {t('title')}
             </Typography>
 
-            <Link href="/admin/availableCategory/addCategory">
+            <Link href={`/${locale}/admin/availableCategory/addCategory`}>
               <MainButton
                 text={t('addNew')}
                 className="bg-primary text-white px-5 py-3 rounded-md"
