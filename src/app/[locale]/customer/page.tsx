@@ -93,7 +93,7 @@ export default function Page() {
             {getText(hero1?.subtitle)}
           </Typography>
 
-          <Link href={`/${locale}/customer/products`}>
+          <Link href={`/customer/products`}>
             <MainButton
               text={t("shopNow")}
               className="cursor-pointer bg-background hover:bg-background-hover duration-300 rounded-md w-40 p-3 m-6 text-2xl text-secondary-text"
@@ -134,7 +134,7 @@ export default function Page() {
           </Typography>
         </div>
 
-        <Link href={`/${locale}/customer/products`}>
+        <Link href={`/customer/products`}>
           <MainButton
             text={t("shopNow")}
             className="cursor-pointer bg-background hover:bg-background-hover duration-300 rounded-md w-40 p-3 m-10 text-2xl text-secondary-text"
@@ -204,7 +204,7 @@ export default function Page() {
             {getText(hero3?.title) || t("offersTitle")}
           </Typography>
 
-          <Link href={`/${locale}/customer/products`}>
+          <Link href={`/customer/products`}>
             <MainButton
               text={t("shopNow")}
               className="cursor-pointer bg-background hover:bg-background-hover duration-300 rounded-md w-40 p-3 m-10 text-2xl text-secondary-text"
