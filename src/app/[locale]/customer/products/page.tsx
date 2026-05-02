@@ -143,12 +143,9 @@ const Page = () => {
   return (
     <div>
 
-      {/* TITLE */}
-    
-
       {/* FILTERS */}
-      <div className="bg-thirdary py-3 rounded-xl my-6 ">
-        <div className="flex gap-4 px-5 md:w-200 ">
+      <div className="bg-thirdary py-3 rounded-xl my-6">
+        <div className="flex gap-4 px-5 md:w-200">
 
           <Filter
             label={t("gender")}
@@ -170,39 +167,54 @@ const Page = () => {
 
         </div>
       </div>
+
       <Typography variant="h5" className="text-secondary-text p-2">
         {t("title_all")}
       </Typography>
 
       {/* PRODUCTS */}
-<div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
 
-  {loading
-    ? Array.from({ length: 8 }).map((_, i) => (
-        <div key={i} className="flex justify-center">
-          <Skeleton
-            variant="rectangular"
-            width={160}
-            height={220}
-            sx={{
-              borderRadius: 2,
-            }}
-          />
-        </div>
-      ))
-    : filteredProducts.length > 0
-    ? filteredProducts.map((product) => (
-        <CardItem key={product._id} product={product} />
-      ))
-    : products.length === 0 && (
-        <div className="col-span-full flex flex-col items-center justify-center py-20 text-gray-500">
-          <SentimentDissatisfiedIcon sx={{ fontSize: 60 }} />
-          <Typography variant="h6" className="mt-3">
-            {t("no_products")}
-          </Typography>
-        </div>
-      )}
-</div>
+        {loading ? (
+          Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="flex justify-center">
+              <Skeleton
+                variant="rectangular"
+                width={160}
+                height={220}
+                sx={{ borderRadius: 2 }}
+              />
+            </div>
+          ))
+        ) : filteredProducts.length > 0 ? (
+          filteredProducts.map((product) => (
+            <CardItem key={product._id} product={product} />
+          ))
+        ) : (
+          <div className="col-span-full flex flex-col items-center justify-center py-20 text-gray-500">
+
+            <SentimentDissatisfiedIcon sx={{ fontSize: 60 }} />
+
+            <Typography variant="h6" className="mt-3">
+              {t("no_products_match")}
+            </Typography>
+
+            <Button
+              variant="outlined"
+              onClick={() => {
+                setSelectedGender("all");
+                setSelectedCategory("all");
+                setSelectedAge("all");
+              }}
+              sx={{ mt: 2 }}
+            >
+              {t("reset_filters")}
+            </Button>
+
+          </div>
+        )}
+
+      </div>
 
     </div>
   );

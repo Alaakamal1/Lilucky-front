@@ -53,7 +53,17 @@
     "girls": "Girls",
     "no_products": "No products in this category.",
     "no_products_match": "No products match your filters",
-    "reset_filters": "Reset Filters"
+    "reset_filters": "Reset Filters",
+     "view_product": "View product",
+  "add_to_cart": "Add to cart",
+  "select_details": "Select details",
+  "color": "Color",
+  "size": "Size",
+  "cancel": "Cancel",
+  "confirm": "Confirm",
+  "login_required": "Login required",
+  "login_message": "You need to login to add product to cart",
+  "login": "Login"
   },
 
   "login": {

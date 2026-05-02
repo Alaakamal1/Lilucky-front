@@ -54,7 +54,17 @@
     "girls": "بنات",
     "no_products": "لا توجد منتجات في هذا القسم.",
     "no_products_match": "لا توجد منتجات تطابق الفلاتر",
-    "reset_filters": "إعادة ضبط الفلاتر"
+    "reset_filters": "إعادة ضبط الفلاتر",
+     "view_product": "عرض المنتج",
+  "add_to_cart": "أضف للسلة",
+  "select_details": "اختار التفاصيل",
+  "color": "اللون",
+  "size": "المقاس",
+  "cancel": "إلغاء",
+  "confirm": "تأكيد",
+  "login_required": "تسجيل الدخول مطلوب",
+  "login_message": "لازم تسجل دخول عشان تضيف المنتج للسلة",
+  "login": "تسجيل الدخول"
   },
 
   "login": {

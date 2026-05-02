@@ -71,7 +71,7 @@ const Footer = () => {
 
           <Link href="">{t("shipping")}</Link>
           <Link href={`/${locale}/customer/aboutus`}>{t("faq")}</Link>
-          <Link href={`/${locale}/customer/returns`}>{t("returns")}</Link>
+          <Link href={""}>{t("returns")}</Link>
         </div>
 
         {/* Social */}

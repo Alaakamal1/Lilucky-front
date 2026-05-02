@@ -169,7 +169,7 @@ export default function ProductDetails() {
             <h2 className="text-lg font-semibold mb-4">تنبيه</h2>
 
             <p className="mb-4 text-gray-600">
-              {t("login_required")}
+              {t("login_required_desc")}
             </p>
 
             <div className="flex gap-3 justify-center">

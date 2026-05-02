@@ -79,8 +79,9 @@ export default function Page() {
           backgroundImage: `url(${hero1?.image || "/Home 1.jpg"})`,
         }}
       >
-        <div className="flex flex-col min-w-10/12 items-end">
-
+       <div className="flex flex-col min-w-10/12 items-end text-left
+                max-md:items-end max-md:text-left
+                max-md:justify-end max-md:h-60 ">
           <Typography variant="h5"
             style={{ color: hero1?.textColors?.title || "#fff" }}
           >
@@ -114,7 +115,7 @@ export default function Page() {
           {t("bestSelling")}
         </Typography>
 
-        <div className="grid grid-cols-3 gap-2 justify-items-center">
+        <div className="grid md:grid-cols-3 grid-col-1  gap-2 justify-items-center">
           {products.slice(0, 3).map((product) => (
             <CardItem key={product._id} product={product} />
           ))}
@@ -128,18 +129,21 @@ export default function Page() {
           backgroundImage: `url(${hero2?.image || "/Home 2.jpg"})`,
         }}
       >
-        <div className="mx-8">
+       <div className="flex flex-col min-w-10/12 items-end text-left
+                max-md:items-end max-md:text-left
+                max-md:justify-end max-md:h-60 ">
+
           <Typography variant="h4">
             {getText(hero2?.title) || t("hero2Title")}
           </Typography>
-        </div>
 
         <Link href={`/customer/products`}>
           <MainButton
             text={t("shopNow")}
             className="cursor-pointer bg-background hover:bg-background-hover duration-300 rounded-md w-40 p-3 m-10 text-2xl text-secondary-text"
-          />
+            />
         </Link>
+            </div>
       </div>
 
       {/* ================= AGE FILTER ================= */}
@@ -198,7 +202,9 @@ export default function Page() {
           backgroundImage: `url(${hero3?.image || "/Home 3.jpg"})`,
         }}
       >
-        <div className="w-full">
+        <div className="flex flex-col min-w-10/12 items-end text-left
+                max-md:items-end max-md:text-left
+                max-md:justify-end max-md:h-60 ">
 
           <Typography variant="h4">
             {getText(hero3?.title) || t("offersTitle")}
