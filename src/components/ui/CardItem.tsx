@@ -8,14 +8,14 @@ import Typography from "@mui/material/Typography";
 import { apiClient } from "@/src/utils/apiClient";
 import { Endpoints } from "@/src/utils/endpoints";
 import MainButton from "./MainButton";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 /* ================= TYPES ================= */
 
 interface Variant {
   images?: string[];
   color?: string;
-  sizes?: string[]; // ✅ مصفوفة
+  sizes?: string[]; 
 }
 
 interface Product {
@@ -35,6 +35,7 @@ const CardItem = ({ product }: { product: Product }) => {
   const [selectedColor, setSelectedColor] = useState<string>("");
   const [selectedSize, setSelectedSize] = useState<string>("");
   const locale = useLocale();
+  const t = useTranslations("products");
   /* ================= LIKE ================= */
 
   useEffect(() => {
@@ -106,7 +107,7 @@ const CardItem = ({ product }: { product: Product }) => {
         `${Endpoints.cart}/add-to-cart`,
         {
           productId: product._id,
-          quantity: 1, // 🔥 لازم
+          quantity: 1, 
         },
         {
           headers: {
@@ -130,8 +131,6 @@ const CardItem = ({ product }: { product: Product }) => {
         .filter((v): v is string => Boolean(v))
     )
   );
-
-  // ✅ FIX: flatten sizes
   const sizes: string[] = Array.from(
     new Set(
       product?.variants
@@ -192,12 +191,12 @@ const CardItem = ({ product }: { product: Product }) => {
 
             <div className="flex gap-2 mt-2">
               <MainButton
-                text="عرض المنتج"
+                text={t("view_product")}
                 className="w-full border py-2 rounded-md border-primary text-primary"
               />
 
               <MainButton
-                text="أضف للسلة"
+                text={t("add_to_cart")}
                 onClick={handleAddToCartClick}
                 className="w-full bg-primary py-2 rounded-md text-white"
               />
@@ -218,7 +217,7 @@ const CardItem = ({ product }: { product: Product }) => {
           <div className="relative bg-white w-[92%] max-w-md rounded-3xl p-6">
 
             <h2 className="text-xl font-bold mb-6 text-center">
-              اختار التفاصيل
+                {t("select_details")}
             </h2>
 
             {/* COLORS */}
@@ -242,7 +241,7 @@ const CardItem = ({ product }: { product: Product }) => {
 
             {/* SIZES */}
             <div className="mb-6">
-              <p className="mb-3 font-medium">المقاس</p>
+              <p className="mb-3 font-medium">{t("size")}</p>
 
               <div className="flex gap-2 flex-wrap">
                 {sizes.map((size) => (
@@ -267,7 +266,7 @@ const CardItem = ({ product }: { product: Product }) => {
                 onClick={() => setOpen(false)}
                 className="px-4 py-2 border rounded-md"
               >
-                إلغاء
+               {t("cancel")}
               </button>
 
               <button
@@ -275,7 +274,7 @@ const CardItem = ({ product }: { product: Product }) => {
                 disabled={!selectedColor || !selectedSize}
                 className="px-4 py-2 bg-primary text-white rounded-md disabled:opacity-50"
               >
-                تأكيد
+               {t("confirm")}
               </button>
 
             </div>
@@ -285,21 +284,21 @@ const CardItem = ({ product }: { product: Product }) => {
 
       {/* LOGIN */}
       {showLoginPopup && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
 
           <div
-            className="absolute inset-0 bg-black/60"
+            className="absolute inset-0 "
             onClick={() => setShowLoginPopup(false)}
           />
 
-          <div className="bg-white p-6 rounded-2xl w-[90%] max-w-md text-center">
+          <div className="bg-white p-6 rounded-2xl w-[90%] max-w-md text-center ">
 
             <h2 className="text-xl font-bold mb-3">
-              تسجيل الدخول مطلوب
+             {t("login_required")}
             </h2>
 
             <p className="mb-5 text-gray-600">
-              لازم تسجل دخول عشان تضيف المنتج للسلة
+             {t("login_message")}
             </p>
 
             <div className="flex gap-2 justify-center">
@@ -308,12 +307,12 @@ const CardItem = ({ product }: { product: Product }) => {
                 onClick={() => setShowLoginPopup(false)}
                 className="px-4 py-2 border rounded-md"
               >
-                إلغاء
+               {t("cancel")}
               </button>
 
               <Link href="/customer/login">
                 <button className="px-4 py-2 bg-primary text-white rounded-md">
-                  تسجيل الدخول
+                  {t("login")}
                 </button>
               </Link>
 
