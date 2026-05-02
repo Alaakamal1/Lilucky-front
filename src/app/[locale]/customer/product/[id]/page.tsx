@@ -41,7 +41,7 @@ export default function ProductDetails() {
 
     const fetchProduct = async () => {
       try {
-        const res = await apiClient.get(`${Endpoints.products}/${id}`);
+        const res = await apiClient.get(`${Endpoints.products}/get/${id}`);
         const data = res.data.data;
 
         setProduct(data);
