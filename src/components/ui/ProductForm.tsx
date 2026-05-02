@@ -614,9 +614,8 @@ export default function ProductForm({
             ...v,
 
             // keep old + new
-            images: [...v.images, ...fileArray],
-
-            previews: [...v.previews, ...previews],
+            images: fileArray,
+            previews: previews,
           }
           : v
       )
@@ -860,8 +859,8 @@ export default function ProductForm({
                     handleColorChange(variant.id, c)
                   }
                   className={`w-8 h-8 rounded-full border-2 ${variant.color === c
-                      ? "border-blue-500"
-                      : "border-gray-300"
+                    ? "border-blue-500"
+                    : "border-gray-300"
                     }`}
                   style={{ backgroundColor: c }}
                 />
@@ -884,8 +883,8 @@ export default function ProductForm({
                     )
                   }
                   className={`py-2 px-4 border rounded ${variant.sizes.includes(age.value)
-                      ? "bg-primary text-white"
-                      : "bg-gray-100"
+                    ? "bg-primary text-white"
+                    : "bg-gray-100"
                     }`}
                 >
                   {age.label}
