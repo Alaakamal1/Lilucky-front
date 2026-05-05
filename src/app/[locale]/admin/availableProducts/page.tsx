@@ -106,7 +106,7 @@ const Page = () => {
             image: firstImage
               ? `${firstImage.replace(/^\/?/, "")}`
               : "/no-image.png",
-            isActive: product.isActive ? tr('common.available') : tr('common.notAvailable'),
+            isActive: product.isActive ? tr('common.Inventory') : tr('common.notAvailable'),
           };
         });
         setProducts(formattedProducts);
@@ -318,8 +318,7 @@ const Page = () => {
             >
               {t('title')}
             </Typography>
-
-            <Link href={`/${locale}/admin/availableProducts/addProduct`} className="w-full sm:w-auto">
+            <Link href={withLocale(`/admin/availableProducts/addProduct`)} className="w-full sm:w-auto">
               <MainButton
                 text={t('addNew')}
                 className="w-full sm:w-auto cursor-pointer bg-primary hover:bg-primary-hover text-background duration-300 ease-in-out rounded-md px-5 py-3 shadow"
