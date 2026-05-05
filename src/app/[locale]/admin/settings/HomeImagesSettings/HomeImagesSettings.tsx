@@ -9,7 +9,7 @@ import { Endpoints } from "@/src/utils/endpoints";
 export default function HomeImagesSettings() {
   const [heroes, setHeroes] = useState<any[]>([]);
   const router = useRouter();
-  const t = useTranslations();
+  const t = useTranslations("mainSetting");
   const locale = useLocale();
   const positions = [1, 2, 3];
 

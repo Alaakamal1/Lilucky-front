@@ -12,13 +12,13 @@ import LanguageIcon from "@mui/icons-material/Language";
 
 const AdminHeader = () => {
   const locale = useLocale();
-  const t = useTranslations("adminHeader");
-
+  const t = useTranslations("header");
   const [menuOpen, setMenuOpen] = useState(false);
   const { user, setUser } = useUser();
   const router = useRouter();
   const pathname = usePathname();
-
+  const withLocale = (path: string) => `/${locale}${path}`;
+  
   useEffect(() => {
     const storedUser = sessionStorage.getItem("user");
     if (!storedUser) return;
@@ -34,7 +34,7 @@ const AdminHeader = () => {
     sessionStorage.removeItem("token");
     sessionStorage.removeItem("user");
     setUser(null);
-    router.replace(`/${locale}/customer/login`);
+    router.replace(withLocale("/customer/login"));
   };
 
   const handleChangeLanguage = () => {
@@ -43,15 +43,14 @@ const AdminHeader = () => {
     router.replace(newPath);
   };
 
-  const withLocale = (path: string) => `/${locale}${path}`;
 
   const links = [
-    { href: withLocale("/admin"), label: t("dashboard") },
-    { href: withLocale("/admin/availableProducts"), label: t("products") },
-    { href: withLocale("/admin/availableCategory"), label: t("categories") },
-    { href: withLocale("/admin/orders"), label: t("orders") },
-    { href: withLocale("/admin/clients"), label: t("clients") },
-    { href: withLocale("/admin/settings"), label: t("settings") }
+    { href: withLocale("/admin"), label: t("adminHeader.dashboard") },
+    { href: withLocale("/admin/availableProducts"), label: t("adminHeader.products") },
+    { href: withLocale("/admin/availableCategory"), label: t("adminHeader.categories") },
+    { href: withLocale("/admin/orders"), label: t("adminHeader.orders") },
+    { href: withLocale("/admin/clients"), label: t("adminHeader.clients") },
+    { href: withLocale("/admin/settings"), label: t("adminHeader.settings") }
   ];
 
   return (
@@ -61,7 +60,7 @@ const AdminHeader = () => {
 
         <nav className="flex flex-col justify-evenly items-center py-2 h-full">
 
-          <Link href="/">
+          <Link href={withLocale("/admin/dashboard")}>
             <Image src="/Lilucky.svg" alt="logo" width={100} height={100} />
           </Link>
 
@@ -75,7 +74,7 @@ const AdminHeader = () => {
 
           {user?.firstName && (
             <div className="text-lg">
-              {t("hello")} {user.firstName}
+              {t("adminHeader.hello")} {user.firstName}
             </div>
           )}
 
@@ -99,7 +98,7 @@ const AdminHeader = () => {
             onClick={handleLogout}
             className="rounded-md bg-primary py-2.5 px-4 text-background"
           >
-            {t("logout")}
+            {t("adminHeader.logout")}
           </button>
 
         </nav>
@@ -119,11 +118,7 @@ const AdminHeader = () => {
       {/* ================= MOBILE OVERLAY MENU ================= */}
       {menuOpen && (
         <div className="fixed inset-0 z-50 bg-black/40">
-
-          {/* SIDEBAR DRAWER */}
           <div className="absolute top-0 left-0 w-64 h-full bg-thirdary text-primary flex flex-col p-4 gap-4">
-
-            {/* CLOSE ICON */}
             <button
               onClick={() => setMenuOpen(false)}
               className="self-end"
@@ -141,7 +136,7 @@ const AdminHeader = () => {
 
             {user?.firstName && (
               <div>
-                {t("hello")} {user.firstName}
+                {t("adminHeader.hello")} {user.firstName}
               </div>
             )}
 
@@ -163,7 +158,7 @@ const AdminHeader = () => {
               }}
               className="border rounded-md border-primary py-2 px-3"
             >
-              {t("logout")}
+              {t("adminHeader.logout")}
             </button>
 
           </div>

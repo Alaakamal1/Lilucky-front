@@ -28,9 +28,11 @@ import {
 import { useLocale, useTranslations } from "next-intl";
 
 const Page = () => {
-  const t = useTranslations("register");
+  const t = useTranslations();
   const router = useRouter();
-  const local = useLocale();
+  const locale = useLocale();
+  const withLocale = (path: string) => `/${locale}${path}`;
+
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -108,15 +110,15 @@ const Page = () => {
         setSuccessMessage(t("success"));
 
         setTimeout(() => {
-          router.push(`/${local}/customer/login`);
+          router.push(withLocale("/customer/login"));
         }, 1200);
       } else {
-        setFormError(t("errors.server"));
+        setFormError(t("registration.errors.server"));
       }
 
     } catch (err) {
       console.error(err);
-      setFormError(t("errors.server"));
+      setFormError(t("registration.errors.server"));
     }
   };
 
@@ -130,7 +132,7 @@ const Page = () => {
         <form onSubmit={handleSubmit}>
 
           <Typography variant="h4" className="mb-4 text-primary text-center">
-            {t("title")}
+            {t("registration.register.create_account")}
           </Typography>
 
           {formError && (
@@ -148,44 +150,41 @@ const Page = () => {
           {/* NAME */}
           <div className="grid grid-cols-2 gap-4">
             <InputField
-              label={t("fields.first_name.label")}
+              label={t("registration.fields.first_name.label")}
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
             />
 
             <InputField
-              label={t("fields.last_name.label")}
+              label={t("registration.fields.last_name.label")}
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
             />
           </div>
 
-          {/* EMAIL / PHONE */}
           <div className="grid grid-cols-2 gap-4">
             <InputField
-              label={t("fields.email.label")}
+              label={t("registration.fields.email.label")}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
 
             <InputField
-              label={t("fields.phone.label")}
+              label={t("registration.fields.phone.label")}
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
             />
           </div>
-
-          {/* PASSWORD */}
           <div className="grid grid-cols-2 gap-4">
             <InputField
-              label={t("fields.password.label")}
+              label={t("registration.fields.password.label")}
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
 
             <InputField
-              label={t("fields.confirm_password.label")}
+              label={t("registration.fields.confirm_password.label")}
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
@@ -196,14 +195,14 @@ const Page = () => {
           <div className="grid grid-cols-2 gap-4">
 
             <Dropdown
-              label={t("fields.gov.label")}
+              label={t("registration.fields.gov.label")}
               options={governorateOptions}
               value={selectedGov}
               onChange={(e) => setSelectedGov(e.target.value)}
             />
 
             <Dropdown
-              label={t("fields.city.label")}
+              label={t("registration.fields.city.label")}
               options={cityOptions}
               value={selectedCity}
               onChange={(e) => setSelectedCity(e.target.value)}
@@ -214,14 +213,22 @@ const Page = () => {
 
           {/* STREET */}
           <TextArea
-            label={t("fields.street.label")}
+            label={t("registration.fields.street.label")}
             value={street}
             onChange={(e) => setStreet(e.target.value)}
           />
+          
+            <div className="flex justify-between">
+              <Link href={withLocale("/customer/login")}>
+                <Typography className="text-secondary-text hover:secondary-text-hover cursor-pointer">
+                  {t("registration.register.have_account")}
+                </Typography>
+              </Link>
+            </div>
 
           {/* SUBMIT */}
           <MainButton
-            text={t("submit")}
+            text={t("registration.register.create_account")}
             type="submit"
             className="w-full h-12 bg-primary text-white mt-4"
           />

@@ -8,16 +8,12 @@ import {
   ReactNode,
 } from "react";
 
-/* ================= TYPE ================= */
-
 export type Product = {
   id: string;
   name?: string;
   price?: number;
   image?: string;
 };
-
-/* ================= CONTEXT ================= */
 
 type CartWishlistContextType = {
   cart: Product[];
@@ -30,13 +26,9 @@ type CartWishlistContextType = {
 
 const CartWishlistContext = createContext<CartWishlistContextType | null>(null);
 
-/* ================= PROVIDER ================= */
-
 export const CartWishlistProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState<Product[]>([]);
   const [wishlist, setWishlist] = useState<Product[]>([]);
-
-  /* ================= LOAD ONCE ================= */
 
   useEffect(() => {
     const storedCart = sessionStorage.getItem("cart");
@@ -46,8 +38,6 @@ export const CartWishlistProvider = ({ children }: { children: ReactNode }) => {
     setCart(storedCart ? JSON.parse(storedCart) : []);
     setWishlist(storedWishlist ? JSON.parse(storedWishlist) : []);
   }, []);
-
-  /* ================= SAVE ================= */
 
   useEffect(() => {
     sessionStorage.setItem("cart", JSON.stringify(cart));

@@ -82,20 +82,20 @@ export default function OrderDetailsPage() {
           {t("orderDetails.title")}
         </Typography>
 
-        <Chip
-          label={status}
-          color={
-            status === "pending"
-              ? "warning"
-              : status === "confirmed"
-                ? "info"
-                : status === "shipped"
-                  ? "primary"
-                  : status === "delivered"
-                    ? "success"
-                    : "error"
-          }
-        />
+      <Chip
+  label={t(`admin_orders.status.${status}`)}
+  color={
+    status === "pending"
+      ? "warning"
+      : status === "confirmed"
+      ? "info"
+      : status === "shipped"
+      ? "primary"
+      : status === "delivered"
+      ? "success"
+      : "error"
+  }
+/>
       </div>
 
       {/* CUSTOMER */}
@@ -133,11 +133,11 @@ export default function OrderDetailsPage() {
             onChange={(e) => handleStatusChange(e.target.value)}
             size="small"
           >
-            <MenuItem value="pending">{t("orderDetails.status.pending")}</MenuItem>
-            <MenuItem value="confirmed">{t("orderDetails.status.confirmed")}</MenuItem>
-            <MenuItem value="shipped">{t("orderDetails.status.shipped")}</MenuItem>
-            <MenuItem value="delivered">{t("orderDetails.status.delivered")}</MenuItem>
-            <MenuItem value="cancelled">{t("orderDetails.status.cancelled")}</MenuItem>
+            <MenuItem value="pending">{t("admin_orders.status.pending")}</MenuItem>
+            <MenuItem value="confirmed">{t("admin_orders.status.confirmed")}</MenuItem>
+            <MenuItem value="shipped">{t("admin_orders.status.shipped")}</MenuItem>
+            <MenuItem value="delivered">{t("admin_orders.status.delivered")}</MenuItem>
+            <MenuItem value="cancelled">{t("admin_orders.status.cancelled")}</MenuItem>
           </Select>
         </div>
       </div>
@@ -147,8 +147,8 @@ export default function OrderDetailsPage() {
         <Typography variant="h6" className="mb-3">
           {t("orderDetails.address")}
         </Typography>
-        <p>{t(`register.governorates.${order.deliveryAddress?.governorate}`)}</p>
-        <p>{t(`register.cities.${order.deliveryAddress?.city}`)}</p>
+        <p>{t(`governorates.${order.deliveryAddress?.governorate}`)}</p>
+        <p>{t(`cities.${order.deliveryAddress?.city}`)}</p>
         <p>{order.deliveryAddress?.street}</p>
       </div>
 

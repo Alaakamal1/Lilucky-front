@@ -40,6 +40,8 @@ const Page = () => {
   const [submitLoading, setSubmitLoading] = useState(false);
   const isEditMode = Boolean(id);
   const t = useTranslations("categoryForm");
+  const tr = useTranslations();
+
   const locale = useLocale();
   useEffect(() => {
     if (!id) return;
@@ -203,9 +205,9 @@ const Page = () => {
                   required
                 >
                   <option value="">{t("typePlaceholder")}</option>
-                  <option value="all">{t("typeAll")}</option>
-                  <option value="boys">{t("typeBoys")}</option>
-                  <option value="girls">{t("typeGirls")}</option>
+                  <option value="all">{tr("common.all")}</option>
+                  <option value="boys">{tr("common.boys")}</option>
+                  <option value="girls">{tr("common.girls")}</option>
                 </select>
               </div>
 

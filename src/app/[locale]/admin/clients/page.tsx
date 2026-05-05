@@ -16,7 +16,7 @@ import DataTable from '@/src/components/ui/DataTable';
 import { apiClient } from '@/src/utils/apiClient';
 import { Endpoints } from '@/src/utils/endpoints';
 import { User } from '@/src/interfaces';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 type UserRow = {
   _id: string;
@@ -34,14 +34,15 @@ const Page = () => {
   const [selectedUser, setSelectedUser] = useState<UserRow | null>(null);
   const [search, setSearch] = useState('');
   const locale = useLocale();
+  const t =useTranslations("users")
 
   const columns = [
-    { id: 'name', label: 'اسم المستخدم' },
-    { id: 'email', label: 'البريد الإلكتروني' },
-    { id: 'phone', label: 'رقم الهاتف' },
-    { id: 'role', label: 'الصلاحية' },
-    { id: 'createdAt', label: 'تاريخ الإنشاء' },
-    { id: 'actions', label: 'الإجراءات', isAction: true },
+    { id: 'name', label: t("columns.name") },
+    { id: 'email', label: t("columns.email") },
+    { id: 'phone', label: t("columns.phone") },
+    { id: 'role', label: t("columns.role") },
+    { id: 'createdAt', label:  t("columns.createdAt")},
+    { id: 'actions', label: t("columns.actions"), isAction: true },
   ];
 
   /* ================= FETCH USERS ================= */
@@ -123,12 +124,12 @@ const Page = () => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
 
         <Typography variant="h5" className="font-semibold text-secondary-text">
-          إدارة المستخدمين
+        { t("title")}
         </Typography>
 
         <TextField
           size="small"
-          placeholder="ابحث باسم المستخدم..."
+          placeholder={t("search_placeholder")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-full md:w-80"
@@ -138,10 +139,10 @@ const Page = () => {
 
       {/* CONTENT */}
       {loading ? (
-        <Typography>Loading...</Typography>
+        <Typography>{t("loading")}</Typography>
       ) : filteredRows.length === 0 ? (
         <Typography className="text-center text-gray-500 py-10">
-          لا يوجد مستخدمين
+         {t("no_users")}
         </Typography>
       ) : (
         <DataTable
@@ -156,17 +157,17 @@ const Page = () => {
 
       {/* DELETE DIALOG */}
       <Dialog open={openDelete} onClose={() => setOpenDelete(false)}>
-        <DialogTitle>تأكيد الحذف</DialogTitle>
+        <DialogTitle>{t("delete_confirm_title")}</DialogTitle>
 
         <DialogContent>
-          هل أنت متأكد أنك تريد حذف المستخدم:
+         {t("delete_confirm_message")}
           <b> {selectedUser?.name}</b> ؟
         </DialogContent>
 
         <DialogActions>
-          <Button onClick={() => setOpenDelete(false)}>إلغاء</Button>
+          <Button onClick={() => setOpenDelete(false)}>{t("cancel")}</Button>
           <Button onClick={confirmDelete} color="error" variant="contained">
-            حذف
+           {t("delete")}
           </Button>
         </DialogActions>
       </Dialog>

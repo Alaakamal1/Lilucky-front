@@ -16,6 +16,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import Link from 'next/link';
 import React from 'react';
+import { useTranslations } from 'next-intl';
 
 /* ================= TYPES ================= */
 
@@ -64,11 +65,12 @@ export default function DataTable<T extends { _id: string }>({
   viewRoute,
   actions = defaultActions,
 }: Props<T>) {
+  const t = useTranslations("dataTable");
 
   const actionLabel = [
-    actions.view ? 'تفاصيل' : null,
-    actions.edit ? 'تعديل' : null,
-    actions.delete ? 'حذف' : null,
+    actions.view ? t("details") : null,
+    actions.edit ? t("edit") : null,
+    actions.delete ? t("delete") : null,
   ]
     .filter(Boolean)
     .join(' / ');

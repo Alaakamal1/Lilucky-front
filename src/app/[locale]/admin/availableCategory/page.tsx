@@ -25,10 +25,12 @@ const Page = () => {
   const [category, setCategory] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
   const router = useRouter();
   const t = useTranslations('availableCategory');
+  const tr = useTranslations();
   const locale = useLocale();
+    const withLocale = (path: string) => `/${locale}${path}`;
+
 
   const columns = [
     { id: 'name', label: t('name') },
@@ -51,21 +53,17 @@ const Page = () => {
         const formattedData = categoryData.map((cat: Category) => ({
           ...cat,
 
-          // الاسم حسب اللغة
           name: locale === "ar" ? cat.arName : cat.enName || cat.arName,
-
-          // type translation
           categoryType:
             cat.categoryType === "boys"
               ? t("typeBoys")
               : cat.categoryType === "girls"
-                ? t("typeGirls")
-                : t("typeAll"),
+                ? tr("common.girls")
+                : tr("common.all"),
 
-          // status translation
           isActive: cat.isActive
-            ? t("available")
-            : t("notAvailable"),
+            ? tr("common.available")
+            : tr("common.notAvailable"),
         }));
 
         setCategory(formattedData);
@@ -75,8 +73,8 @@ const Page = () => {
           setError(err.message);
           toast.error(err.message);
         } else {
-          setError(t('errors.unexpected'));
-          toast.error(t('errors.unexpected'));
+          setError(tr('common.errors.unexpected'));
+          toast.error(tr('common.errors.unexpected'));
         }
       } finally {
         setLoading(false);
@@ -84,20 +82,21 @@ const Page = () => {
     };
 
     fetchCategory();
-  }, [locale, t]);
+  }, [locale, t,tr]);
 
   const handleEdit = (row: Category) => {
-router.push(`/${locale}/admin/availableCategory/addCategory?id=${row._id}`);
+    
+router.push(withLocale(`/admin/availableCategory/addCategory?id=${row._id}`));
   };
 
   const handleDelete = async (row: Category) => {
     const result = await Swal.fire({
-      title: t('confirm.title'),
-      text: t('confirm.text'),
+      title: tr('common.confirmation.title'),
+      text: tr('common.confirmation.text'),
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: t('confirm.confirm'),
-      cancelButtonText: t('confirm.cancel'),
+      confirmButtonText: tr('common.confirmation.confirm'),
+      cancelButtonText: tr('common.confirmation.cancel'),
     });
 
     if (!result.isConfirmed) return;
@@ -153,8 +152,7 @@ router.push(`/${locale}/admin/availableCategory/addCategory?id=${row._id}`);
       {/* EMPTY */}
       {!loading && !error && category.length === 0 && (
         <div className='flex flex-col justify-center items-center gap-4 md:h-2/4'>
-
-          <Link href={`/${locale}/admin/availableCategory/addCategory`}>
+          <Link href={withLocale("/admin/availableCategory/addCategory")}>
             <MainButton
               text={t('addFirst')}
               className="cursor-pointer bg-primary hover:bg-primary-hover text-background duration-300 ease-in-out rounded-md px-5 py-3"
@@ -167,7 +165,6 @@ router.push(`/${locale}/admin/availableCategory/addCategory?id=${row._id}`);
         </div>
       )}
 
-      {/* TABLE */}
       {!loading && !error && category.length > 0 && (
         <div>
 
@@ -177,7 +174,7 @@ router.push(`/${locale}/admin/availableCategory/addCategory?id=${row._id}`);
               {t('title')}
             </Typography>
 
-            <Link href={`/${locale}/admin/availableCategory/addCategory`}>
+            <Link href={withLocale("/admin/availableCategory/addCategory")}>
               <MainButton
                 text={t('addNew')}
                 className="bg-primary text-white px-5 py-3 rounded-md"

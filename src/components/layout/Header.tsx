@@ -17,19 +17,18 @@ import { useTranslations, useLocale } from "next-intl";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
-
   const { user, setUser } = useUser();
   const { cart, wishlist } = useCartWishlist();
-
   const t = useTranslations("header");
   const locale = useLocale();
   const router = useRouter();
-
   const fName = user?.firstName ?? null;
   const isAuth = Boolean(user);
 
   const toggleMenu = () => setMenuOpen((p) => !p);
   const closeMenu = () => setMenuOpen(false);
+  const withLocale = (path: string) => `/${locale}${path}`;
+
 
   /* ================= LANGUAGE ================= */
   const toggleLanguage = () => {
@@ -43,13 +42,13 @@ export default function Header() {
     sessionStorage.removeItem("token");
     sessionStorage.removeItem("firstName");
     setUser(null);
-    router.replace(`/${locale}/customer/login`);
+    router.replace(withLocale("/customer/login"));
   };
 
   /* ================= LINKS ================= */
   const links = [
-    { href: `/${locale}/customer`, label: t("home") },
-    { href: `/${locale}/customer/products`, label: t("products") },
+    { href: withLocale("/customer"), label: t("customerHeader.home") },
+    { href: withLocale("/customer/products"), label: t("customerHeader.products") },
   ];
 
   return (
@@ -58,7 +57,7 @@ export default function Header() {
       {/* TOP BAR */}
       <div className="flex justify-between items-center px-4 py-2 md:justify-center relative md:bg-background">
 
-        <Link href={`/${locale}/customer`}>
+        <Link href={withLocale("/customer")}>
           <Image
             src="/Lilucky.svg"
             alt="logo"
@@ -88,14 +87,12 @@ export default function Header() {
         ))}
 
         {fName ? (
-          <button onClick={handleLogout}>{t("logout")}</button>
+          <button onClick={handleLogout}>{t("customerHeader.logout")}</button>
         ) : (
-          <Link href={`/${locale}/customer/login`}>{t("login")}</Link>
+          <Link href={withLocale("/customer/login")}>{t("customerHeader.login")}</Link>
         )}
 
         <div className="flex items-center gap-4 ">
-
-          {/* <SearchInput /> */}
 
           <button onClick={toggleLanguage} className="flex items-center gap-1">
             <LanguageIcon />
@@ -103,27 +100,24 @@ export default function Header() {
               {locale === "ar" ? "AR" : "EN"}
             </span>
           </button>
-
-          <Link href={`/${locale}/customer/wishlist`} className="relative">
+          <Link href={withLocale("/customer/wishlist")} className="relative">
             <FavoriteBorderIcon />
             {wishlist?.length > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs min-w-[20px] h-5 px-1 flex items-center justify-center rounded-full">
-                {wishlist.length > 9 ? "9+" : wishlist.length}
-              </span>
+              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-ping"></span>
             )}
           </Link>
 
-          <Link href={`/${locale}/customer/cart`} className="relative">
+          <Link href={withLocale("/customer/cart")} className="relative">
             <ShoppingCartOutlinedIcon />
             {cart?.length > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs min-w-[20px] h-5 px-1 flex items-center justify-center rounded-full">
-                {cart.length > 9 ? "9+" : cart.length}
-              </span>
+              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-ping"></span>
             )}
           </Link>
 
+
           {isAuth && (
-            <Link href={`/${locale}/customer/account`}>
+
+            <Link href={withLocale("/customer/account")}>
               <Avatar fName={fName ?? ""} />
             </Link>
           )}
@@ -134,7 +128,6 @@ export default function Header() {
       {/* ================= MOBILE FLOATING MENU ================= */}
       {menuOpen && (
         <>
-          {/* BACKDROP */}
           <div
             className="fixed inset-0 bg-black/40 z-40"
             onClick={closeMenu}
@@ -142,8 +135,6 @@ export default function Header() {
 
           {/* MENU */}
           <div className="fixed top-0 left-0 w-full z-50 bg-thirdary shadow-lg flex flex-col gap-4 px-4 py-6">
-
-            {/* CLOSE BUTTON (X) */}
             <div className="flex justify-end">
               <button onClick={closeMenu}>
                 <CloseIcon />
@@ -162,17 +153,15 @@ export default function Header() {
 
             {fName ? (
               <button onClick={() => { handleLogout(); closeMenu(); }}>
-                {t("logout")}
+                {t("customerHeader.logout")}
               </button>
             ) : (
-              <Link href={`/${locale}/customer/login`} onClick={closeMenu}>
-                {t("login")}
+              <Link href={withLocale("/customer/login")} onClick={closeMenu}>
+                {t("customerHeader.login")}
               </Link>
             )}
 
             <div className="flex items-center gap-4">
-
-              {/* <SearchInput /> */}
 
               <button onClick={toggleLanguage} className="flex items-center gap-1">
                 <LanguageIcon />
@@ -181,16 +170,22 @@ export default function Header() {
                 </span>
               </button>
 
-              <Link href={`/${locale}/customer/wishlist`} onClick={closeMenu}>
+              <Link href={withLocale("/customer/wishlist")} onClick={closeMenu} className="relative">
                 <FavoriteBorderIcon />
+                {wishlist?.length > 0 && (
+                  <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full"></span>
+                )}
               </Link>
 
-              <Link href={`/${locale}/customer/cart`} onClick={closeMenu}>
+              <Link href={withLocale("/customer/cart")} onClick={closeMenu} className="relative">
                 <ShoppingCartOutlinedIcon />
+                {cart?.length > 0 && (
+                  <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full"></span>
+                )}
               </Link>
 
               {isAuth && (
-                <Link href={`/${locale}/customer/account`} onClick={closeMenu}>
+                <Link href={withLocale("/customer/account")} onClick={closeMenu}>
                   <Avatar fName={fName ?? ""} />
                 </Link>
               )}

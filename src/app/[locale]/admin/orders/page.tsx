@@ -10,7 +10,7 @@ import {
   Select,
   MenuItem,
 } from '@mui/material';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useEffect, useMemo, useState } from 'react';
 
 /* ================= UI MODEL ================= */
@@ -55,7 +55,9 @@ const Page = () => {
   const [rows, setRows] = useState<OrderRow[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [search, setSearch] = useState<string>('');
+
   const locale = useLocale();
+  const t = useTranslations('admin_orders');
 
   /* ================= UPDATE STATUS ================= */
   const handleStatusChange = async (
@@ -86,42 +88,44 @@ const Page = () => {
 
   /* ================= COLUMNS ================= */
   const columns: Column<OrderRow>[] = [
-    { id: 'orderId', label: 'رقم الطلب' },
-    { id: 'customerName', label: 'اسم العميل' },
-    { id: 'totalPrice', label: 'اجمالي السعر' },
-    { id: 'orderDate', label: 'تاريخ العملية' },
-    { id: 'paymentMethod', label: 'طريقة الدفع' },
+    { id: 'orderId', label: t('columns.orderId') },
+    { id: 'customerName', label: t('columns.customerName') },
+    { id: 'totalPrice', label: t('columns.totalPrice') },
+    { id: 'orderDate', label: t('columns.orderDate') },
+    { id: 'paymentMethod', label: t('columns.paymentMethod') },
 
     {
       id: 'orderStatus',
-      label: 'حالة الطلب',
-      render: (row: OrderRow) => {
-        return (
-          <Select
-            value={row.orderStatus}
-            size="small"
-            onChange={(e) =>
-              handleStatusChange(
-                row._id,
-                e.target.value as OrderStatus
-              )
-            }
-            className={getStatusColor(row.orderStatus)}
-          >
-            <MenuItem value="pending">Pending</MenuItem>
-            <MenuItem value="confirmed">Confirmed</MenuItem>
-            <MenuItem value="shipped">Shipped</MenuItem>
-            <MenuItem value="delivered">Delivered</MenuItem>
-            <MenuItem value="cancelled">Cancelled</MenuItem>
-          </Select>
-        );
-      },
+      label: t('columns.orderStatus'),
+      render: (row: OrderRow) => (
+        <Select
+          value={row.orderStatus}
+          size="small"
+          onChange={(e) =>
+            handleStatusChange(
+              row._id,
+              e.target.value as OrderStatus
+            )
+          }
+          className={getStatusColor(row.orderStatus)}
+        >
+          {statusOptions.map((status) => (
+            <MenuItem key={status} value={status}>
+              {t(`status.${status}`)}
+            </MenuItem>
+          ))}
+        </Select>
+      ),
     },
 
-    { id: 'actions', label: 'تفاصيل / تعديل / حذف', isAction: true },
+    {
+      id: 'actions',
+      label: t('columns.actions'),
+      isAction: true,
+    },
   ];
 
-  /* ================= FETCH ORDERS ================= */
+  /* ================= FETCH ================= */
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -145,15 +149,13 @@ const Page = () => {
 
           customerName:
             typeof order.userId === 'object' && order.userId
-              ? `${order.userId.firstName ?? ''} ${
-                  order.userId.lastName ?? ''
-                }`
+              ? `${order.userId.firstName ?? ''} ${order.userId.lastName ?? ''}`
               : '---',
 
           totalPrice: order.totalAmount ?? 0,
 
           orderDate: order.createdAt
-            ? new Date(order.createdAt).toLocaleDateString()
+            ? new Date(order.createdAt).toLocaleDateString(locale)
             : '---',
 
           paymentMethod: (order as any).paymentMethod ?? 'cash',
@@ -169,7 +171,7 @@ const Page = () => {
     };
 
     fetchOrders();
-  }, []);
+  }, [locale]);
 
   /* ================= SEARCH ================= */
   const filteredRows = useMemo(() => {
@@ -187,21 +189,22 @@ const Page = () => {
     window.location.href = `/${locale}/admin/orders/${row._id}`;
   };
 
-  /* ================= DELETE (LOCAL ONLY) ================= */
+  /* ================= DELETE ================= */
   const handleDelete = (row: OrderRow) => {
     setRows((prev) => prev.filter((o) => o._id !== row._id));
   };
 
   return (
     <div className="w-full px-4 md:px-10 py-6">
+
       <Typography variant="h5" className="mb-4 text-secondary-text">
-        إدارة الطلبات
+        {t('title')}
       </Typography>
 
       {rows.length > 0 && (
         <input
           type="text"
-          placeholder="ابحث باسم العميل أو رقم الطلب..."
+          placeholder={t('search')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="border p-2 rounded w-full md:w-1/3 mb-4"
@@ -214,7 +217,7 @@ const Page = () => {
         </div>
       ) : rows.length === 0 ? (
         <Typography className="text-center text-gray-500">
-          لا يوجد طلبات
+          {t('no_orders')}
         </Typography>
       ) : (
         <DataTable

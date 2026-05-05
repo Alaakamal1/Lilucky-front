@@ -10,6 +10,7 @@ import {
 import { apiClient } from '@/src/utils/apiClient';
 import { Endpoints } from '@/src/utils/endpoints';
 import { Product } from '@/src/interfaces/product';
+import { useTranslations } from 'next-intl';
 
 /* ================= TYPES ================= */
 
@@ -26,6 +27,7 @@ const ProductDetailsPage = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const t = useTranslations();
 
   /* ================= MEMO ================= */
 
@@ -155,7 +157,7 @@ if (loading) {
           variant="h4"
           className="my-8 text-center text-primary"
         >
-          تفاصيل المنتج
+            {t("products.adminProducts.product_details")}
         </Typography>
           <div className="grid md:grid-cols-2 gap-10">
 
@@ -174,7 +176,7 @@ if (loading) {
                   />
                 ) : (
                   <div className="flex items-center justify-center h-full text-gray-400">
-                    لا توجد صورة
+                    {t("mainSetting.heroSettings.noImage")}
                   </div>
                 )}
               </div>
@@ -212,7 +214,7 @@ if (loading) {
               {/* PRICE */}
               <div className="flex flex-col gap-2">
                 <Typography className="text-lg font-bold text-gray-700">
-                  السعر على الموقع
+                 {t("products.adminProducts.sitePrice")}
                 </Typography>
 
                 <Typography className="text-2xl font-bold text-primary">
@@ -220,32 +222,33 @@ if (loading) {
                 </Typography>
 
                 <Typography className="text-sm text-gray-500">
-                  السعر الأصلي
+                  {t("products.adminProducts.mainPrice")}
                 </Typography>
 
-                <Typography className="text-gray-400 line-through">
-                  {product.main_price} جنيه
+                <Typography className="text-gray-400 ">
+                  {product.main_price} {t("products.customerProducts.pound")}
                 </Typography>
               </div>
 
-              {/* DESCRIPTION */}
               <Typography className="text-gray-600 leading-relaxed">
                 {product.description}
               </Typography>
 
               {/* META */}
               <Typography className="text-sm text-gray-500">
-                الفئة: {product.category?.arName || 'غير محدد'}
+                {t("products.adminProducts.categoryType")}
+ {product.category?.arName || 'غير محدد'}
               </Typography>
 
               <Typography className="text-sm text-gray-500">
-                الخامه: {product.material}
+              {t("products.adminProducts.material")} {product.material}
               </Typography>
 
               {/* STATUS */}
               <div className="flex gap-4">
                 <div className="bg-gray-100 px-3 py-2 rounded">
-                  المخزون: {product.stock || 0}
+                                   {t("products.adminProducts.Inventory")}
+{product.stock || 0}
                 </div>
 
                 <div
@@ -255,13 +258,13 @@ if (loading) {
                       : 'bg-red-100 text-red-500'
                   }`}
                 >
-                  {product.isActive ? 'متوفر' : 'غير متوفر'}
+                  {product.isActive ? t("common.Inventory") : t("common.notAvailable")}
                 </div>
               </div>
 
               {/* VARIANTS */}
               <div className="mt-4 space-y-3">
-                <p className="font-semibold">الألوان والمقاسات:</p>
+                <p className="font-semibold">{t("products.adminProducts.colors_sizes")}</p>
 
                 {product.variants?.length ? (
                   product.variants.map((variant, i) => (
@@ -269,9 +272,8 @@ if (loading) {
                       key={i}
                       className="border p-3 rounded-lg"
                     >
-                      {/* COLOR */}
                       <div className="flex items-center gap-2 mb-2">
-                        <span>اللون:</span>
+                        <span>{t("products.customerProducts.color")}</span>
                         <div
                           className="w-5 h-5 rounded-full border"
                           style={{ backgroundColor: variant.color }}
@@ -293,7 +295,7 @@ if (loading) {
                   ))
                 ) : (
                   <p className="text-gray-400">
-                    لا توجد بيانات
+                    {t("products.adminProducts.noData")}
                   </p>
                 )}
               </div>
