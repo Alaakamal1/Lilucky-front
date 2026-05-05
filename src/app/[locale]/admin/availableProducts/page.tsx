@@ -146,12 +146,12 @@ const Page = () => {
         },
       });
       setProducts((prev) => prev.filter((p) => p._id !== row._id));
-      toast.success(t('success.delete'));
+      toast.success(tr('common.success_messages.delete_product'));
     } catch (err: unknown) {
       if (err instanceof Error) {
         toast.error(err.message);
       } else {
-        toast.error(t('errors.delete'));
+        toast.error(tr('common.errors.delete'));
       }
     }
   };
