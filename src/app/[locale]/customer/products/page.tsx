@@ -17,7 +17,7 @@ interface Option {
   value: string;
 }
 
-type AgeOption =
+type AgeOptionType =
   | "all"
   | "1Y"
   | "2Y"
@@ -28,28 +28,44 @@ type AgeOption =
   | "7Y"
   | "8Y";
 
+
 const Page = () => {
+  const t = useTranslations();
+
+  const AgeOption = [
+  { value: "all", label: t("common.all") },
+  { value: "1Y", label:  t("common.age1") },
+  { value: "2Y", label:  t("common.age2") },
+  { value: "3Y", label:  t("common.age3") },
+  { value: "4Y", label:  t("common.age4") },
+  { value: "5Y", label:  t("common.age5") },
+  { value: "6Y", label:  t("common.age6") },
+  { value: "7Y", label:  t("common.age7") },
+  { value: "8Y", label:  t("common.age8") },
+];
   const [selectedGender, setSelectedGender] = useState<string>("all");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [selectedAge, setSelectedAge] = useState<AgeOption>("all");
+  const [selectedAge, setSelectedAge] = useState<AgeOptionType>("all");
 
   const [loading, setLoading] = useState<boolean>(true);
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Option[]>([]);
 
-  const t = useTranslations("products");
   const locale = useLocale();
+  const withLocale = (path: string) => `/${locale}${path}`;
+
   const searchParams = useSearchParams();
+
+  
 
   /* ================= INIT FROM URL ================= */
   useEffect(() => {
     const categoryFromUrl = searchParams.get("category");
     const genderFromUrl = searchParams.get("gender");
     const ageFromUrl = searchParams.get("age");
-
     if (categoryFromUrl) setSelectedCategory(categoryFromUrl);
     if (genderFromUrl) setSelectedGender(genderFromUrl);
-    if (ageFromUrl) setSelectedAge(ageFromUrl as AgeOption);
+    if (ageFromUrl) setSelectedAge(ageFromUrl as AgeOptionType);
   }, [searchParams]);
 
   /* ================= PRODUCTS ================= */
@@ -96,7 +112,7 @@ const Page = () => {
           res.data?.data?.categoryNames ?? [];
 
         setCategories([
-          { label: t("all"), value: "all" },
+          { label: t("common.all"), value: "all" },
           ...categoriesData.map((cat) => ({
             label: cat.name,
             value: cat._id,
@@ -113,9 +129,9 @@ const Page = () => {
   /* ================= OPTIONS ================= */
   const genderOptions: Option[] = useMemo(
     () => [
-      { value: "all", label: t("all") },
-      { value: "boys", label: t("boys") },
-      { value: "girls", label: t("girls") },
+      { value: "all", label: t("common.all") },
+      { value: "boys", label: t("common.boys") },
+      { value: "girls", label: t("common.girls") },
     ],
     [t]
   );
@@ -127,7 +143,7 @@ const Page = () => {
         selectedGender === "all" || product.gender === selectedGender;
 
       const matchCategory =
-        selectedCategory === "all" ||
+        selectedCategory ===  "all" ||
         product.category?._id === selectedCategory;
 
       const matchAge =
@@ -148,7 +164,7 @@ const Page = () => {
         <div className="flex gap-4 px-5 md:w-200">
 
           <Filter
-            label={t("gender")}
+            label={t("products.adminProducts.gender")}
             options={genderOptions}
             selected={selectedGender}
             onChange={(value: any) =>
@@ -157,7 +173,16 @@ const Page = () => {
           />
 
           <Filter
-            label={t("category")}
+            label={t("common.ageCategory")}
+            options={AgeOption}
+            selected={selectedAge}
+            onChange={(value: any) =>
+              setSelectedAge(value.value || value)
+            }
+          />
+
+          <Filter
+            label={t("products.customerProducts.category")}          
             options={categories}
             selected={selectedCategory}
             onChange={(value: any) =>
@@ -169,12 +194,10 @@ const Page = () => {
       </div>
 
       <Typography variant="h5" className="text-secondary-text p-2">
-        {t("title_all")}
+        {t("products.customerProducts.title_all")}
       </Typography>
 
-      {/* PRODUCTS */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-
         {loading ? (
           Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="flex justify-center">
@@ -196,7 +219,7 @@ const Page = () => {
             <SentimentDissatisfiedIcon sx={{ fontSize: 60 }} />
 
             <Typography variant="h6" className="mt-3">
-              {t("no_products_match")}
+              {t("products.customerProducts.no_products_match")}
             </Typography>
 
             <Button
@@ -208,7 +231,7 @@ const Page = () => {
               }}
               sx={{ mt: 2 }}
             >
-              {t("reset_filters")}
+              {t("products.customerProducts.reset_filters")}
             </Button>
 
           </div>

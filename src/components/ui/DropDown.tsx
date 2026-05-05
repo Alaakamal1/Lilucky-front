@@ -8,7 +8,7 @@ const Dropdown: React.FC<DropdownProps> = ({
   onChange,
   disabled = false,
 }) => {
-  const t = useTranslations("register");
+  const t = useTranslations("registration");
 
   return (
     <div className="mb-4">
@@ -36,7 +36,7 @@ const Dropdown: React.FC<DropdownProps> = ({
           duration-200`}
       >
         <option value="">
-          {t("select")} 
+          {t("register.select")} 
         </option>
 
         {options.map((option) => (

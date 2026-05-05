@@ -13,7 +13,7 @@ export default function EditHeroPage() {
   const [hero, setHero] = useState<any>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(true);
-  const t = useTranslations();
+  const t = useTranslations("mainSetting");
 
   /* ===========================
      FETCH HERO
@@ -63,9 +63,6 @@ export default function EditHeroPage() {
     setImageFile(file);
   };
 
-  /* ===========================
-     SAVE (FIXED)
-  =========================== */
 
   const handleSave = async () => {
   const formData = new FormData();
@@ -75,7 +72,6 @@ export default function EditHeroPage() {
   formData.append("title_ar", hero.title?.ar || "");
   formData.append("title_en", hero.title?.en || "");
 
-  // ✅ subtitle مسموح يكون فاضي
   formData.append("subtitle_ar", hero.subtitle?.ar || "");
   formData.append("subtitle_en", hero.subtitle?.en || "");
 

@@ -370,8 +370,8 @@ import { apiClient } from "@/src/utils/apiClient";
 import { Endpoints } from "@/src/utils/endpoints";
 import { Category } from "@/src/interfaces/Category";
 import { Product, ProductVariant } from "@/src/interfaces/product";
+import { useTranslations } from "next-intl";
 
-/* ================= TYPES ================= */
 
 type Age =
   | '1Y'
@@ -399,29 +399,40 @@ interface ProductFormProps {
 /* ================= CONSTANTS ================= */
 
 const availableColors = [
-  "#000000",
-  "#ffffff",
-  "#ff0000",
-  "#00ff00",
-  "#0000ff",
-  "#f5a623"
+  "#000000", 
+  "#ffffff", 
+  "#ff0000", 
+  "#00ff00", 
+  "#0000ff", 
+  "#f5a623",
+  "#ff69b4",
+  "#ffb6c1", 
+  "#ffc0cb",
+  "#ffd700", 
+  "#ffff00",
+  "#87ceeb", 
+  "#00bfff", 
+  "#1e90ff", 
+  "#9370db", 
+  "#ba55d3",
+  "#ff8c00", 
+  "#ffa500", 
+  "#98fb98",
+  "#32cd32", 
+  "#20b2aa", 
+  "#40e0d0", 
+  "#a0522d",
+  "#d2b48c",
+  "#c0c0c0",
+  "#808080",
+  "#f08080",
+  "#e6e6fa", 
+  "#fffacd",
+  "#add8e6", 
+  "#ffe4e1"  
 ];
 
-const ageRangeOptions: { value: Age; label: string }[] = [
-  { value: "1Y", label: "سنة" },
-  { value: "2Y", label: "سنتين" },
-  { value: "3Y", label: "3 سنوات" },
-  { value: "4Y", label: "4 سنوات" },
-  { value: "5Y", label: "5 سنوات" },
-  { value: "6Y", label: "6 سنوات" },
-  { value: "7Y", label: "7 سنوات" },
-  { value: "8Y", label: "8 سنوات" },
-];
 
-const genderOptions = [
-  { value: "boys", label: "ذكر" },
-  { value: "girls", label: "انثى" },
-];
 
 /* ================= COMPONENT ================= */
 
@@ -497,6 +508,24 @@ export default function ProductForm({
       },
     ]
   );
+
+  const t = useTranslations();
+
+  const ageRangeOptions: { value: Age; label: string }[] = [
+  { value: "1Y", label: t("common.age1") },
+  { value: "2Y", label: t("common.age2") },
+  { value: "3Y", label: t("common.age3") },
+  { value: "4Y", label: t("common.age4") },
+  { value: "5Y", label: t("common.age5") },
+  { value: "6Y", label: t("common.age6") },
+  { value: "7Y", label: t("common.age7") },
+  { value: "8Y", label: t("common.age8") },
+];
+
+const genderOptions = [
+  { value: "boys", label: t("common.boys")},
+  { value: "girls", label: t("common.girls") },
+];
 
   /* ================= FETCH ================= */
 
@@ -612,8 +641,6 @@ export default function ProductForm({
         v.id === id
           ? {
             ...v,
-
-            // keep old + new
             images: fileArray,
             previews: [...v.previews, ...previews],
           }
@@ -681,8 +708,6 @@ export default function ProductForm({
           color: v.color,
 
           sizes: v.sizes,
-
-          // keep only server images
           images: v.previews.filter(
             (img) =>
               typeof img === "string" &&
@@ -730,7 +755,7 @@ export default function ProductForm({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
           <InputField
-            label="اسم المنتج"
+            label={t("products.adminProducts.name")}
             value={productName}
             onChange={(e) =>
               setProductName(e.target.value)
@@ -738,21 +763,18 @@ export default function ProductForm({
           />
 
           <Dropdown
-            label="النوع"
+            label={t("products.adminProducts.gender")}
             options={genderOptions}
             value={gender}
             onChange={(e) => {
-
               const value = e.target.value;
-
               setGender(value);
-
               setProductCategory("");
             }}
           />
 
           <Dropdown
-            label="التصنيف"
+            label={t("products.adminProducts.categoryType")}
             options={productDataCategory}
             value={productCategory}
             onChange={(e) =>
@@ -762,7 +784,7 @@ export default function ProductForm({
           />
 
           <InputField
-            label="الخامة"
+            label={t("products.adminProducts.material")}
             value={productMaterial}
             onChange={(e) =>
               setProductMaterial(e.target.value)
@@ -773,7 +795,7 @@ export default function ProductForm({
         {/* ================= DESCRIPTION ================= */}
 
         <TextArea
-          label="الوصف"
+          label={t("products.adminProducts.description")}
           value={productDescription}
           onChange={(e) =>
             setProductDescription(e.target.value)
@@ -785,7 +807,7 @@ export default function ProductForm({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
           <InputField
-            label="السعر الاصلي"
+            label={t("products.adminProducts.mainPrice")}
             value={productMainPrice}
             onChange={(e) =>
               handleNumberChange(
@@ -796,7 +818,7 @@ export default function ProductForm({
           />
 
           <InputField
-            label="سعر الموقع"
+            label={t("products.adminProducts.sitePrice")}
             value={productSitePrice}
             onChange={(e) =>
               handleNumberChange(
@@ -807,7 +829,7 @@ export default function ProductForm({
           />
 
           <InputField
-            label="المخزون"
+            label={t("products.adminProducts.Inventory")}
             value={stockQuantity}
             onChange={(e) =>
               handleNumberChange(
@@ -824,7 +846,7 @@ export default function ProductForm({
           variant="h6"
           className="text-primary"
         >
-          الالوان والمقاسات
+         {t("products.adminProducts.variants")}
         </Typography>
 
         {variants.map((variant) => (
@@ -848,24 +870,25 @@ export default function ProductForm({
 
             {/* ================= COLORS ================= */}
 
-            <div className="flex gap-2 mb-2">
+         <div className="flex flex-wrap gap-2 mb-2">
 
-              {availableColors.map((c) => (
+  {availableColors.map((c) => (
 
-                <button
-                  key={c}
-                  type="button"
-                  onClick={() =>
-                    handleColorChange(variant.id, c)
-                  }
-                  className={`w-8 h-8 rounded-full border-2 ${variant.color === c
-                    ? "border-blue-500"
-                    : "border-gray-300"
-                    }`}
-                  style={{ backgroundColor: c }}
-                />
-              ))}
-            </div>
+    <button
+      key={c}
+      type="button"
+      onClick={() =>
+        handleColorChange(variant.id, c)
+      }
+      className={`w-8 h-8 rounded-full border-2 ${
+        variant.color === c
+          ? "border-blue-500"
+          : "border-gray-300"
+      }`}
+      style={{ backgroundColor: c }}
+    />
+  ))}
+</div>
 
             {/* ================= SIZES ================= */}
 
@@ -907,8 +930,6 @@ export default function ProductForm({
 
             {/* ================= PREVIEWS ================= */}
 
-            {/* ================= PREVIEWS ================= */}
-
             <div className="flex gap-2 mt-2 flex-wrap">
 
               {variant.previews
@@ -920,7 +941,6 @@ export default function ProductForm({
                     className="relative w-[70px] h-[70px]"
                   >
 
-                    {/* DELETE BUTTON */}
                     <button
                       type="button"
                       onClick={() => {
@@ -937,8 +957,6 @@ export default function ProductForm({
                               previews: v.previews.filter(
                                 (_, index) => index !== i
                               ),
-
-                              // حذف الصورة الجديدة لو blob
                               images: img.startsWith("blob:")
                                 ? v.images.filter(
                                   (_, index) => index !== (
@@ -956,8 +974,6 @@ export default function ProductForm({
                     >
                       ×
                     </button>
-
-                    {/* IMAGE */}
 
                     <Image
                       src={
@@ -989,13 +1005,13 @@ export default function ProductForm({
           onClick={addVariant}
           className="mt-4 text-lg"
         >
-          + اضافة لون جديد
+       {t("products.adminProducts.addVariant")}
         </button>
 
         {/* ================= SUBMIT ================= */}
 
         <MainButton
-          text="انشاء منتج"
+          text={t("products.adminProducts.createProduct")}
           type="submit"
           className="w-full h-12 rounded-md text-background hover:bg-primary-hover duration-400 ease-in my-4 px-6 bg-primary cursor-pointer"
         />

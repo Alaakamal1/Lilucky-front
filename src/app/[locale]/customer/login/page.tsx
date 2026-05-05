@@ -28,15 +28,17 @@ const validatePassword = (value: string) => {
 const Page = () => {
   const router = useRouter();
   const { setUser } = useUser();
-  const t = useTranslations("login");
-
+  const t = useTranslations();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [formError, setFormError] = useState("");
   const locale = useLocale();
+  const withLocale = (path: string) => `/${locale}${path}`;
+
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -73,8 +75,8 @@ const Page = () => {
           await mergeWishlist();
         }
 
-        if (role === "client") router.push(`/${locale}/customer/products`);
-        else if (role === "admin") router.push(`/${locale}/admin`);
+        if (role === "client") router.push(withLocale("/customer/products"));
+        else if (role === "admin") router.push(withLocale("/admin"));
       } else {
         setFormError(result.message || t("errors.login"));
       }
@@ -85,7 +87,7 @@ const Page = () => {
       if (error.response?.data?.message) {
         setFormError(error.response.data.message);
       } else {
-        setFormError(t("errors.server"));
+        setFormError(t("common.errors.server"));
       }
     }
   };
@@ -93,13 +95,13 @@ const Page = () => {
   const isFormValid = email && password;
 
   const mergeWishlist = async () => {
-    const wishlist = JSON.parse(sessionStorage.getItem("wishlist") || "[]");
+    const wishlist = JSON.parse(sessionStorage.getItem("likedProducts") || "[]");
     const token = sessionStorage.getItem("token");
 
     if (!wishlist.length || !token) return;
 
     await apiClient.post(
-      `${Endpoints.products}/merge-wishlist`,
+      `${Endpoints.products}/wishlist/merge`,
       { productIds: wishlist },
       {
         headers: {
@@ -109,7 +111,7 @@ const Page = () => {
       }
     );
 
-    sessionStorage.removeItem("wishlist");
+    sessionStorage.removeItem("likedProducts");
   };
 
   return (
@@ -120,7 +122,7 @@ const Page = () => {
         <form onSubmit={handleSubmit}>
 
           <Typography variant="h4" className="mb-4 text-center text-primary">
-            {t("title")}
+            {t("common.login_button")}
           </Typography>
 
           {formError && (
@@ -130,21 +132,19 @@ const Page = () => {
           )}
 
           <div className="w-full max-w-sm mx-auto flex flex-col gap-4">
-
-            {/* Email */}
             <div>
               <InputField
-                label={t("email")}
+                label={t("registration.fields.email.label")}
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 onBlur={() => setEmailError(validateEmail(email))}
-                placeholder={t("email_placeholder")}
+                placeholder={t("registration.fields.email.placeholder")}
               />
 
               {emailError && (
                 <Typography className="text-red-500 text-sm mt-1">
-                  {t(`errors.${emailError}`)}
+                  {t(`registration.fields.email.invalid_email.${emailError}`)}
                 </Typography>
               )}
             </div>
@@ -152,26 +152,25 @@ const Page = () => {
             {/* Password */}
             <div>
               <InputField
-                label={t("password")}
+                label={t("registration.fields.password.label")}
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 onBlur={() => setPasswordError(validatePassword(password))}
-                placeholder={t("password_placeholder")}
+                placeholder={t("registration.fields.password.placeholder")}
               />
 
               {passwordError && (
                 <Typography className="text-red-500 text-sm mt-1">
-                  {t(`errors.${passwordError}`)}
+                  {t(`registration.login.errors.pass_error.${passwordError}`)}
                 </Typography>
               )}
             </div>
 
-            {/* Signup link */}
             <div className="flex justify-between">
-              <Link href={`/${locale}/customer/signup`}>
+              <Link href={withLocale("/customer/signup")}>
                 <Typography className="text-secondary-text hover:secondary-text-hover cursor-pointer">
-                  {t("no_account")}
+                  {t("registration.login.no_account")}
                 </Typography>
               </Link>
             </div>
@@ -179,7 +178,7 @@ const Page = () => {
             {/* Submit */}
             <MainButton
               type="submit"
-              text={t("login_button")}
+              text={t("common.login_button")}
               className="w-full h-12 rounded-md text-background hover:bg-primary-hover duration-400 ease-in my-4 px-6 bg-primary cursor-pointer"
               disabled={!isFormValid}
             />

@@ -157,8 +157,7 @@
 import { apiClient } from "@/src/utils/apiClient";
 import { Endpoints } from "@/src/utils/endpoints";
 import { useEffect, useState } from "react";
-import { useLanguage } from "@/src/context/LanguageContext";
-import { translations } from "@/src/locales";
+import { useLocale, useTranslations } from "next-intl";
 
 /* ================= TYPES ================= */
 
@@ -191,9 +190,9 @@ type DashboardData = {
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-
-  const { locale } = useLanguage(); // 👈 اللغة
-  const t = translations[locale];   // 👈 الترجمة
+  const t = useTranslations();
+  const locale = useLocale();
+  const withLocale = (path: string) => `/${locale}${path}`;
 
   useEffect(() => {
     const fetchDashboard = async () => {
@@ -212,27 +211,28 @@ export default function DashboardPage() {
     fetchDashboard();
   }, []);
 
-  if (loading) return <p className="p-6">{t.loading}</p>;
-  if (!data) return <p className="p-6">{t.noData}</p>;
+  if (loading) return <p className="p-6">{t("dashboard.loading")}</p>;
+  if (!data) return <p className="p-6">{t("dashboard.noData")}</p>;
 
   return (
     <div className="p-6 space-y-6 bg-gray-50 w-full min-h-screen">
 
-      {/* المالية */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card title={t.totalSales} value={data.financial.total_sales} />
-        <Card title={t.netProfit} value={data.financial.net_profit} />
+        <Card title={t("dashboard.financial.totalSales")} value={data.financial.total_sales} />
+        <Card title={t("dashboard.financial.netProfit")}
+          value={data.financial.net_profit} />
         <Card
-          title={t.profitMargin}
+          title={t("dashboard.financial.profitMargin")}
+
           value={`${data.financial.profit_margin}%`}
         />
       </section>
 
       {/* الطلبات */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card title={t.totalOrders} value={data.orders.total_orders} />
-        <Card title={t.completedOrders} value={data.orders.completed_orders} />
-        <Card title={t.cancelledOrders} value={data.orders.cancelled_orders} />
+        <Card title={t("dashboard.orders.totalOrders")} value={data.orders.total_orders} />
+        <Card title={t("dashboard.orders.completedOrders")} value={data.orders.completed_orders} />
+        <Card title={t("dashboard.orders.cancelledOrders")} value={data.orders.cancelled_orders} />
       </section>
 
       {/* المنتجات */}
@@ -240,7 +240,7 @@ export default function DashboardPage() {
 
         {/* الأكثر مبيعًا */}
         <div className="bg-white p-4 rounded-xl shadow">
-          <h2 className="font-bold mb-3">{t.topSelling}</h2>
+          <h2 className="font-bold mb-3">{t("dashboard.products.topSellingTitle")}</h2>
 
           {data.products.top_selling_products.length > 0 ? (
             data.products.top_selling_products.map((p, i) => (
@@ -250,13 +250,13 @@ export default function DashboardPage() {
               </div>
             ))
           ) : (
-            <p className="text-gray-400">{t.noData}</p>
+            <p className="text-gray-400">{t("dashboard.noData")}</p>
           )}
         </div>
 
         {/* الأقل مبيعًا */}
         <div className="bg-white p-4 rounded-xl shadow">
-          <h2 className="font-bold mb-3">{t.lowSelling}</h2>
+          <h2 className="font-bold mb-3">{t("dashboard.products.lowSellingTitle")}</h2>
 
           {data.products.low_selling_products.length > 0 ? (
             data.products.low_selling_products.map((p, i) => (
@@ -266,14 +266,14 @@ export default function DashboardPage() {
               </div>
             ))
           ) : (
-            <p className="text-gray-400">{t.noData}</p>
+            <p className="text-gray-400">{t("dashboard.noData")}</p>
           )}
         </div>
       </div>
 
       {/* المخزون */}
       <div className="bg-white p-4 rounded-xl shadow">
-        <h2 className="font-bold mb-3">{t.stock}</h2>
+        <h2 className="font-bold mb-3">{t("dashboard.products.stockTitle")}</h2>
 
         {data.products.stock.length > 0 ? (
           data.products.stock.map((p, i) => (
@@ -283,7 +283,7 @@ export default function DashboardPage() {
             </div>
           ))
         ) : (
-          <p className="text-gray-400">{t.noData}</p>
+          <p className="text-gray-400">{t("dashboard.noData")}</p>
         )}
       </div>
     </div>

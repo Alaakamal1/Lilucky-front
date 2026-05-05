@@ -19,7 +19,9 @@ export default function ProductDetails() {
   const router = useRouter();
   const id = params?.id;
   const locale = useLocale();
-  const t = useTranslations("productDetails");
+  const t = useTranslations();
+  const withLocale = (path: string) => `/${locale}${path}`;
+
 
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
@@ -119,7 +121,7 @@ export default function ProductDetails() {
     }
 
     if (!selectedSize) {
-      toast.error(t("size_required"));
+      toast.error(t("products.customerProducts.size_required"));
       return;
     }
 
@@ -137,7 +139,7 @@ export default function ProductDetails() {
         }
       );
 
-      toast.success(t("toast_add_cart"));
+      toast.success(t("products.customerProducts.toast_add_cart"));
     } catch (err) {
       console.error(err);
       toast.error("Failed to add to cart");
@@ -150,7 +152,7 @@ export default function ProductDetails() {
     return (
       <div className="p-6 text-center">
         <Typography variant="h6">
-          {t("product_not_found")}
+          {t("products.customerProducts.product_not_found")}
         </Typography>
       </div>
     );
@@ -161,15 +163,14 @@ export default function ProductDetails() {
   return (
     <div className="p-6">
 
-      {/* LOGIN POPUP */}
       {showLoginPopup && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
           <div className="bg-white p-6 rounded-lg w-80 text-center">
 
-            <h2 className="text-lg font-semibold mb-4">تنبيه</h2>
+            <h2 className="text-lg font-semibold mb-4">{t("products.customerProducts.login_required_title")}</h2>
 
             <p className="mb-4 text-gray-600">
-              {t("login_required_desc")}
+              {t("products.customerProducts.login_required_desc")}
             </p>
 
             <div className="flex gap-3 justify-center">
@@ -178,14 +179,14 @@ export default function ProductDetails() {
                 className="bg-gray-300 px-4 py-2 rounded"
                 onClick={() => setShowLoginPopup(false)}
               >
-                {t("cancel")}
+                {t("common.cancel")}
               </button>
 
               <button
                 className="bg-primary text-white px-4 py-2 rounded"
-                onClick={() => router.push(`#/${locale}/customer/login`)}
+                onClick={() => router.push(withLocale("/customer/login"))}
               >
-                {t("login")}
+                {t("common.login_button")}
               </button>
 
             </div>
@@ -259,7 +260,7 @@ export default function ProductDetails() {
           </div>
 
           <Typography className="mt-2">
-            {t("description")}
+            {t("products.customerProducts.description")}
           </Typography>
 
           <Typography className="mt-2">
@@ -267,7 +268,7 @@ export default function ProductDetails() {
           </Typography>
 
           <Typography className="mt-2">
-            {t("material")}
+            {t("products.customerProducts.material")}
           </Typography>
           <Typography className="mt-2">
             {product.material}
@@ -276,7 +277,7 @@ export default function ProductDetails() {
           {/* COLORS */}
           <div className="mt-2">
             <Typography className="mb-2">
-              {t("colors")}
+              {t("products.customerProducts.colors")}
             </Typography>
 
             <div className="flex gap-2">
@@ -305,7 +306,7 @@ export default function ProductDetails() {
           <div className="mt-4">
 
             <Typography className="mb-2">
-              {t("size")}
+              {t("products.customerProducts.size")}
             </Typography>
 
             <OptionSelector
@@ -320,7 +321,7 @@ export default function ProductDetails() {
 
           <div className="mt-4">
             <Typography className="mb-2">
-              {t("quntity")}
+              {t("products.customerProducts.quntity")}
             </Typography>
             <Counter
               value={quantity}
@@ -332,7 +333,7 @@ export default function ProductDetails() {
 
           {/* ADD TO CART */}
           <MainButton
-            text={t("add_to_cart")}
+            text={t("products.customerProducts.add_to_cart")}
             className="cursor-pointer bg-primary hover:bg-primary-hover duration-300 rounded-md w-40 md:w-80 p-3 my-2  text-white"
             onClick={handleAddToCart}
           />

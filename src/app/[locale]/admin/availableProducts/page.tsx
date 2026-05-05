@@ -25,11 +25,15 @@ const Page = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedType, setSelectedType] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
-  const t = useTranslations('availableProducts');
+  const t = useTranslations('products.adminProducts');
+  const tr = useTranslations();
+
   const locale = useLocale();
+    const withLocale = (path: string) => `/${locale}${path}`;
+
   const router = useRouter();
   const [categories, setCategories] = useState<{ label: string; value: string }[]>(
-    [{ label: t('typeAll'), value: "all" }]
+    [{ label: tr('common.all'), value: "all" }]
   );
 
 
@@ -42,26 +46,26 @@ const Page = () => {
     { id: 'actions', label: t('actions'), isAction: true },
   ];
   const ageRange = [
-    { label: t('typeAll'), value: "all" },
-    { label: t('type1Y'), value: "1Y" },
-    { label: t('type2Y'), value: "2Y" },
-    { label: t('type3Y'), value: "3Y" },
-    { label: t('type4Y'), value: "4Y" },
-    { label: t('type5Y'), value: "5Y" },
-    { label: t('type6Y'), value: "6Y" },
-    { label: t('type7Y'), value: "7Y" },
-    { label: t('type8Y'), value: "8Y" },
+    { label: tr('common.all'), value: "all" },
+    { label: tr('common.age1'), value: "1Y" },
+    { label: tr('common.age2'), value: "2Y" },
+    { label: tr('common.age3'), value: "3Y" },
+    { label: tr('common.age4'), value: "4Y" },
+    { label: tr('common.age5'), value: "5Y" },
+    { label: tr('common.age6'), value: "6Y" },
+    { label: tr('common.age7'), value: "7Y" },
+    { label: tr('common.age8'), value: "8Y" },
   ];
   const types = [
-    { label: t('typeAll'), value: "all" },
-    { label: t('typeBoys'), value: "boys" },
-    { label: t('typeGirls'), value: "girls" },
+    { label: tr('common.all'), value: "all" },
+    { label: tr('common.boys'), value: "boys" },
+    { label: tr('common.girls'), value: "girls" },
   ];
 
   const statuses = [
-    { label: t('typeAll'), value: "all" },
-    { label: t('available'), value: "available" },
-    { label: t('notAvailable'), value: "unavailable" },
+    { label: tr('common.all'), value: "all" },
+    { label: tr('common.Inventory'), value: "available" },
+    { label: tr('common.notAvailable'), value: "unavailable" },
   ];
   useEffect(() => {
     const fetchCategories = async () => {
@@ -70,7 +74,7 @@ const Page = () => {
         const data = res.data;
         const categoriesData = data.data.categoryNames;
         const formatted = [
-          { label: t('typeAll'), value: "all" },
+          { label: tr('common.all'), value: "all" },
           ...categoriesData.map((cat: Category) => ({
             label: cat.name,
             value: cat._id,
@@ -102,7 +106,7 @@ const Page = () => {
             image: firstImage
               ? `${firstImage.replace(/^\/?/, "")}`
               : "/no-image.png",
-            isActive: product.isActive ? t('available') : t('notAvailable'),
+            isActive: product.isActive ? tr('common.available') : tr('common.notAvailable'),
           };
         });
         setProducts(formattedProducts);
@@ -119,12 +123,12 @@ const Page = () => {
 
   const handleDelete = async (row: Product) => {
     const result = await Swal.fire({
-      title: t('confirm.title'),
-      text: t('confirm.text'),
+      title: tr('common.confirmation.title'),
+      text: tr('common.confirmation.text'),
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: t('confirm.confirm'),
-      cancelButtonText: t('confirm.cancel'),
+      confirmButtonText: tr('common.confirmation.confirm'),
+      cancelButtonText: tr('common.confirmation.cancel'),
     });
 
     if (!result.isConfirmed) return;
@@ -152,10 +156,11 @@ const Page = () => {
     }
   };
   const handleEdit = (row: Product) => {
-    router.push(`/${locale}/admin/availableProducts/editProduct/${row._id}`);
+    
+    router.push(withLocale(`/admin/availableProducts/editProduct?id=${row._id}`));
   };
   const handleView = (row: Product) => {
-    router.push(`/${locale}/admin/availableProducts/${row._id}`);
+    router.push(withLocale(`/admin/availableProducts/id=${row._id}`));
   };
   const filteredProducts = products.filter((p) => {
     const matchGender =
@@ -179,8 +184,6 @@ const Page = () => {
 
   return (
     <div className="w-full px-3 sm:px-6 md:px-8 lg:px-10 py-4 space-y-6">
-
-      {/* Loading */}
       {loading && (
         <div className="space-y-6 animate-pulse">
 
@@ -242,17 +245,16 @@ const Page = () => {
       {/* Error */}
       {error && (
         <Typography align="center" className="my-6">
-          {t('errors.load')}: {error}
+          {tr('common.errors.load')}: {error}
         </Typography>
       )}
 
       {/* No Data */}
       {!loading && !error && products.length === 0 && (
         <div className="flex flex-col justify-center items-center gap-6 min-h-[50vh] text-center">
-
-          <Link href={`/${locale}/admin/availableProducts/addProduct`}>
+          <Link href={withLocale(`/admin/availableProducts/addProduct`)}>
             <MainButton
-              text={t('addFirst')}
+              text={t('addNew')}
 
               className="cursor-pointer bg-primary hover:bg-primary-hover text-background duration-300 ease-in-out rounded-md px-5 py-3"
             />
@@ -289,7 +291,7 @@ const Page = () => {
 
             <div className="w-full">
               <Filter
-                label={t('type')}
+                label={t('gender')}
                 options={types}
                 selected={selectedType}
                 onChange={setSelectedType}
@@ -333,12 +335,13 @@ const Page = () => {
                 columns={columns}
                 rows={filteredProducts}
                 rowKey={(row) => row._id}
-                viewRoute={(row) => `/${locale}/admin/availableProducts/${row._id}`}
+                viewRoute={(row) => withLocale(`/admin/availableProducts/${row._id}`)}
                 onView={handleView}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
               />
             </div>
+
           </div>
 
         </div>

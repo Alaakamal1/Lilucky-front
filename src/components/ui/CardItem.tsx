@@ -15,7 +15,7 @@ import { useLocale, useTranslations } from "next-intl";
 interface Variant {
   images?: string[];
   color?: string;
-  sizes?: string[]; 
+  sizes?: string[];
 }
 
 interface Product {
@@ -35,7 +35,10 @@ const CardItem = ({ product }: { product: Product }) => {
   const [selectedColor, setSelectedColor] = useState<string>("");
   const [selectedSize, setSelectedSize] = useState<string>("");
   const locale = useLocale();
+  const withLocale = (path: string) => `/${locale}${path}`;
   const t = useTranslations("products");
+  const tr = useTranslations();
+
   /* ================= LIKE ================= */
 
   useEffect(() => {
@@ -100,14 +103,14 @@ const CardItem = ({ product }: { product: Product }) => {
   const handleConfirmAdd = async () => {
     const token = sessionStorage.getItem("token");
 
-    if (!product._id || !selectedColor || !selectedSize ) return;
+    if (!product._id || !selectedColor || !selectedSize) return;
 
     try {
       await apiClient.post(
         `${Endpoints.cart}/add-to-cart`,
         {
           productId: product._id,
-          quantity: 1, 
+          quantity: 1,
         },
         {
           headers: {
@@ -152,7 +155,7 @@ const CardItem = ({ product }: { product: Product }) => {
   return (
     <>
       {/* CARD */}
-      <Link href={`/${locale}/customer/product/${product._id}`}>
+      <Link href={withLocale(`/customer/product/${product._id}`)}>
         <div className="bg-white w-67 rounded-lg shadow-md text-center overflow-hidden m-6">
 
           {/* IMAGE + LIKE */}
@@ -182,21 +185,21 @@ const CardItem = ({ product }: { product: Product }) => {
           {/* INFO */}
           <div className="p-3">
             <Typography variant="h6">
-              {product.name || "منتج"}
+              {product.name || t("adminProducts.name")}
             </Typography>
 
             <Typography>
-              {Number(product.price ?? 0)} EGY
+              {Number(product.price ?? 0)} {t("customerProducts.pound")}
             </Typography>
 
             <div className="flex gap-2 mt-2">
               <MainButton
-                text={t("view_product")}
+                text={t("customerProducts.view_product")}
                 className="w-full border py-2 rounded-md border-primary text-primary"
               />
 
               <MainButton
-                text={t("add_to_cart")}
+                text={t("customerProducts.add_to_cart")}
                 onClick={handleAddToCartClick}
                 className="w-full bg-primary py-2 rounded-md text-white"
               />
@@ -217,12 +220,12 @@ const CardItem = ({ product }: { product: Product }) => {
           <div className="relative bg-white w-[92%] max-w-md rounded-3xl p-6">
 
             <h2 className="text-xl font-bold mb-6 text-center">
-                {t("select_details")}
+              {t("customerProducts.select_details")}
             </h2>
 
             {/* COLORS */}
             <div className="mb-6">
-              <p className="mb-3 font-medium">اللون</p>
+              <p className="mb-3 font-medium">{t("customerProducts.color")}</p>
 
               <div className="flex gap-3 flex-wrap">
                 {colors.map((color) => (
@@ -230,8 +233,8 @@ const CardItem = ({ product }: { product: Product }) => {
                     key={color}
                     onClick={() => setSelectedColor(color)}
                     className={`w-10 h-10 rounded-full border-2 ${selectedColor === color
-                        ? "border-primary scale-110"
-                        : "border-gray-300"
+                      ? "border-primary scale-110"
+                      : "border-gray-300"
                       }`}
                     style={{ backgroundColor: color }}
                   />
@@ -241,7 +244,7 @@ const CardItem = ({ product }: { product: Product }) => {
 
             {/* SIZES */}
             <div className="mb-6">
-              <p className="mb-3 font-medium">{t("size")}</p>
+              <p className="mb-3 font-medium">{t("customerProducts.size")}</p>
 
               <div className="flex gap-2 flex-wrap">
                 {sizes.map((size) => (
@@ -249,8 +252,8 @@ const CardItem = ({ product }: { product: Product }) => {
                     key={size}
                     onClick={() => setSelectedSize(size)}
                     className={`px-4 py-2 rounded-full border ${selectedSize === size
-                        ? "bg-primary text-white"
-                        : "bg-white"
+                      ? "bg-primary text-white"
+                      : "bg-white"
                       }`}
                   >
                     {size}
@@ -266,7 +269,7 @@ const CardItem = ({ product }: { product: Product }) => {
                 onClick={() => setOpen(false)}
                 className="px-4 py-2 border rounded-md"
               >
-               {t("cancel")}
+                {tr("common.cancel")}
               </button>
 
               <button
@@ -274,7 +277,7 @@ const CardItem = ({ product }: { product: Product }) => {
                 disabled={!selectedColor || !selectedSize}
                 className="px-4 py-2 bg-primary text-white rounded-md disabled:opacity-50"
               >
-               {t("confirm")}
+                {tr("common.confirm")}
               </button>
 
             </div>
@@ -294,11 +297,11 @@ const CardItem = ({ product }: { product: Product }) => {
           <div className="bg-white p-6 rounded-2xl w-[90%] max-w-md text-center ">
 
             <h2 className="text-xl font-bold mb-3">
-             {t("login_required")}
+              {t("customerProducts.login_required_title")}
             </h2>
 
             <p className="mb-5 text-gray-600">
-             {t("login_message")}
+              {tr("registration.login.login_message")}
             </p>
 
             <div className="flex gap-2 justify-center">
@@ -307,13 +310,12 @@ const CardItem = ({ product }: { product: Product }) => {
                 onClick={() => setShowLoginPopup(false)}
                 className="px-4 py-2 border rounded-md"
               >
-               {t("cancel")}
+                {tr("common.cancel")}
               </button>
 
-              <Link href="/customer/login">
-                <button className="px-4 py-2 bg-primary text-white rounded-md">
-                  {t("login")}
-                </button>
+              <Link href={withLocale(`/customer/login`)}>                <button className="px-4 py-2 bg-primary text-white rounded-md">
+                {tr("common.login_button")}
+              </button>
               </Link>
 
             </div>

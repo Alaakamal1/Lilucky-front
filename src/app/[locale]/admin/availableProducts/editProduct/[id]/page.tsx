@@ -7,10 +7,13 @@ import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { Product } from '@/src/interfaces/product';
+import { useTranslations } from 'next-intl';
 export default function EditProductPage() {
   const params = useParams();
   const productId = params?.id as string;
   const [initialData, setInitialData] = useState<Product | null>(null);
+  const t = useTranslations();
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -22,7 +25,7 @@ export default function EditProductPage() {
         setInitialData(product);
       } catch (err) {
         console.error(err);
-        toast.error("فشل تحميل البيانات");
+        toast.error(t("common.load"));
       }
     };
     if (productId) fetchProduct();
@@ -42,23 +45,23 @@ export default function EditProductPage() {
       );
 
       if (res.status === 200) {
-        toast.success("تم تعديل المنتج");
+        toast.success(t("products.adminProducts.product_updated"));
       } else {
-        toast.error("حدث خطأ أثناء التعديل");
+        toast.error(t("products.adminProducts.update_error"));
       }
 
     } catch (err: unknown) {
       if (err instanceof Error) {
         toast.error(err.message);
       } else {
-        toast.error("فشل التحديث");
+        toast.error(t("products.adminProducts.update_failed"));
       }
     }
   };
-  if (!initialData) return <p>جارٍ تحميل البيانات...</p>;
+  if (!initialData) return <p>{t("products.customerProducts.loading")}</p>;
   return (
     <div className="w-full p-6">
-      <h2 className="text-2xl font-bold mb-4">تعديل المنتج</h2>
+      <h2 className="text-2xl font-bold mb-4"> {t("products.customerProducts.edit_product")}</h2>
       <ProductForm
         initialData={initialData}
         onSubmit={handleSubmit}
