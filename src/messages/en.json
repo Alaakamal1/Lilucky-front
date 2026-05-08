@@ -210,12 +210,17 @@
   "categoryForm": {
     "titleAdd": "Add New Category",
     "titleEdit": "Edit Category",
+    "submitEdit": "Edit Category",
     "arNameLabel": "Category Name (Arabic)",
     "enNameLabel": "Category Name (English)",
     "typeLabel": "Category Type",
     "typePlaceholder": "Select type",
     "submitAdd": "Add Category",
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "success": {
+  "created": "Category created successfully",
+  "updated": "Category updated successfully"
+}
   },
   "validation": {
     "arNameRequired": "Arabic category name is required",

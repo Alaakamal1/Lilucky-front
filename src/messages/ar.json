@@ -241,12 +241,18 @@
   "categoryForm": {
     "titleAdd": "إضافة فئة جديدة",
     "titleEdit": "تعديل فئة",
+    "submitEdit":"تعديل الفئة",
     "arNameLabel": "اسم الفئة بالعربي",
     "enNameLabel": "اسم الفئة بالإنجليزي",
     "typeLabel": "نوع الفئة",
     "typePlaceholder": "اختر النوع",
     "submitAdd": "إضافة فئة",
-    "saving": "جاري الحفظ..."
+    "saving": "جاري الحفظ...",
+    "success": {
+  "created": "تم الإنشاءالفئة بنجاح",
+  "updated": "تم التحديث الفئة بنجاح"
+}
+
   },
   "validation": {
     "arNameRequired": "اسم الفئة بالعربي مطلوب",
@@ -500,7 +506,7 @@
     "address": "عنوان التوصيل",
     "items": "المنتجات",
     "changeStatus": "تغيير حالة الطلب",
-      "order_success_title": "تم إنشاء الطلب بنجاح ",
+    "order_success_title": "تم إنشاء الطلب بنجاح ",
   "order_success_message": "شكراً لشرائك",
   "order_id": "رقم الطلب",
 

@@ -34,22 +34,26 @@ type DashboardData = {
   };
 };
 
+/* ================= SKELETON ================= */
+
+function Skeleton({ className = "" }: { className?: string }) {
+  return (
+    <div className={`animate-pulse bg-gray-200 rounded ${className}`} />
+  );
+}
+
 /* ================= PAGE ================= */
 
 export default function DashboardPage() {
-
   const [data, setData] = useState<DashboardData | null>(null);
-
   const [loading, setLoading] = useState<boolean>(true);
 
   const t = useTranslations();
-
   const locale = useLocale() as "en" | "ar";
 
   /* ================= GET TEXT ================= */
 
   const getText = (field?: I18nText) => {
-
     if (!field) return "";
 
     return locale === "ar"
@@ -60,44 +64,73 @@ export default function DashboardPage() {
   /* ================= FETCH ================= */
 
   useEffect(() => {
-
     const fetchDashboard = async () => {
-
       try {
-
-        const res = await apiClient.get(
-          `${Endpoints.baseUrl}/dashboard`
-        );
-
+        const res = await apiClient.get(`${Endpoints.baseUrl}/dashboard`);
         const result = res?.data?.data;
 
         setData(result ?? null);
-
       } catch (error) {
-
         console.error("Dashboard API Error:", error);
-
         setData(null);
-
       } finally {
-
         setLoading(false);
       }
     };
 
     fetchDashboard();
-
   }, []);
 
-  /* ================= STATES ================= */
+  /* ================= LOADING ================= */
 
   if (loading) {
     return (
-      <p className="p-6">
-        {t("dashboard.loading")}
-      </p>
+      <div className="p-6 space-y-6">
+
+        {/* FINANCIAL */}
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="bg-white p-4 rounded-xl shadow space-y-3">
+              <Skeleton className="h-4 w-1/2" />
+              <Skeleton className="h-6 w-1/3" />
+            </div>
+          ))}
+        </section>
+
+        {/* ORDERS */}
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="bg-white p-4 rounded-xl shadow space-y-3">
+              <Skeleton className="h-4 w-1/2" />
+              <Skeleton className="h-6 w-1/3" />
+            </div>
+          ))}
+        </section>
+
+        {/* PRODUCTS */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+          {[1, 2].map((i) => (
+            <div key={i} className="bg-white p-4 rounded-xl shadow space-y-3">
+              <Skeleton className="h-5 w-1/2 mb-3" />
+
+              {[1, 2, 3, 4].map((j) => (
+                <div key={j} className="flex justify-between">
+                  <Skeleton className="h-4 w-1/3" />
+                  <Skeleton className="h-4 w-10" />
+                </div>
+              ))}
+
+            </div>
+          ))}
+
+        </div>
+
+      </div>
     );
   }
+
+  /* ================= EMPTY ================= */
 
   if (!data) {
     return (
@@ -110,57 +143,30 @@ export default function DashboardPage() {
   /* ================= UI ================= */
 
   return (
-
     <div className="p-6 space-y-6 bg-gray-50 w-full min-h-screen">
 
-      {/* ================= FINANCIAL ================= */}
-
+      {/* FINANCIAL */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
-        <Card
-          title={t("dashboard.financial.totalSales")}
-          value={data.financial.total_sales}
-        />
-
-        <Card
-          title={t("dashboard.financial.netProfit")}
-          value={data.financial.net_profit}
-        />
-
-        <Card
-          title={t("dashboard.financial.profitMargin")}
-          value={`${data.financial.profit_margin}%`}
-        />
+        <Card title={t("dashboard.financial.totalSales")} value={data.financial.total_sales} />
+        <Card title={t("dashboard.financial.netProfit")} value={data.financial.net_profit} />
+        <Card title={t("dashboard.financial.profitMargin")} value={`${data.financial.profit_margin}%`} />
 
       </section>
 
-      {/* ================= ORDERS ================= */}
-
+      {/* ORDERS */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
-        <Card
-          title={t("dashboard.orders.totalOrders")}
-          value={data.orders.total_orders}
-        />
-
-        <Card
-          title={t("dashboard.orders.completedOrders")}
-          value={data.orders.completed_orders}
-        />
-
-        <Card
-          title={t("dashboard.orders.cancelledOrders")}
-          value={data.orders.cancelled_orders}
-        />
+        <Card title={t("dashboard.orders.totalOrders")} value={data.orders.total_orders} />
+        <Card title={t("dashboard.orders.completedOrders")} value={data.orders.completed_orders} />
+        <Card title={t("dashboard.orders.cancelledOrders")} value={data.orders.cancelled_orders} />
 
       </section>
 
-      {/* ================= PRODUCTS ================= */}
-
+      {/* PRODUCTS */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-        {/* ================= TOP SELLING ================= */}
-
+        {/* TOP SELLING */}
         <div className="bg-white p-4 rounded-xl shadow">
 
           <h2 className="font-bold mb-3">
@@ -168,33 +174,19 @@ export default function DashboardPage() {
           </h2>
 
           {data.products.top_selling_products.length > 0 ? (
-
             data.products.top_selling_products.map((p, i) => (
-
-              <div
-                key={i}
-                className="flex justify-between border-b py-2"
-              >
-
+              <div key={i} className="flex justify-between border-b py-2">
                 <span>{getText(p.name)}</span>
-
                 <span>{p.sold ?? 0}</span>
-
               </div>
             ))
-
           ) : (
-
-            <p className="text-gray-400">
-              {t("dashboard.noData")}
-            </p>
-
+            <p className="text-gray-400">{t("dashboard.noData")}</p>
           )}
 
         </div>
 
-        {/* ================= LOW SELLING ================= */}
-
+        {/* LOW SELLING */}
         <div className="bg-white p-4 rounded-xl shadow">
 
           <h2 className="font-bold mb-3">
@@ -202,35 +194,21 @@ export default function DashboardPage() {
           </h2>
 
           {data.products.low_selling_products.length > 0 ? (
-
             data.products.low_selling_products.map((p, i) => (
-
-              <div
-                key={i}
-                className="flex justify-between border-b py-2"
-              >
-
+              <div key={i} className="flex justify-between border-b py-2">
                 <span>{getText(p.name)}</span>
-
                 <span>{p.sold ?? 0}</span>
-
               </div>
             ))
-
           ) : (
-
-            <p className="text-gray-400">
-              {t("dashboard.noData")}
-            </p>
-
+            <p className="text-gray-400">{t("dashboard.noData")}</p>
           )}
 
         </div>
 
       </div>
 
-      {/* ================= STOCK ================= */}
-
+      {/* STOCK */}
       <div className="bg-white p-4 rounded-xl shadow">
 
         <h2 className="font-bold mb-3">
@@ -238,27 +216,14 @@ export default function DashboardPage() {
         </h2>
 
         {data.products.stock.length > 0 ? (
-
           data.products.stock.map((p, i) => (
-
-            <div
-              key={i}
-              className="flex justify-between border-b py-2"
-            >
-
+            <div key={i} className="flex justify-between border-b py-2">
               <span>{getText(p.name)}</span>
-
               <span>{p.stock ?? 0}</span>
-
             </div>
           ))
-
         ) : (
-
-          <p className="text-gray-400">
-            {t("dashboard.noData")}
-          </p>
-
+          <p className="text-gray-400">{t("dashboard.noData")}</p>
         )}
 
       </div>
@@ -275,19 +240,10 @@ type CardProps = {
 };
 
 function Card({ title, value }: CardProps) {
-
   return (
-
     <div className="bg-white p-4 rounded-xl shadow">
-
-      <p className="text-gray-500">
-        {title}
-      </p>
-
-      <h3 className="text-xl font-bold">
-        {value}
-      </h3>
-
+      <p className="text-gray-500">{title}</p>
+      <h3 className="text-xl font-bold">{value}</h3>
     </div>
   );
 }
