@@ -62,7 +62,7 @@ const Page = () => {
                 : tr("common.all"),
 
           isActive: cat.isActive
-            ? tr("common.available")
+            ? tr("common.Available")
             : tr("common.notAvailable"),
         }));
 

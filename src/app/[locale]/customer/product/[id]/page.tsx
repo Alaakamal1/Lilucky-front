@@ -18,7 +18,7 @@ export default function ProductDetails() {
   const params = useParams();
   const router = useRouter();
   const id = params?.id;
-  const locale = useLocale();
+  const locale = useLocale() as "en" | "ar";
   const t = useTranslations();
   const withLocale = (path: string) => `/${locale}${path}`;
 
@@ -30,6 +30,10 @@ export default function ProductDetails() {
   const [quantity, setQuantity] = useState(1);
   const [isLiked, setIsLiked] = useState(false);
   const [showLoginPopup, setShowLoginPopup] = useState(false);
+  const getText = (value?: { en?: string; ar?: string }) => {
+  if (!value) return "";
+  return locale === "ar" ? value.ar : value.en;
+};
 
   const token =
     typeof window !== "undefined"
@@ -233,7 +237,7 @@ export default function ProductDetails() {
           <div className="flex gap-6 items-center">
 
             <Typography variant="h4">
-              {product.name}
+                 {getText(product.name) || t("adminProducts.name")}
             </Typography>
 
             <div onClick={handleLike} className="cursor-pointer">
@@ -264,17 +268,16 @@ export default function ProductDetails() {
           </Typography>
 
           <Typography className="mt-2">
-            {product.description}
+              {getText(product.description) || t("adminProducts.description")}
           </Typography>
 
           <Typography className="mt-2">
             {t("products.customerProducts.material")}
           </Typography>
           <Typography className="mt-2">
-            {product.material}
+              {getText(product.material) || t("adminProducts.material")}
           </Typography>
 
-          {/* COLORS */}
           <div className="mt-2">
             <Typography className="mb-2">
               {t("products.customerProducts.colors")}
