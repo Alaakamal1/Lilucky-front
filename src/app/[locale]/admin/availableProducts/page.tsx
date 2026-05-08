@@ -30,7 +30,6 @@ const Page = () => {
 
   const locale = useLocale();
   const withLocale = (path: string) => `/${locale}${path}`;
-
   const router = useRouter();
   const [categories, setCategories] = useState<{ label: string; value: string }[]>(
     [{ label: tr('common.all'), value: "all" }]
@@ -162,7 +161,7 @@ const Page = () => {
   };
   const handleEdit = (row: Product) => {
 
-    router.push(withLocale(`/admin/availableProducts/editProduct?id=${row._id}`));
+    router.push(withLocale(`/admin/availableProducts/editProduct/${row._id}`));
   };
   const handleView = (row: Product) => {
     router.push(withLocale(`/admin/availableProducts/id=${row._id}`));
