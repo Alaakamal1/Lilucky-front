@@ -9,35 +9,36 @@ import { apiClient } from "@/src/utils/apiClient";
 import { Endpoints } from "@/src/utils/endpoints";
 import MainButton from "./MainButton";
 import { useLocale, useTranslations } from "next-intl";
+import { Product } from "@/src/interfaces/product";
 
-/* ================= TYPES ================= */
+/* ================= SAFE TYPE ================= */
 
-interface Variant {
-  images?: string[];
-  color?: string;
-  sizes?: string[];
-}
-
-interface Product {
-  _id: string;
-  name?: string;
-  price?: number;
-  variants?: Variant[];
-  like?: boolean;
+interface TranslatedField {
+  en?: string;
+  ar?: string;
 }
 
 /* ================= COMPONENT ================= */
 
 const CardItem = ({ product }: { product: Product }) => {
-  const [isLiked, setIsLiked] = useState<boolean>(false);
-  const [open, setOpen] = useState<boolean>(false);
-  const [showLoginPopup, setShowLoginPopup] = useState<boolean>(false);
-  const [selectedColor, setSelectedColor] = useState<string>("");
-  const [selectedSize, setSelectedSize] = useState<string>("");
-  const locale = useLocale();
+  const [isLiked, setIsLiked] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [showLoginPopup, setShowLoginPopup] = useState(false);
+  const [selectedColor, setSelectedColor] = useState("");
+  const [selectedSize, setSelectedSize] = useState("");
+
+  const locale = useLocale() as "en" | "ar";
   const withLocale = (path: string) => `/${locale}${path}`;
+
   const t = useTranslations("products");
   const tr = useTranslations();
+
+  /* ================= SAFE TRANSLATION ================= */
+
+  const getText = (value?: TranslatedField) => {
+    if (!value) return "";
+    return locale === "ar" ? value.ar : value.en;
+  };
 
   /* ================= LIKE ================= */
 
@@ -47,21 +48,22 @@ const CardItem = ({ product }: { product: Product }) => {
       sessionStorage.getItem("likedProducts") || "[]"
     );
 
-    if (!token) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setIsLiked(storedLikes.includes(product._id));
-    } else {
-      setIsLiked(product.like ?? false);
-    }
+    const liked = token
+      ? product.like ?? false
+      : storedLikes.includes(product._id);
+
+    setIsLiked(liked);
   }, [product._id, product.like]);
 
   const handleLike = async (productId: string) => {
     const token = sessionStorage.getItem("token");
+
     const stored: string[] = JSON.parse(
       sessionStorage.getItem("likedProducts") || "[]"
     );
 
     const isLikedNow = stored.includes(productId);
+
     const updated = isLikedNow
       ? stored.filter((id) => id !== productId)
       : [...stored, productId];
@@ -75,9 +77,7 @@ const CardItem = ({ product }: { product: Product }) => {
           `${Endpoints.products}/like/${productId}`,
           {},
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
       } catch (err) {
@@ -86,17 +86,37 @@ const CardItem = ({ product }: { product: Product }) => {
     }
   };
 
-  /* ================= CART ================= */
+  /* ================= VARIANTS ================= */
+
+  const colors = Array.from(
+    new Set(product?.variants?.map(v => v.color).filter(Boolean))
+  );
+
+  const sizes = Array.from(
+    new Set(product?.variants?.flatMap(v => v.sizes || []).filter(Boolean))
+  );
+
+  const image = product?.variants?.[0]?.images?.[0];
+
+  const imageSrc = image
+    ? image.startsWith("http")
+      ? image
+      : `${Endpoints.prodUrl}/uploads/products/${image}`
+    : "/placeholder.png";
+
+  /* ================= ADD TO CART ================= */
 
   const handleAddToCartClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
+
     const token = sessionStorage.getItem("token");
 
     if (!token) {
       setShowLoginPopup(true);
       return;
     }
+
     setOpen(true);
   };
 
@@ -125,31 +145,6 @@ const CardItem = ({ product }: { product: Product }) => {
     }
   };
 
-  /* ================= VARIANTS SAFE ================= */
-
-  const colors: string[] = Array.from(
-    new Set(
-      product?.variants
-        ?.map((v) => v.color)
-        .filter((v): v is string => Boolean(v))
-    )
-  );
-  const sizes: string[] = Array.from(
-    new Set(
-      product?.variants
-        ?.flatMap((v) => v.sizes || [])
-        .filter((v): v is string => Boolean(v))
-    )
-  );
-
-  const image = product?.variants?.[0]?.images?.[0];
-
-  const imageSrc = image
-    ? image.startsWith("http")
-      ? image
-      : `${Endpoints.prodUrl}/uploads/products/${image}`
-    : "/placeholder.png";
-
   /* ================= UI ================= */
 
   return (
@@ -160,6 +155,7 @@ const CardItem = ({ product }: { product: Product }) => {
 
           {/* IMAGE + LIKE */}
           <div className="relative">
+
             <div
               className="absolute top-2 right-2 z-10 cursor-pointer"
               onClick={(e) => {
@@ -168,31 +164,30 @@ const CardItem = ({ product }: { product: Product }) => {
                 handleLike(product._id);
               }}
             >
-              {isLiked ? (
-                <FavoriteIcon className="text-red-600" />
-              ) : (
-                <FavoriteBorderIcon />
-              )}
+              {isLiked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
             </div>
 
             <img
               src={imageSrc}
-              alt={product.name || "product"}
+              alt={getText(product.name) || "product"}
               className="w-full h-40 object-cover"
             />
+
           </div>
 
           {/* INFO */}
           <div className="p-3">
+
             <Typography variant="h6">
-              {product.name || t("adminProducts.name")}
+              {getText(product.name) || t("adminProducts.name")}
             </Typography>
 
             <Typography>
-              {Number(product.price ?? 0)} {t("customerProducts.pound")}
+              {product.price} {t("customerProducts.pound")}
             </Typography>
 
             <div className="flex gap-2 mt-2">
+
               <MainButton
                 text={t("customerProducts.view_product")}
                 className="w-full border py-2 rounded-md border-primary text-primary"
@@ -203,17 +198,19 @@ const CardItem = ({ product }: { product: Product }) => {
                 onClick={handleAddToCartClick}
                 className="w-full bg-primary py-2 rounded-md text-white"
               />
+
             </div>
+
           </div>
         </div>
       </Link>
 
-      {/* ================= POPUP ================= */}
+      {/* POPUP */}
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
 
           <div
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/60"
             onClick={() => setOpen(false)}
           />
 
@@ -232,10 +229,11 @@ const CardItem = ({ product }: { product: Product }) => {
                   <button
                     key={color}
                     onClick={() => setSelectedColor(color)}
-                    className={`w-10 h-10 rounded-full border-2 ${selectedColor === color
-                      ? "border-primary scale-110"
-                      : "border-gray-300"
-                      }`}
+                    className={`w-10 h-10 rounded-full border-2 ${
+                      selectedColor === color
+                        ? "border-primary scale-110"
+                        : "border-gray-300"
+                    }`}
                     style={{ backgroundColor: color }}
                   />
                 ))}
@@ -251,10 +249,11 @@ const CardItem = ({ product }: { product: Product }) => {
                   <button
                     key={size}
                     onClick={() => setSelectedSize(size)}
-                    className={`px-4 py-2 rounded-full border ${selectedSize === size
-                      ? "bg-primary text-white"
-                      : "bg-white"
-                      }`}
+                    className={`px-4 py-2 rounded-full border ${
+                      selectedSize === size
+                        ? "bg-primary text-white"
+                        : "bg-white"
+                    }`}
                   >
                     {size}
                   </button>
@@ -281,6 +280,7 @@ const CardItem = ({ product }: { product: Product }) => {
               </button>
 
             </div>
+
           </div>
         </div>
       )}
@@ -290,11 +290,11 @@ const CardItem = ({ product }: { product: Product }) => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
 
           <div
-            className="absolute inset-0 "
+            className="absolute inset-0"
             onClick={() => setShowLoginPopup(false)}
           />
 
-          <div className="bg-white p-6 rounded-2xl w-[90%] max-w-md text-center ">
+          <div className="bg-white p-6 rounded-2xl w-[90%] max-w-md text-center">
 
             <h2 className="text-xl font-bold mb-3">
               {t("customerProducts.login_required_title")}
@@ -313,9 +313,10 @@ const CardItem = ({ product }: { product: Product }) => {
                 {tr("common.cancel")}
               </button>
 
-              <Link href={withLocale(`/customer/login`)}>                <button className="px-4 py-2 bg-primary text-white rounded-md">
-                {tr("common.login_button")}
-              </button>
+              <Link href={withLocale("/customer/login")}>
+                <button className="px-4 py-2 bg-primary text-white rounded-md">
+                  {tr("common.login_button")}
+                </button>
               </Link>
 
             </div>

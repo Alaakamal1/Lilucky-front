@@ -22,7 +22,7 @@
     "cancel": "Cancel",
     "confirm": "Confirm",
     "login_button": "Login",
-    "available": "Available",
+    "Available": "Available",
     "notAvailable": "Not available",
     "bestSelling": "Top Selling Products",
     "orders": {
@@ -532,6 +532,8 @@
 
     "adminProducts": {
       "name": "Product Name",
+      "arname": "Product Name (AR)",
+      "enname": "Product Name (EN)",
       "image": "Product Image",
       "price": "Price",
       "stock": "Stock",
@@ -547,7 +549,11 @@
       "gender": "Gender",
       "categoryType": "Category",
       "material": "Material",
-      "description": "Description",
+      "materialAR": "Material (AR)",
+      "materialEN": "Material (EN)",
+      "description": "Description ",
+      "ardescription": "Description (AR)",
+      "endescription": "Description (EN)",
       "mainPrice": "Original Price",
       "sitePrice": "Website Price",
       "Inventory": "Inventory",

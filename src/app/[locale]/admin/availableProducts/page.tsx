@@ -29,7 +29,7 @@ const Page = () => {
   const tr = useTranslations();
 
   const locale = useLocale();
-    const withLocale = (path: string) => `/${locale}${path}`;
+  const withLocale = (path: string) => `/${locale}${path}`;
 
   const router = useRouter();
   const [categories, setCategories] = useState<{ label: string; value: string }[]>(
@@ -38,7 +38,12 @@ const Page = () => {
 
 
   const columns = [
-    { id: 'name', label: t('name') },
+    {
+      id: "name",
+      label: t("name"),
+      render: (row: any) =>
+        locale === "ar" ? row.name?.ar : row.name?.en,
+    },
     { id: 'image', label: t('image'), isImage: true },
     { id: 'price', label: t('price') },
     { id: 'stock', label: t('stock') },
@@ -64,7 +69,7 @@ const Page = () => {
 
   const statuses = [
     { label: tr('common.all'), value: "all" },
-    { label: tr('common.Inventory'), value: "available" },
+    { label: tr('common.Available'), value: "available" },
     { label: tr('common.notAvailable'), value: "unavailable" },
   ];
   useEffect(() => {
@@ -86,7 +91,7 @@ const Page = () => {
       }
     };
     fetchCategories();
-  }, []);
+  }, [locale,tr]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -106,7 +111,7 @@ const Page = () => {
             image: firstImage
               ? `${firstImage.replace(/^\/?/, "")}`
               : "/no-image.png",
-            isActive: product.isActive ? tr('common.Inventory') : tr('common.notAvailable'),
+            isActive: product.isActive ? tr('common.Available') : tr('common.notAvailable'),
           };
         });
         setProducts(formattedProducts);
@@ -119,7 +124,7 @@ const Page = () => {
       }
     };
     fetchProducts();
-  }, []);
+  }, [tr]);
 
   const handleDelete = async (row: Product) => {
     const result = await Swal.fire({
@@ -156,7 +161,7 @@ const Page = () => {
     }
   };
   const handleEdit = (row: Product) => {
-    
+
     router.push(withLocale(`/admin/availableProducts/editProduct?id=${row._id}`));
   };
   const handleView = (row: Product) => {
