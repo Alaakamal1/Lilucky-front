@@ -60,7 +60,7 @@ const AdminHeader = () => {
 
         <nav className="flex flex-col justify-evenly items-center py-2 h-full">
 
-          <Link href={withLocale("/admin/dashboard")}>
+          <Link href={withLocale("/admin")}>
             <Image src="/Lilucky.svg" alt="logo" width={100} height={100} />
           </Link>
 
